@@ -1,0 +1,104 @@
+{
+  "refresh_interval": 60,
+  "server_port": 8000,
+
+  "sources": {
+
+    "employees": {
+      "enabled": false,
+      "type": "excel_local",
+      "path": "",
+      "sheet": "Employees",
+      "skip_rows": 0,
+      "column_map": {}
+    },
+
+    "invoices": {
+      "enabled": false,
+      "type": "excel_local",
+      "path": "",
+      "sheet": "Invoices",
+      "skip_rows": 0,
+      "column_map": {}
+    },
+
+    "budgets": {
+      "enabled": false,
+      "type": "excel_local",
+      "path": "",
+      "sheet": "Budget",
+      "skip_rows": 0,
+      "column_map": {}
+    },
+
+    "expenses": {
+      "enabled": false,
+      "type": "excel_local",
+      "path": "",
+      "sheet": "Expenses",
+      "skip_rows": 0,
+      "column_map": {}
+    },
+
+    "petty": {
+      "enabled": false,
+      "type": "excel_local",
+      "path": "",
+      "sheet": "Petty Cash",
+      "skip_rows": 0,
+      "column_map": {}
+    },
+
+    "projects": {
+      "enabled": false,
+      "type": "excel_local",
+      "path": "",
+      "sheet": "Projects",
+      "skip_rows": 0,
+      "column_map": {}
+    },
+
+    "leaves": {
+      "enabled": false,
+      "type": "excel_local",
+      "path": "",
+      "sheet": "Leave",
+      "skip_rows": 0,
+      "column_map": {}
+    },
+
+    "payroll": {
+      "enabled": false,
+      "type": "excel_local",
+      "path": "",
+      "sheet": "Payroll",
+      "skip_rows": 0,
+      "column_map": {}
+    },
+
+    "contracts": {
+      "enabled": false,
+      "type": "excel_local",
+      "path": "",
+      "sheet": "Contracts",
+      "skip_rows": 0,
+      "column_map": {}
+    },
+
+    "onboarding": {
+      "enabled": false,
+      "type": "excel_local",
+      "path": "",
+      "sheet": "Onboarding",
+      "skip_rows": 0,
+      "column_map": {}
+    }
+
+  },
+
+  "_notes": {
+    "connector_types": ["excel_local", "excel_graph", "mysql", "postgresql"],
+    "excel_graph_auth": "Set tenant_id + client_id + client_secret for background refresh, or pass access_token from the login session.",
+    "database_drivers": "MySQL: pip install pymysql  |  PostgreSQL: pip install psycopg2-binary"
+  }
+}

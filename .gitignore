@@ -19,3 +19,21 @@ venv/
 
 # Logs
 *.log
+
+# Local Netlify folder
+.netlify
+
+# Local working backups & agent files
+*.bak-*
+.claude/
+context/
+
+# Data exports (contain employee data — do not publish)
+employees_export.json
+PETGO_Backup_*.json
+*.xlsx
+
+# Personal notes / working docs
+My Finance Prefs.md
+PETGO Finance Dashboard - Overview for NotebookLM.txt
+setup_github.sh

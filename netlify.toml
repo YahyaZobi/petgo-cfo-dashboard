@@ -1,0 +1,8 @@
+[build]
+  command = ""
+  publish = "."
+
+[[redirects]]
+  from = "/"
+  to = "/PETGO Finance CFO Dashboard.html"
+  status = 200

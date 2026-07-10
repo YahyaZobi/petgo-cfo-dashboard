@@ -139,9 +139,10 @@
 .pv-bell-ping { position:absolute; top:8px; right:9px; width:7px; height:7px; border-radius:50%;
   background:#8fa5cf; }
 .pv-user { display:flex; align-items:center; gap:9px; cursor:pointer; background:none; border:none; }
-.pv-avatar { width:36px; height:36px; border-radius:50%; flex:none;
+.pv-avatar { width:36px; height:36px; border-radius:50%; flex:none; overflow:hidden;
   background:linear-gradient(135deg,#2a3550,#41547e);
   display:flex; align-items:center; justify-content:center; color:#e8eefc; font-size:12.5px; font-weight:800; }
+.pv-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
 .pv-user-name { color:var(--pv-text); font-size:13px; font-weight:700; line-height:1.2;
   text-align:left; display:block; white-space:nowrap; }
 .pv-user-role { color:var(--pv-muted-2); font-size:11px; text-align:left; display:block; }
@@ -2403,7 +2404,11 @@ function bootApp(){
   loggedIn=true;
   var u=_userFromEmail(currentUser);
   var n=document.querySelector('.pv-user-name'); if(n)n.textContent=u.name;
-  var a=document.querySelector('.pv-avatar'); if(a)a.textContent=u.initials;
+  /* Header avatar: pull the signed-in user's real photo from the employee
+     directory (same source as Team Directory / Org Chart); initials only fall
+     back when no photo exists. Defined in the Phase-3 script block. */
+  if(window.refreshHeaderAvatar){ refreshHeaderAvatar(); }
+  else { var a=document.querySelector('.pv-avatar'); if(a)a.textContent=u.initials; }
   _initMSAL();
   if(window.pvOnAppShown)window.pvOnAppShown();
 }
@@ -2849,6 +2854,47 @@ function empColor(name){var h=0;for(var i=0;i<name.length;i++)h=((h<<5)-h+name.c
 /* Employees — loaded from localStorage (set by Team Directory when migrated) */
 var employees=fnLoad('petgo_employees',[]);
 
+/* ── Shared employee-avatar system ──────────────────────────────
+   Single source of truth for every avatar in the app. A real stored
+   photo (base64 in the Team Directory record) always wins; coloured
+   initials are ONLY a fallback when no matching record has a photo.
+   Always reads the freshest directory from localStorage so photos
+   saved elsewhere (Team Directory / Org Chart) show up immediately. */
+function empDirectory(){ return fnLoad('petgo_employees', employees||[]); }
+function empLookup(o){
+  o=o||{}; var list=empDirectory(), e=null, k;
+  /* Email is the login identity and the most reliable match (same key the
+     production dashboard used). Name is next; empId is a last resort because
+     the static USERS map's empIds can drift from the live directory. */
+  if(o.email){ k=(''+o.email).toLowerCase(); e=list.find(function(x){return (x.email||'').toLowerCase()===k;}); }
+  if(!e && o.name){ k=(''+o.name).trim().toLowerCase(); e=list.find(function(x){return (x.name||'').trim().toLowerCase()===k;}); }
+  if(!e && o.empId){ e=list.find(function(x){return x.empId && x.empId===o.empId;}); }
+  return e||null;
+}
+/* Inner HTML for a round avatar: <img> when the matched record has a
+   photo, else coloured initials. `emp` may be null (name-only fallback). */
+function empAvatarInner(emp, name){
+  var nm=(emp&&emp.name)||name||'';
+  var init=empInitials(nm);
+  if(emp && emp.photo){
+    return '<img src="'+emp.photo+'" alt="'+escH(nm)+'" '
+      +'style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" '
+      +'onerror="this.parentNode.textContent=\''+init.replace(/[^A-Z0-9]/gi,'')+'\'">';
+  }
+  return '<span style="pointer-events:none">'+escH(init)+'</span>';
+}
+/* Header profile avatar for the signed-in user: photo from the
+   directory (matched by email → empId → name), else initials. */
+function refreshHeaderAvatar(){
+  var el=document.querySelector('.pv-avatar'); if(!el)return;
+  var u=(typeof USERS!=='undefined'&&USERS[currentUser])||{};
+  var emp=empLookup({email:currentUser, empId:u.empId, name:u.name});
+  var name=(emp&&emp.name)||u.name||(typeof _userFromEmail==='function'?_userFromEmail(currentUser||'').name:'');
+  if(emp && emp.photo){ el.innerHTML=empAvatarInner(emp, name); }
+  else { el.textContent=empInitials(name); }
+}
+window.refreshHeaderAvatar=refreshHeaderAvatar;
+
 /* ── LEAVE TRACKER ── */
 var leaves=fnLoad('petgo_leaves',[
   {id:1,emp:'Ahmed Sudgey',type:'Annual',start:'2026-07-01',end:'2026-07-10',status:'Approved',reason:'Family vacation'},
@@ -3182,7 +3228,7 @@ function renderOrgChart(){
   employees.forEach(function(e){if(e===ceo)return;var d=e.dept||'General';if(!depts[d])depts[d]=[];depts[d].push(e);});
   var pal=['#3b82f6','#8b5cf6','#10b981','#f59e0b','#ec4899','#06b6d4','#6366f1','#ef4444'];
   function dc(dept){return pal[Math.abs(dept.split('').reduce(function(a,c){return a+c.charCodeAt(0);},0))%pal.length];}
-  function av(e,cls){var initials=empInitials(e.name);var bg=empColor(e.name);var imgTag=e.photo?'<img src="'+e.photo+'" alt="">':'';return '<div class="org-av '+cls+'" style="background:'+bg+'">'+( imgTag||'<span style="pointer-events:none">'+escH(initials)+'</span>')+' </div>';}
+  function av(e,cls){var bg=empColor(e.name);return '<div class="org-av '+cls+'" style="background:'+bg+'">'+empAvatarInner(e, e.name)+'</div>';}
   var deptKeys=Object.keys(depts);
   var isSingle=deptKeys.length<=1;
   var html='<div class="org-chart">';
@@ -3224,9 +3270,10 @@ function renderOnboarding(){
   list.innerHTML=onboarding.map(function(o,oi){
     var doneItems=o.items.filter(function(i){return i.d;}).length;
     var p=Math.round(doneItems/o.items.length*100);
+    var obEmp=empLookup({name:o.name});
     return '<div class="ob-card">'+
       '<button class="ob-expand" onclick="toggleOb('+oi+')">'+
-        '<div style="width:34px;height:34px;border-radius:50%;background:'+empColor(o.name)+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">'+escH(empInitials(o.name))+'</div>'+
+        '<div class="ob-av" style="width:34px;height:34px;border-radius:50%;overflow:hidden;background:'+empColor(o.name)+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">'+empAvatarInner(obEmp, o.name)+'</div>'+
         '<div style="flex:1;min-width:0;text-align:left;">'+
           '<div style="font-size:13px;font-weight:700;color:var(--pv-text);">'+escH(o.name)+'</div>'+
           '<div style="font-size:11px;color:var(--pv-muted-2);">'+escH(o.dept)+' · Started '+fmtDate(o.start)+'</div>'+

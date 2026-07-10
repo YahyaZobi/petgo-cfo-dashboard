@@ -37,3 +37,8 @@ PETGO_Backup_*.json
 My Finance Prefs.md
 PETGO Finance Dashboard - Overview for NotebookLM.txt
 setup_github.sh
+
+# Test screenshots / QA artifacts (Playwright verification runs)
+p1-*.png
+p2-*.png
+p3-*.png

@@ -136,8 +136,11 @@
 .pv-currency button.is-active { background:rgba(255,255,255,.14); color:#fff; }
 .pv-bell { position:relative; width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,.04);
   display:flex; align-items:center; justify-content:center; flex:none; }
-.pv-bell-ping { position:absolute; top:8px; right:9px; width:7px; height:7px; border-radius:50%;
-  background:#8fa5cf; }
+.pv-bell-ping { position:absolute; top:7px; right:8px; width:8px; height:8px; border-radius:50%;
+  background:#ef4444; box-shadow:0 0 0 2px rgba(11,16,32,.9), 0 0 6px rgba(239,68,68,.7);
+  display:none; }
+.pv-bell-ping.is-on { display:block; }
+[data-theme="light"] .pv-bell-ping { box-shadow:0 0 0 2px rgba(255,255,255,.95), 0 0 6px rgba(239,68,68,.55); }
 .pv-user { display:flex; align-items:center; gap:9px; cursor:pointer; background:none; border:none; }
 .pv-avatar { width:36px; height:36px; border-radius:50%; flex:none; overflow:hidden;
   background:linear-gradient(135deg,#2a3550,#41547e);
@@ -705,6 +708,37 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
     .vantage-login-wrap { flex-direction: column; }
     .vantage-login-brand-side { display: none; }
   }
+/* ── PASSWORD MODAL (self-contained; works over the login screen AND the app) ── */
+.pw-modal{position:fixed;inset:0;z-index:4000;display:none;align-items:center;justify-content:center;background:rgba(6,10,22,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-family:'Manrope','Plus Jakarta Sans',system-ui,-apple-system,sans-serif;}
+.pw-modal.open{display:flex;}
+.pw-box{background:#fff;width:400px;max-width:92vw;border-radius:18px;box-shadow:0 30px 70px rgba(6,12,30,.4);overflow:hidden;}
+.pw-hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 6px;}
+.pw-hdr span{font-size:16px;font-weight:800;color:#141d33;}
+.pw-x{border:none;background:rgba(20,30,55,.05);width:28px;height:28px;border-radius:9px;color:#586780;cursor:pointer;font-size:12px;}
+.pw-x:hover{background:rgba(20,30,55,.1);color:#141d33;}
+.pw-body{padding:4px 22px 8px;}
+.pw-sub{font-size:12.5px;color:#67748c;margin:0 22px 12px;line-height:1.5;}
+.pw-field{margin-bottom:12px;}
+.pw-field label{display:block;font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#8a97b3;margin-bottom:6px;}
+.pw-field input{width:100%;box-sizing:border-box;height:42px;padding:0 13px;font-size:14px;font-family:inherit;color:#0f1b2d;background:#f7f9fc;border:1.5px solid #e2e8f2;border-radius:10px;outline:none;transition:border-color .15s,box-shadow .15s;}
+.pw-field input:focus{background:#fff;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.16);}
+.pw-msg{display:none;font-size:12.5px;font-weight:600;margin:2px 0 6px;color:#dc2626;}
+.pw-foot{display:flex;gap:10px;padding:8px 22px 20px;}
+.pw-cancel{flex:1;border:none;border-radius:11px;padding:11px;font-size:13px;font-weight:700;background:#eef1f6;color:#475069;cursor:pointer;font-family:inherit;}
+.pw-cancel:hover{background:#e4e8ef;}
+.pw-save{flex:2;border:none;border-radius:11px;padding:11px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#1e40af,#2563eb 55%,#3b82f6);cursor:pointer;font-family:inherit;box-shadow:0 8px 22px rgba(37,99,235,.3);}
+.pw-save:hover{box-shadow:0 8px 26px rgba(59,130,246,.5);}
+/* ── USER MENU (Change password / Sign out) ── */
+.pv-user-wrap{position:relative;}
+.pv-user-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:184px;background:rgba(17,24,44,.98);border:1px solid rgba(255,255,255,.1);border-radius:12px;box-shadow:0 18px 44px rgba(0,0,0,.5);padding:6px;display:none;z-index:1300;backdrop-filter:blur(20px);}
+.pv-user-menu.open{display:block;}
+.pv-user-menu button{width:100%;display:flex;align-items:center;gap:10px;background:none;border:none;text-align:left;padding:9px 11px;border-radius:8px;font-size:13px;font-weight:600;color:var(--pv-text-2);cursor:pointer;font-family:inherit;}
+.pv-user-menu button:hover{background:rgba(255,255,255,.07);color:var(--pv-text);}
+.pv-user-menu button svg{color:var(--pv-muted-2);flex:none;}
+.pv-user-menu .pv-menu-sep{height:1px;background:var(--pv-line);margin:5px 4px;}
+[data-theme="light"] .pv-user-menu{background:rgba(255,255,255,.99);border-color:rgba(20,30,55,.1);box-shadow:0 18px 44px rgba(30,50,90,.18);}
+[data-theme="light"] .pv-user-menu button{color:#33415e;}
+[data-theme="light"] .pv-user-menu button:hover{background:rgba(20,30,55,.05);color:#141d33;}
 /* ── PAGES & MIGRATION PLACEHOLDERS ── */
 .pv-page{display:none;flex-direction:column;flex:1;min-height:0;}
 .pv-page.is-active{display:flex;}
@@ -805,6 +839,119 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
 [data-theme="light"] .fn-field input[type=date],[data-theme="light"] .fn-field input[type=datetime-local],[data-theme="light"] .fn-field input[type=month],[data-theme="light"] .fn-field input[type=time]{color-scheme:light;}
 [data-theme="light"] .fn-field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23586780' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
 [data-theme="light"] .fn-modal-x,[data-theme="light"] .fn-cancel-btn{background:rgba(20,30,55,.05);color:#586780;}
+/* ── PHASE 4: HOME MODULES (Analytics / Documents / Team / Audit) ── */
+
+/* Analytics — matches the Dashboard card system (borderless, shadow elevation) */
+.tw{color:var(--pv-text);font-weight:700;}
+.an-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1vw,22px);margin-bottom:16px;}
+.an-grid2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1vw,22px);margin-bottom:16px;}
+.an-kpi{display:flex;flex-direction:column;}
+.an-kpi-eyebrow{font-size:11px;font-weight:600;color:var(--pv-muted-2);margin-bottom:8px;}
+.an-kpi .pv-kpi-value{font-variant-numeric:tabular-nums;font-feature-settings:'tnum';}
+.an-note{font-size:10.5px;font-weight:700;color:var(--pv-muted);background:rgba(255,255,255,.07);border-radius:8px;padding:3px 8px;}
+[data-theme="light"] .an-note{background:rgba(20,30,55,.06);color:#47597a;}
+/* status badges in the ratios table (semantic status, like Dashboard badges) */
+.an-badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;}
+.an-badge.g{background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.25);color:var(--pv-pos);}
+.an-badge.y{background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.28);color:#fbbf24;}
+.an-badge.r{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.28);color:var(--pv-neg);}
+[data-theme="light"] .an-badge.g{color:#15803d;}
+[data-theme="light"] .an-badge.y{color:#b45309;}
+[data-theme="light"] .an-badge.r{color:#b91c1c;}
+@media(max-width:1100px){.an-grid4{grid-template-columns:repeat(2,1fr);}.an-grid2{grid-template-columns:1fr;}}
+
+/* Audit log + timeline */
+.audit-item{display:flex;align-items:flex-start;gap:12px;padding:11px 4px;border-bottom:1px solid var(--pv-line);}
+.audit-item:last-child{border-bottom:none;}
+.audit-dot{width:9px;height:9px;border-radius:50%;margin-top:5px;flex:none;}
+.audit-body{flex:1;min-width:0;}
+.audit-action{font-size:12.5px;font-weight:700;color:var(--pv-text);}
+.audit-detail{font-size:11.5px;color:var(--pv-muted-2);margin-top:1px;}
+.audit-time{font-size:11px;color:var(--pv-muted-2);white-space:nowrap;font-variant-numeric:tabular-nums;}
+.tl{position:relative;padding-left:6px;}
+.tl-item{position:relative;padding:0 0 18px 22px;border-left:2px solid var(--pv-line);margin-left:4px;}
+.tl-item:last-child{border-left-color:transparent;}
+.tl-dot{position:absolute;left:-7px;top:2px;width:12px;height:12px;border-radius:50%;border:2px solid var(--pv-bg);}
+.tl-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+.tl-title{font-size:12.5px;font-weight:700;color:var(--pv-text);}
+.tl-time{font-size:10.5px;color:var(--pv-muted-2);white-space:nowrap;}
+.tl-desc{font-size:11.5px;color:var(--pv-muted-2);line-height:1.5;margin-top:3px;}
+[data-theme="light"] .tl-dot{border-color:#fff;}
+
+/* Team directory */
+.emp-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.emp-search{width:260px;max-width:52vw;height:38px;padding:0 13px;font-size:13px;font-family:inherit;color:var(--pv-text);background:rgba(255,255,255,.05);border:1px solid var(--pv-line);border-radius:10px;outline:none;}
+.emp-search:focus{border-color:var(--pv-primary-lt);box-shadow:0 0 0 3px rgba(59,130,246,.16);}
+.emp-count-lbl{font-size:12px;color:var(--pv-muted-2);font-weight:600;}
+.emp-list{background:var(--pv-card);border:1px solid var(--pv-line);border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.emp-list-hdr,.emp-row{display:grid;grid-template-columns:56px 2fr 1.3fr 1.6fr 120px;align-items:center;gap:12px;padding:11px 18px;}
+.emp-list-hdr{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--pv-muted-2);border-bottom:1px solid var(--pv-line);}
+.emp-row{border-bottom:1px solid var(--pv-line);transition:background .12s;}
+.emp-row:last-child{border-bottom:none;}
+.emp-row:hover{background:rgba(255,255,255,.03);}
+.emp-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;overflow:hidden;}
+.emp-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;}
+.emp-name{font-size:13.5px;font-weight:700;color:var(--pv-text);}
+.emp-title{font-size:11.5px;color:var(--pv-muted-2);margin-top:1px;}
+.emp-id-badge{display:inline-block;font-size:9.5px;font-weight:700;font-family:ui-monospace,'SF Mono',monospace;letter-spacing:.5px;color:var(--pv-primary);margin-top:3px;}
+.emp-dept{display:inline-block;font-size:11px;font-weight:600;background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.2);padding:3px 9px;border-radius:20px;}
+.emp-reach-row{display:flex;gap:7px;flex-wrap:wrap;}
+/* Matched pair: identical shape/size/icon treatment — only the accent colour differs. */
+.emp-reach-btn{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:5px 11px;border-radius:8px;text-decoration:none;border:1.5px solid;cursor:pointer;transition:background .12s,border-color .12s,color .12s,box-shadow .12s;}
+.emp-reach-btn svg{flex:none;}
+/* Email — app blue accent (same interaction pattern as Approve buttons) */
+.emp-reach-email{color:#60a5fa;border-color:rgba(59,130,246,.42);background:rgba(59,130,246,.07);}
+.emp-reach-email:hover{color:#fff;background:#2563eb;border-color:#2563eb;}
+.emp-reach-email:active{color:#fff;background:#1d4ed8;border-color:#1d4ed8;box-shadow:0 2px 8px rgba(37,99,235,.4);}
+/* WhatsApp — official brand green */
+.emp-reach-wa{color:#25d366;border-color:rgba(37,211,102,.5);background:rgba(37,211,102,.08);}
+.emp-reach-wa:hover{color:#fff;background:#1da851;border-color:#1da851;}
+.emp-reach-wa:active{color:#fff;background:#128c3e;border-color:#128c3e;box-shadow:0 2px 8px rgba(37,211,102,.4);}
+[data-theme="light"] .emp-reach-email{color:#1d4ed8;}
+[data-theme="light"] .emp-reach-wa{color:#128c3e;}
+.emp-row-actions{display:flex;gap:6px;justify-content:flex-end;}
+.emp-edit-btn{background:rgba(255,255,255,.06);border:none;color:var(--pv-text-2);font-size:11px;font-weight:700;padding:5px 11px;border-radius:7px;cursor:pointer;}
+.emp-edit-btn:hover{background:rgba(255,255,255,.12);}
+.emp-del-btn{background:none;border:none;color:var(--pv-muted-2);cursor:pointer;padding:5px;border-radius:7px;}
+.emp-del-btn:hover{color:var(--pv-neg);background:rgba(248,113,113,.1);}
+.emp-empty{padding:40px;text-align:center;color:var(--pv-muted-2);font-size:13px;}
+[data-theme="light"] .emp-search{background:rgba(20,30,55,.04);color:#141d33;}
+[data-theme="light"] .emp-row:hover{background:rgba(20,30,55,.03);}
+[data-theme="light"] .emp-edit-btn{background:rgba(20,30,55,.05);color:#33415e;}
+[data-theme="light"] .emp-dept{color:#1d4ed8;}
+@media(max-width:900px){.emp-list-hdr,.emp-row{grid-template-columns:48px 2fr 1.4fr 92px;}.emp-list-hdr span:nth-child(4),.emp-row .emp-contact-col{display:none;}}
+
+/* Employee photo area (in modal) */
+.emp-photo-area{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:16px;}
+.emp-photo-ring{width:84px;height:84px;border-radius:50%;position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.2);}
+.emp-photo-ring img{width:100%;height:100%;object-fit:cover;display:none;position:absolute;inset:0;}
+.emp-photo-overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;}
+.emp-photo-ring:hover .emp-photo-overlay{opacity:1;}
+.emp-photo-lbl{font-size:11.5px;color:var(--pv-muted-2);}
+.emp-photo-lbl a{color:var(--pv-primary);cursor:pointer;font-weight:600;}
+
+/* Documents */
+.upload-zone{border:2px dashed var(--pv-line);border-radius:16px;padding:38px 20px;text-align:center;transition:.15s;background:var(--pv-card);}
+.upload-zone.drag-over{border-color:var(--pv-primary);background:rgba(37,99,235,.06);}
+.upload-zone h3{font-size:15px;font-weight:700;color:var(--pv-text);margin:6px 0 6px;}
+.upload-zone p{font-size:12.5px;color:var(--pv-muted-2);margin-bottom:14px;}
+.doc-ext{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(59,130,246,.12);color:#60a5fa;margin:0 2px;}
+.doc-choose{background:linear-gradient(135deg,var(--pv-primary-dk),var(--pv-primary) 55%,var(--pv-primary-lt));color:#fff;border:none;border-radius:10px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 6px 16px rgba(37,99,235,.3);}
+.doc-proc{display:none;margin-top:12px;font-size:12.5px;color:var(--pv-muted-2);}
+.doc-file-list{margin-top:16px;display:flex;flex-direction:column;gap:8px;}
+.doc-file-row{display:flex;align-items:center;gap:12px;background:var(--pv-card);border:1px solid var(--pv-line);border-radius:12px;padding:11px 14px;}
+.doc-file-ic{width:34px;height:34px;border-radius:9px;background:rgba(59,130,246,.12);display:flex;align-items:center;justify-content:center;color:#60a5fa;flex:none;}
+.doc-file-meta{flex:1;min-width:0;}
+.doc-file-name{font-size:12.5px;font-weight:700;color:var(--pv-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.doc-file-sub{font-size:11px;color:var(--pv-muted-2);}
+.doc-file-status{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(110,231,160,.14);color:#15803d;}
+.doc-file-del{background:none;border:none;color:var(--pv-muted-2);cursor:pointer;padding:5px;border-radius:7px;}
+.doc-file-del:hover{color:var(--pv-neg);}
+.doc-prev-wrap{margin-top:16px;overflow-x:auto;}
+.doc-prev-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.doc-prev-tbl th,.doc-prev-tbl td{border:1px solid var(--pv-line);padding:7px 10px;text-align:left;color:var(--pv-text-2);white-space:nowrap;}
+.doc-prev-tbl th{background:rgba(255,255,255,.04);font-weight:700;color:var(--pv-text);}
+[data-theme="light"] .doc-prev-tbl th{background:rgba(20,30,55,.04);}
 /* ── PHASE 3: PEOPLE MODULE CSS ── */
 
 /* Shared approve/leave urgency badges */
@@ -1085,7 +1232,10 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
     pwToggle.querySelector('.vantage-eye-off').style.display = isPw ? 'block' : 'none';
   });
 
-  forgotLink.addEventListener('click', function (e) { e.preventDefault(); });
+  forgotLink.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (typeof window.pvForgotPassword === 'function') window.pvForgotPassword();
+  });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -1139,9 +1289,9 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
     <!-- topbar -->
     <div class="pv-topbar">
       <div class="pv-date">
-        <span>Wednesday, 9 Jul</span>
+        <span id="pv-live-date">—</span>
         <span class="pv-dot">•</span>
-        <span class="pv-chip-info">Q2 close in 4 days</span>
+        <span class="pv-chip-info" id="pv-quarter-chip">Q2 close in 4 days</span>
       </div>
       <div class="pv-search">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#66738c" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
@@ -1158,7 +1308,8 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c3cde0" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>
           <span class="pv-bell-ping"></span>
         </div>
-        <button class="pv-user">
+        <div class="pv-user-wrap">
+        <button class="pv-user" id="pv-user-btn" type="button">
           <span class="pv-avatar">YZ</span>
           <span>
             <span class="pv-user-name">Yahya Zoubi</span>
@@ -1166,6 +1317,18 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
           </span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#66738c" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </button>
+        <div class="pv-user-menu" id="pv-user-menu">
+          <button type="button" onclick="pvChangePassword();pvCloseUserMenu();">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Change password
+          </button>
+          <div class="pv-menu-sep"></div>
+          <button type="button" onclick="pvCloseUserMenu();doLogout();">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign out
+          </button>
+        </div>
+        </div>
       </div>
     </div>
 
@@ -1487,6 +1650,109 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
     </div>
     <div class="fn-tbl-wrap"><table class="fn-tbl" id="exp-tbl"><thead><tr><th>Employee</th><th>Category</th><th>Description</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody id="exp-tbody"></tbody></table></div>
   </div>
+    </section>
+
+<!-- ══ ANALYTICS ══ -->
+    <section class="pv-page" data-page="Analytics">
+      <div class="pv-header"><div><div class="pv-h1">Analytics</div><div class="pv-h1-sub">Home · Financial trend analysis — Jan to Jun 2026</div></div></div>
+      <div style="overflow-y:auto;flex:1;min-height:0;">
+      <div class="an-grid4">
+        <div class="pv-kpi an-kpi"><div class="an-kpi-eyebrow">Avg Monthly Revenue</div><div class="pv-kpi-value">$1.30M</div><div class="pv-kpi-meta"><span class="pv-kpi-label">6-month average</span><span class="pv-delta-chip is-sm">▲ +8.3% vs prior period</span></div></div>
+        <div class="pv-kpi an-kpi"><div class="an-kpi-eyebrow">Best Month</div><div class="pv-kpi-value">$1.42M</div><div class="pv-kpi-meta"><span class="pv-kpi-label">March &amp; May 2026</span><span class="an-note">Peak performance</span></div></div>
+        <div class="pv-kpi an-kpi"><div class="an-kpi-eyebrow">Avg Net Margin</div><div class="pv-kpi-value">10.9%</div><div class="pv-kpi-meta"><span class="pv-kpi-label">Target: 12.0%</span><span class="pv-delta-chip is-sm is-neg">▼ −1.1 pts below target</span></div></div>
+        <div class="pv-kpi an-kpi"><div class="an-kpi-eyebrow">Cash Coverage</div><div class="pv-kpi-value">3.2×</div><div class="pv-kpi-meta"><span class="pv-kpi-label">vs monthly obligations</span><span class="an-note">Healthy liquidity</span></div></div>
+      </div>
+      <div class="an-grid2">
+        <div class="pv-card"><div class="pv-card-head"><span class="pv-card-title">Monthly Revenue vs Expenses</span></div><div style="position:relative;height:250px;"><canvas id="an-rev-chart"></canvas></div></div>
+        <div class="pv-card"><div class="pv-card-head"><span class="pv-card-title">Expense Breakdown</span></div><div style="position:relative;height:250px;"><canvas id="an-exp-chart"></canvas></div></div>
+      </div>
+      <div class="an-grid2">
+        <div class="pv-card"><div class="pv-card-head"><span class="pv-card-title">Net Profit Margin Trend (%)</span></div><div style="position:relative;height:220px;"><canvas id="an-margin-chart"></canvas></div></div>
+        <div class="pv-card"><div class="pv-card-head"><span class="pv-card-title">Cash Position Trend</span></div><div style="position:relative;height:220px;"><canvas id="an-cash-chart"></canvas></div></div>
+      </div>
+      <div class="pv-card">
+        <div class="pv-card-head"><span class="pv-card-title">Key Financial Ratios — Q1 &amp; Q2 2026</span></div>
+        <div class="fn-tbl-wrap"><table class="fn-tbl"><thead><tr><th>Metric</th><th>Q1 2026</th><th>Q2 2026</th><th>Change</th><th>Target</th><th>Status</th></tr></thead><tbody>
+          <tr><td><strong>Gross Margin</strong></td><td>28.8%</td><td>27.9%</td><td class="tr">−0.9 pts</td><td>30%</td><td><span class="an-badge y">Watch</span></td></tr>
+          <tr><td><strong>Net Profit Margin</strong></td><td>11.2%</td><td>10.5%</td><td class="tr">−0.7 pts</td><td>12%</td><td><span class="an-badge y">Watch</span></td></tr>
+          <tr><td><strong>Revenue Growth (MoM)</strong></td><td>+5.1%</td><td>+3.8%</td><td class="tr">−1.3 pts</td><td>+5%</td><td><span class="an-badge y">Near Target</span></td></tr>
+          <tr><td><strong>DSO (Days Sales Outstanding)</strong></td><td>62 days</td><td>65 days</td><td class="tr">+3 days</td><td>&lt;60 days</td><td><span class="an-badge r">Action</span></td></tr>
+          <tr><td><strong>DPO (Days Payable Outstanding)</strong></td><td>48 days</td><td>45 days</td><td class="tg">−3 days</td><td>45–50 days</td><td><span class="an-badge g">On Target</span></td></tr>
+          <tr><td><strong>ROIC</strong></td><td>13.8%</td><td>14.2%</td><td class="tg">+0.4 pts</td><td>14%</td><td><span class="an-badge g">On Target</span></td></tr>
+          <tr><td><strong>Cash Conversion Cycle</strong></td><td>24 days</td><td>22 days</td><td class="tg">−2 days</td><td>&lt;25 days</td><td><span class="an-badge g">On Target</span></td></tr>
+          <tr><td><strong>Bid-to-Win Rate</strong></td><td>33%</td><td>35%</td><td class="tg">+2 pts</td><td>35%</td><td><span class="an-badge g">On Target</span></td></tr>
+        </tbody></table></div>
+      </div>
+      </div>
+    </section>
+
+    <!-- ══ DOCUMENTS ══ -->
+    <section class="pv-page" data-page="Documents">
+      <div class="pv-header"><div><div class="pv-h1">Documents</div><div class="pv-h1-sub">Home · Upload &amp; manage source files</div></div></div>
+      <div style="overflow-y:auto;flex:1;min-height:0;">
+      <div class="upload-zone" id="doc-zone" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="docHandleDrop(event)">
+        <div style="color:var(--pv-muted-2);"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>
+        <h3>Drop your financial document here</h3>
+        <p>Supports <span class="doc-ext">.xlsx</span> <span class="doc-ext">.xls</span> <span class="doc-ext">.csv</span></p>
+        <button class="doc-choose" onclick="document.getElementById('doc-file-input').click()">Choose File</button>
+        <input type="file" id="doc-file-input" accept=".xlsx,.xls,.csv" hidden onchange="docHandleSelect(event)">
+        <div class="doc-proc" id="doc-proc"><span>⏳ Processing file, please wait…</span></div>
+      </div>
+      <div id="doc-file-list" class="doc-file-list"></div>
+      <div id="doc-prev-sec" style="display:none;" class="fn-card"><span class="fn-tbar-title" id="doc-prev-title" style="display:block;margin-bottom:10px;">Data Preview</span><div class="doc-prev-wrap"><table class="doc-prev-tbl" id="doc-prev-tbl"></table></div></div>
+      </div>
+    </section>
+
+    <!-- ══ TEAM DIRECTORY ══ -->
+    <section class="pv-page" data-page="Team directory">
+      <div class="pv-header"><div><div class="pv-h1">Team Directory</div><div class="pv-h1-sub">Home · PETGO people</div></div></div>
+      <div style="overflow-y:auto;flex:1;min-height:0;">
+      <div class="emp-topbar">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <input type="text" id="emp-search" class="emp-search" placeholder="Search name, title, department…" oninput="renderEmpGrid()">
+          <span class="emp-count-lbl" id="emp-count-lbl"></span>
+        </div>
+        <button class="fn-add-btn" onclick="openEmpModal()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Employee</button>
+      </div>
+      <div id="emp-grid"></div>
+      </div>
+    </section>
+
+    <!-- ══ AUDIT LOG ══ -->
+    <section class="pv-page" data-page="Audit log">
+      <div class="pv-header">
+        <div><div class="pv-h1">History &amp; Audit Log</div><div class="pv-h1-sub">Home · Activity trail</div></div>
+        <div style="margin-left:auto;"><button class="exp-btn" onclick="exportAuditLog()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export Log</button></div>
+      </div>
+      <div style="overflow-y:auto;flex:1;min-height:0;">
+      <div class="fn-card" style="margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <span class="fn-tbar-title">Live Audit Log</span>
+          <button onclick="clearAuditLog()" style="font-size:11px;color:var(--pv-neg);background:none;border:none;cursor:pointer;font-weight:700;">Clear All</button>
+        </div>
+        <div id="audit-log-list" style="max-height:300px;overflow-y:auto;"></div>
+      </div>
+      <div class="an-grid2">
+        <div>
+          <div class="fn-tbar-title" style="display:block;margin-bottom:12px;">Recent Activity</div>
+          <div class="tl" id="history-timeline"></div>
+        </div>
+        <div>
+          <div class="fn-tbar-title" style="display:block;margin-bottom:12px;">Monthly Financial Snapshots</div>
+          <div class="fn-card" style="margin-bottom:14px;">
+            <div class="fn-tbl-wrap"><table class="fn-tbl"><thead><tr><th>Month</th><th>Revenue</th><th>Expenses</th><th>Net Profit</th><th>Margin</th><th>Cash</th></tr></thead><tbody>
+              <tr><td><strong>Jan 2026</strong></td><td>$1.18M</td><td>$1.05M</td><td class="tg">$130K</td><td>11.0%</td><td>$720K</td></tr>
+              <tr><td><strong>Feb 2026</strong></td><td>$1.25M</td><td>$1.11M</td><td class="tg">$144K</td><td>11.5%</td><td>$740K</td></tr>
+              <tr><td><strong>Mar 2026</strong></td><td>$1.42M</td><td>$1.27M</td><td class="tg">$149K</td><td>10.5%</td><td>$790K</td></tr>
+              <tr><td><strong>Apr 2026</strong></td><td>$1.28M</td><td>$1.14M</td><td class="tg">$138K</td><td>10.8%</td><td>$810K</td></tr>
+              <tr><td><strong>May 2026</strong></td><td>$1.42M</td><td>$1.26M</td><td class="tg">$159K</td><td>11.2%</td><td>$840K</td></tr>
+              <tr><td><strong>Jun 2026</strong></td><td>$1.25M</td><td>$1.10M</td><td class="tg">$150K</td><td>12.0%</td><td>$850K</td></tr>
+              <tr><td><strong style="color:var(--pv-primary);">YTD</strong></td><td class="tw">$7.80M</td><td class="tw">$6.93M</td><td class="tg">$870K</td><td class="tg">11.2%</td><td class="tw">$850K</td></tr>
+            </tbody></table></div>
+          </div>
+        </div>
+      </div>
+      </div>
     </section>
 
     <!-- ══ LEAVE TRACKER ══ -->
@@ -2383,13 +2649,57 @@ function _userFromEmail(email){
 var currentUser = null;
 var loggedIn = false;
 
+/* ── Demo-mode credentials ──────────────────────────────────────
+   In demo (non-Graph) mode we store one password per allowed user in
+   localStorage so login validates against a real stored value instead of
+   accepting anything. This is light obfuscation for a demo, NOT real
+   security. Graph/MSAL mode never touches this — Microsoft owns those
+   credentials and password changes go to Microsoft's own pages. */
+function _pwHash(s){ s=''+(s||''); var h=5381,i=s.length; while(i){ h=(h*33)^s.charCodeAt(--i); } return (h>>>0).toString(16); }
+function _pwStore(){ try{ return JSON.parse(localStorage.getItem('petgo_credentials'))||{}; }catch(e){ return {}; } }
+function _pwSaveStore(m){ localStorage.setItem('petgo_credentials', JSON.stringify(m)); }
+function _pwGet(email){ var m=_pwStore(); return Object.prototype.hasOwnProperty.call(m,email)?m[email]:null; }
+function _pwSet(email,pw){ var m=_pwStore(); m[email]=_pwHash(pw); _pwSaveStore(m); }
+function _pwVerify(email,pw){ var h=_pwGet(email); return h!==null && h===_pwHash(pw); }
+function _pwHasAccount(email){ return _pwGet(email)!==null; }
+
+/* Documented default demo password + the built-in allowed users. */
+var DEMO_DEFAULT_PW='demo1234';
+var DEMO_SEED_USERS=['karen.mombay@petgo.ly','yahya.zoubi@petgo.ly'];
+/* One-time credential seed/repair: guarantees the built-in users always have a
+   known, working demo password (fixes the earlier lockout where a mismatched
+   credential could be stored with no way to recover). Guarded by a one-time flag
+   so later "Change password" updates are never clobbered. Re-runs only if
+   localStorage is wiped, so a reset can never lock anyone out again. */
+(function seedDemoCredentials(){
+  try{
+    if(localStorage.getItem('petgo_cred_seed_v2')==='1')return;
+    var m=_pwStore();
+    DEMO_SEED_USERS.forEach(function(u){ m[u]=_pwHash(DEMO_DEFAULT_PW); });
+    _pwSaveStore(m);
+    localStorage.setItem('petgo_cred_seed_v2','1');
+  }catch(e){}
+})();
+
 function login(email,password,remember){
   email=(email||'').trim().toLowerCase();
   var box=document.getElementById('vantage-login-error');
   var txt=document.getElementById('vantage-login-error-text');
   function fail(msg){txt.textContent=msg;box.classList.add('is-visible');}
   if(!_isAllowed(email)){fail("That account doesn't have access. Only @petgo.ly work emails are allowed.");return;}
-  if(password.length<4){fail('Your password is incorrect. Try again.');return;}
+  /* Demo-mode password check. In Graph/MSAL mode Microsoft handles auth, so we
+     don't validate a stored password here. First sign-in for an account
+     establishes its demo password; later sign-ins must match it. */
+  if(!GRAPH_MODE){
+    if(_pwHasAccount(email)){
+      if(!_pwVerify(email,password)){fail('Your password is incorrect. Try again.');return;}
+    } else {
+      /* Safety net: no stored credential for this allowed user (e.g. localStorage was
+         wiped) → accept whatever is typed and store it, so a reset can't lock anyone out. */
+      if((password||'').length<4){fail('Set a password of at least 4 characters to finish setting up this demo account.');return;}
+      _pwSet(email,password);
+    }
+  }
   box.classList.remove('is-visible');txt.textContent='';
   if(remember){localStorage.setItem('petgo_login_email',email);}else{localStorage.removeItem('petgo_login_email');}
   currentUser=email;
@@ -2409,6 +2719,8 @@ function bootApp(){
      back when no photo exists. Defined in the Phase-3 script block. */
   if(window.refreshHeaderAvatar){ refreshHeaderAvatar(); }
   else { var a=document.querySelector('.pv-avatar'); if(a)a.textContent=u.initials; }
+  if(window.pvUpdateBell)pvUpdateBell();
+  if(window.pvUpdateDate)pvUpdateDate();
   _initMSAL();
   if(window.pvOnAppShown)window.pvOnAppShown();
 }
@@ -2446,6 +2758,85 @@ function loginMS(){
   }).catch(function(e){showToast('Sign-in was cancelled or failed: '+e.message);});
 }
 window.loginMS = loginMS;
+
+/* ── Password change / reset ────────────────────────────────────
+   Demo mode: manage the locally-stored password via a small modal.
+   Graph/MSAL mode: never touch Microsoft's credential — send the user to
+   Microsoft's official pages instead. */
+var MS_PW_RESET_URL  = 'https://account.microsoft.com/password/';
+var MS_PW_CHANGE_URL = 'https://mysignins.microsoft.com/security-info';
+function _pwModalMsg(text, ok){
+  var m=document.getElementById('pw-msg'); if(!m)return;
+  m.textContent=text||''; m.style.display=text?'block':'none';
+  m.style.color = ok ? '#15803d' : '#dc2626';
+}
+function openPwModal(mode){
+  var m=document.getElementById('pw-modal'); if(!m)return;
+  m.dataset.mode=mode;
+  document.getElementById('pw-ttl').textContent = mode==='reset' ? 'Reset Password' : 'Change Password';
+  document.getElementById('pw-sub').textContent = mode==='reset'
+    ? 'Set a new password for your demo account.'
+    : 'Update the password for your demo account.';
+  document.getElementById('pw-row-email').style.display   = mode==='reset'  ? '' : 'none';
+  document.getElementById('pw-row-current').style.display = mode==='change' ? '' : 'none';
+  ['pw-f-email','pw-f-current','pw-f-new','pw-f-confirm'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  if(mode==='reset'){
+    var le=document.getElementById('vantage-login-email');
+    document.getElementById('pw-f-email').value=((le&&le.value)||localStorage.getItem('petgo_login_email')||'').toLowerCase();
+  }
+  _pwModalMsg('');
+  m.classList.add('open');
+  setTimeout(function(){ var f=document.getElementById(mode==='reset'?'pw-f-email':'pw-f-current'); if(f)f.focus(); },60);
+}
+function closePwModal(){ var m=document.getElementById('pw-modal'); if(m)m.classList.remove('open'); }
+function savePassword(){
+  var mode=document.getElementById('pw-modal').dataset.mode;
+  var np=document.getElementById('pw-f-new').value;
+  var cp=document.getElementById('pw-f-confirm').value;
+  var email;
+  if(mode==='reset'){
+    email=(document.getElementById('pw-f-email').value||'').trim().toLowerCase();
+    if(!_isAllowed(email)){_pwModalMsg('Enter a valid @petgo.ly email address.');return;}
+  } else {
+    email=currentUser;
+    var cur=document.getElementById('pw-f-current').value;
+    if(_pwHasAccount(email) && !_pwVerify(email,cur)){_pwModalMsg('Current password is incorrect.');return;}
+  }
+  if((np||'').length<4){_pwModalMsg('New password must be at least 4 characters.');return;}
+  if(np!==cp){_pwModalMsg('New passwords do not match.');return;}
+  _pwSet(email,np);
+  if(mode==='reset'){
+    _pwModalMsg('Password updated. Sign in with your new password.', true);
+    var pi=document.getElementById('vantage-login-password'); if(pi)pi.value='';
+    setTimeout(closePwModal,1500);
+  } else {
+    closePwModal();
+    if(window.showToast)showToast('Password updated.');
+  }
+}
+/* Entry points — redirect to Microsoft when in Graph mode, else open the modal. */
+function pvForgotPassword(){
+  if(GRAPH_MODE){ window.open(MS_PW_RESET_URL,'_blank','noopener'); return; }
+  openPwModal('reset');
+}
+function pvChangePassword(){
+  if(GRAPH_MODE){ window.open(MS_PW_CHANGE_URL,'_blank','noopener'); if(window.showToast)showToast('Opening your Microsoft account security settings…'); return; }
+  openPwModal('change');
+}
+window.pvForgotPassword=pvForgotPassword;
+window.pvChangePassword=pvChangePassword;
+window.openPwModal=openPwModal; window.closePwModal=closePwModal; window.savePassword=savePassword;
+
+/* ── Header user dropdown (Change password / Sign out) ── */
+function pvCloseUserMenu(){ var m=document.getElementById('pv-user-menu'); if(m)m.classList.remove('open'); }
+window.pvCloseUserMenu=pvCloseUserMenu;
+(function(){
+  var btn=document.getElementById('pv-user-btn'), menu=document.getElementById('pv-user-menu');
+  if(!btn||!menu)return;
+  btn.addEventListener('click',function(e){ e.stopPropagation(); menu.classList.toggle('open'); });
+  document.addEventListener('click',function(e){ if(!btn.contains(e.target)&&!menu.contains(e.target)) menu.classList.remove('open'); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') menu.classList.remove('open'); });
+})();
 </script>
 
 <script>
@@ -2583,6 +2974,7 @@ var invoices=fnLoad('petgo_invoices',[
 var invEditIdx=-1; var invFilter='All';
 function saveInvStore(){fnSave('petgo_invoices',invoices);}
 function renderInvoices(){
+  if(window.pvUpdateBell)pvUpdateBell();
   var total=invoices.reduce(function(s,i){return s+(i.status!=='Paid'?i.amount:0);},0);
   var overdue=invoices.filter(function(i){return i.status==='Overdue';}).reduce(function(s,i){return s+i.amount;},0);
   var paid=invoices.filter(function(i){return i.status==='Paid';}).reduce(function(s,i){return s+i.amount;},0);
@@ -2760,6 +3152,7 @@ var expenses=fnLoad('petgo_expenses',[
 var expEditIdx=-1; var expFilter='All';
 function saveExpStore(){fnSave('petgo_expenses',expenses);}
 function renderExpenses(){
+  if(window.pvUpdateBell)pvUpdateBell();
   var total=expenses.length;
   var pending=expenses.filter(function(e){return e.status==='Pending';}).length;
   var approvedAmt=expenses.filter(function(e){return e.status==='Approved';}).reduce(function(s,e){return s+e.amount;},0);
@@ -2906,6 +3299,7 @@ var leaves=fnLoad('petgo_leaves',[
 var leaveEditIdx=-1; var leaveFilter='All';
 function saveLeaveStore(){fnSave('petgo_leaves',leaves);}
 function renderLeave(){
+  if(window.pvUpdateBell)pvUpdateBell();
   var td=today();
   var onLeave=leaves.filter(function(l){return l.status==='Approved'&&l.start<=td&&l.end>=td;}).length;
   var pending=leaves.filter(function(l){return l.status==='Pending';}).length;
@@ -3132,6 +3526,7 @@ var contracts=fnLoad('petgo_contracts',[
 var conEditIdx=-1; var conFilter='All'; var _conPendingPDF=null;
 function saveConStore(){fnSave('petgo_contracts',contracts);}
 function renderContracts(){
+  if(window.pvUpdateBell)pvUpdateBell();
   var td=today();
   var e30=contracts.filter(function(c){var d=daysBetween(td,c.end);return d>=0&&d<=30;}).length;
   var e60=contracts.filter(function(c){var d=daysBetween(td,c.end);return d>30&&d<=60;}).length;
@@ -3374,6 +3769,238 @@ function saveRev(){
 }
 function delRev(idx){if(!confirm('Delete this review?'))return;reviews.splice(idx,1);saveRevStore();renderReviews();showToast('Review deleted.');}
 
+/* ════════════════════════════════════════════════════════════
+   PHASE 4 — HOME MODULES (Analytics / Documents / Team / Audit)
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Local formatters + chart helper (theme-aware) ── */
+function _anFmtM(v){var a=Math.abs(v);if(a>=1e6)return '$'+(v/1e6).toFixed(2)+'M';if(a>=1e3)return '$'+(v/1e3).toFixed(0)+'K';return '$'+v;}
+function _anFmtK(v){return '$'+(v/1e3).toFixed(0)+'K';}
+var _anCharts={};
+function _anMk(id,cfg){var cv=document.getElementById(id);if(!cv||typeof Chart==='undefined')return;if(_anCharts[id]){_anCharts[id].destroy();}pvChartDefaults();_anCharts[id]=new Chart(cv,cfg);}
+
+/* ── ANALYTICS ── */
+function renderAnalytics(){
+  var months=['Jan','Feb','Mar','Apr','May','Jun'];
+  var rev=[1180000,1250000,1420000,1280000,1420000,1250000];
+  var exp=[1050000,1106000,1271000,1142000,1261000,1100000];
+  var margins=[11.0,11.5,10.5,10.8,11.2,12.0];
+  var cash=[720000,740000,790000,810000,840000,850000];
+  _anMk('an-rev-chart',{type:'bar',data:{labels:months,datasets:[{label:'Revenue',data:rev,backgroundColor:'#3b82f6',borderRadius:5},{label:'Expenses',data:exp,backgroundColor:'rgba(239,68,68,0.7)',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:11},boxWidth:11}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+_anFmtM(c.raw);}}}},scales:{x:{grid:{display:false}},y:{ticks:{callback:function(v){return _anFmtM(v);}}}}}});
+  _anMk('an-exp-chart',{type:'doughnut',data:{labels:['Engineering/COGS','Operations','Admin & G&A','Marketing & BD','Technology','Other'],datasets:[{data:[58,15,12,8,4,3],backgroundColor:['#1d4ed8','#3b82f6','#60a5fa','#93c5fd','#bfdbfe','#dbeafe'],borderWidth:2,borderColor:'rgba(0,0,0,0)'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{font:{size:10},boxWidth:10,padding:8}},tooltip:{callbacks:{label:function(c){return c.label+': '+c.raw+'%';}}}}}});
+  _anMk('an-margin-chart',{type:'line',data:{labels:months,datasets:[{label:'Net Margin %',data:margins,borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.08)',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:'#10b981',pointBorderColor:'#fff',pointBorderWidth:2},{label:'Target 12%',data:Array(6).fill(12),borderColor:'rgba(239,68,68,0.5)',borderDash:[5,4],pointRadius:0,borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:11},boxWidth:11}}},scales:{x:{grid:{display:false}},y:{ticks:{callback:function(v){return v+'%';}},min:9,max:14}}}});
+  _anMk('an-cash-chart',{type:'line',data:{labels:months,datasets:[{label:'Cash Position',data:cash,borderColor:'#8b5cf6',backgroundColor:'rgba(139,92,246,0.08)',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:'#8b5cf6',pointBorderColor:'#fff',pointBorderWidth:2},{label:'Target $1M',data:Array(6).fill(1000000),borderColor:'rgba(37,99,235,0.4)',borderDash:[5,4],pointRadius:0,borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:11},boxWidth:11}}},scales:{x:{grid:{display:false}},y:{ticks:{callback:function(v){return _anFmtK(v);}},min:600000,max:1100000}}}});
+}
+
+/* ── AUDIT LOG ── */
+function renderAuditLog(){
+  var list=document.getElementById('audit-log-list'); if(!list)return;
+  var log=fnLoad('petgo_audit_log',[]);
+  if(!log.length){list.innerHTML='<div style="padding:20px;text-align:center;color:var(--pv-muted-2);font-size:12.5px;">No activity recorded yet. Actions you take will appear here.</div>';return;}
+  list.innerHTML=log.map(function(e){
+    return '<div class="audit-item"><div class="audit-dot" style="background:'+e.color+'"></div>'+
+      '<div class="audit-body"><div class="audit-action">'+escH(e.module)+'</div><div class="audit-detail">'+escH(e.action)+'</div></div>'+
+      '<div class="audit-time">'+escH(e.time)+'</div></div>';
+  }).join('');
+}
+function clearAuditLog(){if(!confirm('Clear all audit log entries?'))return;fnSave('petgo_audit_log',[]);renderAuditLog();renderHistoryTimeline();showToast('Audit log cleared.');}
+function exportAuditLog(){
+  var log=fnLoad('petgo_audit_log',[]);
+  try{
+    var wb=XLSX.utils.book_new();
+    var rows=[['Time','Module','Action']];
+    log.forEach(function(e){rows.push([e.time,e.module,e.action]);});
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Audit Log');
+    XLSX.writeFile(wb,'PETGO_AuditLog_'+today()+'.xlsx');
+    showToast('Audit log exported.');
+  }catch(e){showToast('Export failed.');}
+}
+function renderHistoryTimeline(){
+  var tl=document.getElementById('history-timeline'); if(!tl)return;
+  var log=fnLoad('petgo_audit_log',[]);
+  var SEED=[
+    {id:'s7',module:'Strategic KPI review',action:'Q1 strategic review: ROIC 13.8%, Bid-to-Win 33%, Revenue Growth 18% YoY — presented to board.',time:'15 Apr 2026 · 15:00',color:'#3b82f6'},
+    {id:'s6',module:'Budget vs Actual reconciliation',action:'Q1 reconciliation completed. Revenue variance: -$500K (5% below budget). OpEx under by $50K.',time:'28 May 2026 · 11:20',color:'#64748b'},
+    {id:'s5',module:'May financial report generated',action:'Monthly CFO report for May 2026 finalized. Revenue: $1.42M, Net Profit: $159K.',time:'01 Jun 2026 · 09:00',color:'#10b981'},
+    {id:'s4',module:'Project C — 95% milestone',action:'Project C completion hit 95%. Margin tracking at 35%, above the 30% target.',time:'18 Jun 2026 · 14:30',color:'#8b5cf6'},
+    {id:'s3',module:'AR Aging threshold breached',action:'AR balance exceeding 90 days reached $250K — collection team notified.',time:'20 Jun 2026 · 08:15',color:'#f59e0b'},
+    {id:'s2',module:'User signed in',action:'Karen Mombay authenticated via Microsoft account (karen.mombay@petgo.ly).',time:'22 Jun 2026 · 09:58',color:'#3b82f6'},
+    {id:'s1',module:'CFO Dashboard generated',action:'Dashboard rebuilt from K.Mombay template — 6 sheets processed, all charts rendered.',time:'22 Jun 2026 · 10:04',color:'#10b981'}
+  ];
+  var combined=log.concat(SEED.filter(function(s){return !log.find(function(l){return l.id===s.id;});}));
+  tl.innerHTML=combined.slice(0,15).map(function(e){
+    return '<div class="tl-item"><div class="tl-dot" style="background:'+e.color+';"></div>'+
+      '<div class="tl-content"><div class="tl-head"><span class="tl-title">'+escH(e.module)+'</span><span class="tl-time">'+escH(e.time)+'</span></div>'+
+      '<div class="tl-desc">'+escH(e.action)+'</div></div></div>';
+  }).join('');
+}
+
+/* ── TEAM DIRECTORY ── */
+var empEditIdx=-1, empPendingPhoto='';
+var empNextId=(function(){var m=0;employees.forEach(function(e){if((e.id||0)>m)m=e.id;});return m+1;})();
+function saveEmployeeStore(){fnSave('petgo_employees',employees);}
+function renderEmpGrid(){
+  employees=fnLoad('petgo_employees',employees);
+  var q=((document.getElementById('emp-search')||{}).value||'').toLowerCase();
+  var list=employees.filter(function(e){return !q||(e.name||'').toLowerCase().indexOf(q)>=0||(e.email||'').toLowerCase().indexOf(q)>=0||(e.title||'').toLowerCase().indexOf(q)>=0||(e.dept||'').toLowerCase().indexOf(q)>=0;});
+  var lbl=document.getElementById('emp-count-lbl');
+  if(lbl)lbl.textContent=list.length+(list.length===employees.length?' employees':' of '+employees.length+' employees');
+  var grid=document.getElementById('emp-grid'); if(!grid)return;
+  if(!employees.length){grid.innerHTML='<div class="emp-empty">No employees yet. Click “Add Employee” to build your directory.</div>';return;}
+  if(!list.length){grid.innerHTML='<div class="emp-empty">No employees match your search.</div>';return;}
+  var emailSVG='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>';
+  var waSVG='<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M20.52 3.449C12.831-3.984.106 1.407.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c7.905 4.27 17.661-1.4 17.665-10.449 0-3.176-1.24-6.165-3.495-8.416zM12.05 21.785h-.004c-1.775 0-3.51-.478-5.021-1.379l-.36-.214-3.734.98.998-3.641-.235-.374a9.86 9.86 0 01-1.51-5.26c.002-8.72 10.646-13.088 16.815-6.918a9.815 9.815 0 012.896 6.99c-.003 5.448-4.436 9.885-9.895 9.885z"/></svg>';
+  var rows=list.map(function(emp){
+    var idx=employees.indexOf(emp);
+    var waNum=(emp.phone||'').replace(/\D/g,'');
+    var reach='';
+    if(emp.email)reach+='<a class="emp-reach-btn emp-reach-email" href="mailto:'+encodeURIComponent(emp.email)+'" title="Email '+escH(emp.email)+'" target="_blank">'+emailSVG+'Email</a>';
+    if(waNum)reach+='<a class="emp-reach-btn emp-reach-wa" href="https://wa.me/'+waNum+'" title="WhatsApp '+escH(emp.phone)+'" target="_blank" rel="noopener">'+waSVG+'WhatsApp</a>';
+    if(!reach)reach='<span style="font-size:11px;color:var(--pv-muted-2);">—</span>';
+    return '<div class="emp-row">'+
+      '<div><div class="emp-av" style="background:'+empColor(emp.name)+'">'+empAvatarInner(emp,emp.name)+'</div></div>'+
+      '<div class="emp-row-info"><div class="emp-name">'+escH(emp.name)+'</div>'+
+        '<div class="emp-title">'+escH(emp.title||'—')+'</div>'+
+        (emp.empId?'<span class="emp-id-badge">'+escH(emp.empId)+'</span>':'')+'</div>'+
+      '<div>'+(emp.dept?'<span class="emp-dept">'+escH(emp.dept)+'</span>':'<span style="font-size:11px;color:var(--pv-muted-2);">—</span>')+'</div>'+
+      '<div class="emp-contact-col"><div class="emp-reach-row">'+reach+'</div></div>'+
+      '<div class="emp-row-actions"><button class="emp-edit-btn" onclick="openEmpModal('+idx+')">Edit</button>'+
+        '<button class="emp-del-btn" onclick="deleteEmp('+idx+')" title="Remove"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div>'+
+    '</div>';
+  }).join('');
+  grid.innerHTML='<div class="emp-list"><div class="emp-list-hdr"><span></span><span>Name &amp; Title</span><span>Department</span><span>Reach</span><span></span></div>'+rows+'</div>';
+}
+function updateModalPhotoInitials(){
+  var name=document.getElementById('emp-f-name').value||'';
+  var initEl=document.getElementById('emp-photo-initials');
+  var ring=document.getElementById('emp-photo-ring');
+  var preview=document.getElementById('emp-photo-preview');
+  if(preview&&preview.style.display==='block')return;
+  if(initEl)initEl.textContent=name?empInitials(name):'?';
+  if(ring)ring.style.background=name?empColor(name):'#41547e';
+}
+function handleEmpPhotoUpload(input){
+  var file=input.files[0]; if(!file)return;
+  if(!/^image\//.test(file.type)){showToast('Please select an image file.');return;}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var img=new Image();
+    img.onload=function(){
+      var S=256,c=document.createElement('canvas');c.width=S;c.height=S;
+      var ctx=c.getContext('2d');
+      var side=Math.min(img.naturalWidth,img.naturalHeight);
+      ctx.drawImage(img,(img.naturalWidth-side)/2,(img.naturalHeight-side)/2,side,side,0,0,S,S);
+      empPendingPhoto=c.toDataURL('image/jpeg',0.85);
+      var pv=document.getElementById('emp-photo-preview'),ini=document.getElementById('emp-photo-initials'),ring=document.getElementById('emp-photo-ring');
+      if(pv){pv.src=empPendingPhoto;pv.style.display='block';}
+      if(ini)ini.style.display='none';
+      if(ring)ring.style.background='transparent';
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file); input.value='';
+}
+function clearEmpPhoto(){
+  empPendingPhoto='__clear__';
+  var pv=document.getElementById('emp-photo-preview'),ini=document.getElementById('emp-photo-initials'),ring=document.getElementById('emp-photo-ring');
+  if(pv){pv.src='';pv.style.display='none';}
+  var name=document.getElementById('emp-f-name').value||'';
+  if(ini){ini.textContent=name?empInitials(name):'?';ini.style.display='';}
+  if(ring)ring.style.background=name?empColor(name):'#41547e';
+}
+function openEmpModal(idx){
+  empEditIdx=(idx===undefined)?-1:idx;
+  var emp=empEditIdx>=0?employees[empEditIdx]:{name:'',title:'',dept:'',email:'',phone:'',photo:''};
+  empPendingPhoto='';
+  document.getElementById('emp-f-name').value=emp.name||'';
+  document.getElementById('emp-f-empid').value=empEditIdx<0?('PTG-'+String(empNextId).padStart(3,'0')):(emp.empId||'');
+  document.getElementById('emp-f-title').value=emp.title||'';
+  document.getElementById('emp-f-dept').value=emp.dept||'';
+  document.getElementById('emp-f-email').value=emp.email||'';
+  document.getElementById('emp-f-phone').value=emp.phone||'';
+  var pv=document.getElementById('emp-photo-preview'),ini=document.getElementById('emp-photo-initials'),ring=document.getElementById('emp-photo-ring');
+  if(emp.photo){if(pv){pv.src=emp.photo;pv.style.display='block';}if(ini)ini.style.display='none';if(ring)ring.style.background='transparent';}
+  else{if(pv){pv.src='';pv.style.display='none';}var nm=emp.name||'';if(ini){ini.textContent=nm?empInitials(nm):'?';ini.style.display='';}if(ring)ring.style.background=nm?empColor(nm):'#41547e';}
+  openFnModal('emp-modal',empEditIdx>=0?'Edit Employee':'Add Employee','emp-modal-ttl');
+  setTimeout(function(){document.getElementById('emp-f-name').focus();},80);
+}
+function saveEmp(){
+  var name=document.getElementById('emp-f-name').value.trim();
+  if(!name){showToast('Full name is required.');document.getElementById('emp-f-name').focus();return;}
+  var existingPhoto=(empEditIdx>=0&&employees[empEditIdx].photo)||'';
+  var finalPhoto=empPendingPhoto==='__clear__'?'':(empPendingPhoto||existingPhoto);
+  var newId=empEditIdx>=0?employees[empEditIdx].id:empNextId++;
+  var empId=document.getElementById('emp-f-empid').value.trim()||('PTG-'+String(newId).padStart(3,'0'));
+  var emp={id:newId,empId:empId,name:name,title:document.getElementById('emp-f-title').value.trim(),dept:document.getElementById('emp-f-dept').value.trim(),email:document.getElementById('emp-f-email').value.trim(),phone:document.getElementById('emp-f-phone').value.trim(),photo:finalPhoto};
+  if(empEditIdx>=0){employees[empEditIdx]=emp;showToast(name+' updated.');}
+  else{employees.push(emp);showToast(name+' added to the directory.');}
+  saveEmployeeStore();
+  addAudit('Team Directory',(empEditIdx>=0?'Updated ':'Added ')+name,'#2563eb');
+  closeFnModal('emp-modal');
+  renderEmpGrid();
+  if(window.refreshHeaderAvatar)refreshHeaderAvatar();
+}
+function deleteEmp(idx){
+  var emp=employees[idx]; if(!emp)return;
+  if(!confirm('Remove '+emp.name+' from the team directory?'))return;
+  var name=emp.name;
+  employees.splice(idx,1); saveEmployeeStore();
+  addAudit('Team Directory','Removed '+name,'#ef4444');
+  renderEmpGrid(); showToast(name+' removed.');
+}
+
+/* ── DOCUMENTS ── */
+var docFiles=fnLoad('petgo_doc_files',[]);
+function _docSave(){fnSave('petgo_doc_files',docFiles);}
+function docHandleDrop(e){e.preventDefault();document.getElementById('doc-zone').classList.remove('drag-over');var f=e.dataTransfer.files[0];if(f)docProcess(f);}
+function docHandleSelect(e){var f=e.target.files[0];if(f){docProcess(f);e.target.value='';}}
+function _docCSV(t){return t.trim().split(/\r?\n/).map(function(l){var r=[],cur='',q=false;for(var i=0;i<l.length;i++){var c=l[i];if(c==='"'){q=!q;}else if(c===','&&!q){r.push(cur.trim());cur='';}else{cur+=c;}}r.push(cur.trim());return r;});}
+function docProcess(file){
+  var ext=file.name.split('.').pop().toLowerCase();
+  if(['xlsx','xls','csv'].indexOf(ext)<0){showToast('Unsupported type. Use .xlsx or .csv');return;}
+  var proc=document.getElementById('doc-proc'); if(proc)proc.style.display='block';
+  setTimeout(function(){
+    function done(rows){
+      if(proc)proc.style.display='none';
+      docShowPrev(file.name,rows.slice(0,6));
+      docFiles.unshift({name:file.name,size:file.size,ext:ext,date:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),rows:rows.length});
+      if(docFiles.length>30)docFiles=docFiles.slice(0,30);
+      _docSave(); docRenderList();
+      addAudit('Documents','Uploaded '+file.name,'#2563eb');
+      showToast('“'+file.name+'” processed.');
+    }
+    if(ext==='csv'){var r=new FileReader();r.onload=function(ev){done(_docCSV(ev.target.result).slice(0,5001));};r.readAsText(file);}
+    else{
+      if(typeof XLSX==='undefined'){if(proc)proc.style.display='none';showToast('Excel parser still loading, try again.');return;}
+      var r=new FileReader();r.onload=function(ev){try{var wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});var n=wb.SheetNames[0];var raw=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,defval:null,blankrows:false});done(raw.slice(0,5001));}catch(er){if(proc)proc.style.display='none';showToast('Error reading file: '+er.message);}};r.readAsArrayBuffer(file);
+    }
+  },60);
+}
+function docShowPrev(name,rows){
+  if(!rows||!rows.length)return;
+  var sec=document.getElementById('doc-prev-sec'),ttl=document.getElementById('doc-prev-title'),tbl=document.getElementById('doc-prev-tbl');
+  if(ttl)ttl.textContent='Data Preview — '+name;
+  var head=rows[0]||[];
+  var h='<thead><tr>'+head.map(function(c){return '<th>'+escH(c==null?'':c)+'</th>';}).join('')+'</tr></thead>';
+  var body='<tbody>'+rows.slice(1).map(function(r){return '<tr>'+head.map(function(_,i){return '<td>'+escH(r[i]==null?'':r[i])+'</td>';}).join('')+'</tr>';}).join('')+'</tbody>';
+  tbl.innerHTML=h+body; sec.style.display='';
+}
+function docRenderList(){
+  var el=document.getElementById('doc-file-list'); if(!el)return;
+  docFiles=fnLoad('petgo_doc_files',docFiles);
+  if(!docFiles.length){el.innerHTML='';return;}
+  var fileSVG='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+  el.innerHTML=docFiles.map(function(f,i){
+    var kb=f.size<1048576?((f.size/1024).toFixed(1)+' KB'):((f.size/1048576).toFixed(1)+' MB');
+    return '<div class="doc-file-row"><div class="doc-file-ic">'+fileSVG+'</div>'+
+      '<div class="doc-file-meta"><div class="doc-file-name">'+escH(f.name)+'</div><div class="doc-file-sub">'+f.ext.toUpperCase()+' · '+kb+' · '+(f.rows||0)+' rows · '+escH(f.date)+'</div></div>'+
+      '<span class="doc-file-status">Processed</span>'+
+      '<button class="doc-file-del" onclick="docDelete('+i+')" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>';
+  }).join('');
+}
+function docDelete(i){docFiles.splice(i,1);_docSave();docRenderList();}
+function renderDocuments(){docRenderList();}
+
 /* ── charts (Chart.js), pv-tinted ── */
 var _pvChartRoot=document.querySelector('.pv-dashboard');
 function pvChartDefaults(){
@@ -3424,6 +4051,10 @@ function renderInvAgingChart(){
 
 /* ── page-shown hook: render module + dashboard-consistent stagger entrance ── */
 var PV_PAGE_RENDER={
+  'Analytics':function(){renderAnalytics();},
+  'Documents':function(){renderDocuments();},
+  'Team directory':function(){renderEmpGrid();},
+  'Audit log':function(){renderAuditLog();renderHistoryTimeline();},
   'Budget tracker':function(){renderBudget();renderBudVsActChart();},
   'Invoices':function(){renderInvoices();renderInvAgingChart();},
   'Petty cash':function(){renderPetty();},
@@ -3448,12 +4079,48 @@ var _pvReduced=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:
 window.pvPageShown=function(label,animate){
   var fn=PV_PAGE_RENDER[label]; if(!fn)return;
   fn();
+  if(window.pvUpdateBell)pvUpdateBell();
   if(animate&&window.gsap&&!_pvReduced){
     var sec=document.querySelector('.pv-page[data-page="'+label+'"]');
     if(sec)gsap.from(sec.querySelectorAll('.fn-kpi, .pv-card, .fn-card'),
       {y:16,opacity:0,duration:.4,ease:'power2.out',stagger:.05,clearProps:'opacity,transform'});
   }
 };
+
+/* ── Live header date + notification-bell dot ──────────────────── */
+/* Date always reflects the real current day; the interval lets it roll
+   over past midnight even if the tab is left open. Format: "Friday, 10 Jul". */
+function pvUpdateDate(){
+  var el=document.getElementById('pv-live-date'); if(!el)return;
+  var d=new Date();
+  var wd=d.toLocaleDateString('en-US',{weekday:'long'});
+  var mon=d.toLocaleDateString('en-US',{month:'short'});
+  el.textContent=wd+', '+d.getDate()+' '+mon; // e.g. "Friday, 10 Jul"
+}
+pvUpdateDate();
+setInterval(pvUpdateDate,60000);
+
+/* Actionable items pulled from live module data — overdue invoices,
+   contracts expiring within 30 days, and pending approvals (expenses + leave). */
+function pvNotifCount(){
+  var td=today(), n=0;
+  try{
+    if(typeof invoices!=='undefined')  n+=invoices.filter(function(i){return i.status==='Overdue'||(i.status!=='Paid'&&i.due&&i.due<td);}).length;
+    if(typeof contracts!=='undefined') n+=contracts.filter(function(c){return daysBetween(td,c.end)<=30;}).length;
+    if(typeof expenses!=='undefined')  n+=expenses.filter(function(e){return e.status==='Pending';}).length;
+    if(typeof leaves!=='undefined')    n+=leaves.filter(function(l){return l.status==='Pending';}).length;
+  }catch(e){}
+  return n;
+}
+function pvUpdateBell(){
+  var dot=document.querySelector('.pv-bell-ping'); if(!dot)return;
+  var n=pvNotifCount();
+  dot.classList.toggle('is-on', n>0);
+  var bell=document.querySelector('.pv-bell');
+  if(bell) bell.setAttribute('title', n>0 ? (n+' item'+(n>1?'s':'')+' need attention') : 'No new notifications');
+}
+window.pvUpdateBell=pvUpdateBell;
+pvUpdateBell();
 
 /* topbar currency switcher drives the finance modules too (stored amounts unchanged) */
 (function(){
@@ -3469,5 +4136,47 @@ window.pvPageShown=function(label,animate){
   });
 })();
 </script>
+
+<!-- Employee Modal (Team Directory) -->
+<div id="emp-modal" class="fn-modal" onclick="closeFnModalOnBg(event,'emp-modal')">
+  <div class="fn-modal-box" style="max-height:92vh;overflow-y:auto;">
+    <div class="fn-modal-hdr"><div class="fn-modal-ttl" id="emp-modal-ttl">Add Employee</div><button class="fn-modal-x" onclick="closeFnModal('emp-modal')">✕</button></div>
+    <div class="emp-photo-area">
+      <div class="emp-photo-ring" id="emp-photo-ring" onclick="document.getElementById('emp-photo-input').click()" title="Click to upload photo">
+        <img id="emp-photo-preview" alt=""><span id="emp-photo-initials">?</span>
+        <div class="emp-photo-overlay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+      </div>
+      <div class="emp-photo-lbl"><a onclick="document.getElementById('emp-photo-input').click()">Upload photo</a> or <a onclick="clearEmpPhoto()">remove</a></div>
+      <input type="file" id="emp-photo-input" accept="image/*" style="display:none;" onchange="handleEmpPhotoUpload(this)">
+    </div>
+    <div class="fn-field"><label>Full Name *</label><input id="emp-f-name" placeholder="e.g. Yahya Zoubi" oninput="updateModalPhotoInitials()"></div>
+    <div class="fn-field-row">
+      <div class="fn-field"><label>Employee ID</label><input id="emp-f-empid" placeholder="e.g. PTG-001"></div>
+      <div class="fn-field"><label>Job Title</label><input id="emp-f-title" placeholder="e.g. Data Analyst"></div>
+    </div>
+    <div class="fn-field"><label>Department</label><input id="emp-f-dept" placeholder="e.g. Engineering"></div>
+    <div class="fn-field-row">
+      <div class="fn-field"><label>Email</label><input id="emp-f-email" type="email" placeholder="name@petgo.ly"></div>
+      <div class="fn-field"><label>Phone</label><input id="emp-f-phone" type="tel" placeholder="+218 91 000 0000"></div>
+    </div>
+    <div class="fn-modal-foot"><button class="fn-cancel-btn" onclick="closeFnModal('emp-modal')">Cancel</button><button class="fn-save-btn" onclick="saveEmp()">Save</button></div>
+  </div>
+</div>
+
+<!-- ══ PASSWORD CHANGE / RESET MODAL (body-level so it works over the login screen too) ══ -->
+<div id="pw-modal" class="pw-modal" onclick="if(event.target===this)closePwModal()">
+  <div class="pw-box">
+    <div class="pw-hdr"><span id="pw-ttl">Change Password</span><button class="pw-x" onclick="closePwModal()">✕</button></div>
+    <p class="pw-sub" id="pw-sub">Update the password for your demo account.</p>
+    <div class="pw-body">
+      <div class="pw-field" id="pw-row-email" style="display:none;"><label>Account Email</label><input id="pw-f-email" type="email" placeholder="you@petgo.ly" autocomplete="username"></div>
+      <div class="pw-field" id="pw-row-current" style="display:none;"><label>Current Password</label><input id="pw-f-current" type="password" placeholder="Current password" autocomplete="current-password"></div>
+      <div class="pw-field"><label>New Password</label><input id="pw-f-new" type="password" placeholder="At least 4 characters" autocomplete="new-password"></div>
+      <div class="pw-field"><label>Confirm New Password</label><input id="pw-f-confirm" type="password" placeholder="Re-enter new password" autocomplete="new-password"></div>
+      <div class="pw-msg" id="pw-msg"></div>
+    </div>
+    <div class="pw-foot"><button class="pw-cancel" onclick="closePwModal()">Cancel</button><button class="pw-save" onclick="savePassword()">Update Password</button></div>
+  </div>
+</div>
 </body>
 </html>

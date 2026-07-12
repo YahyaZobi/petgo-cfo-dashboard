@@ -767,6 +767,17 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
 .fn-kpi-v{color:var(--pv-text);font-size:clamp(20px,1.4vw,30px);font-weight:800;line-height:1.15;margin-top:2px;}
 .fn-kpi-s{color:var(--pv-muted-3);font-size:10.5px;margin-top:3px;}
 .fn-card{background:var(--pv-card);border-radius:20px;box-shadow:0 12px 32px rgba(0,0,0,.35);padding:18px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+/* ── Glass-card corner fix ──────────────────────────────────────────
+   Any card that combines `backdrop-filter` with `border-radius` must clip
+   its own overflow, otherwise Chromium paints the filtered backdrop to the
+   square border-box and a hard rectangular "backing plate" pokes out behind
+   the rounded corners (was clearly visible on Analytics / Audit Log). Clipping
+   makes the corner + soft shadow fade naturally. Applied only to display cards
+   — NOT to the rail/panel/topbar (they host hover tooltips that must overflow). */
+.pv-card, .pv-cash, .pv-kpi, .fn-kpi, .fn-card, .an-kpi { overflow: hidden; }
+/* Modal cards: clip too (same bug) but keep them scrollable so tall modals on
+   short viewports never lose content. */
+.fn-modal-box, .jd-box { max-height: 92vh; overflow: auto; }
 .fn-tbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
 .fn-tbar-left{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
 .fn-tbar-title{color:var(--pv-text);font-size:13.5px;font-weight:700;}
@@ -1134,13 +1145,22 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
 @media(max-width:900px){.emp-list-hdr,.emp-row{grid-template-columns:48px 2fr 1.4fr 92px;}.emp-list-hdr span:nth-child(4),.emp-row .emp-contact-col{display:none;}}
 
 /* Employee photo area (in modal) */
-.emp-photo-area{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:16px;}
-.emp-photo-ring{width:84px;height:84px;border-radius:50%;position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.2);}
+.emp-photo-area{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:18px;}
+.emp-photo-ring{width:80px;height:80px;border-radius:50%;position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;overflow:hidden;border:2px solid rgba(255,255,255,.14);box-shadow:0 6px 18px rgba(0,0,0,.28);transition:transform .15s,box-shadow .15s,border-color .15s;}
+.emp-photo-ring:hover{transform:translateY(-1px);border-color:rgba(96,165,250,.55);box-shadow:0 10px 24px rgba(37,99,235,.4);}
 .emp-photo-ring img{width:100%;height:100%;object-fit:cover;display:none;position:absolute;inset:0;}
-.emp-photo-overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;}
-.emp-photo-ring:hover .emp-photo-overlay{opacity:1;}
-.emp-photo-lbl{font-size:11.5px;color:var(--pv-muted-2);}
-.emp-photo-lbl a{color:var(--pv-primary);cursor:pointer;font-weight:600;}
+/* Small "editable photo" camera badge (replaces the old dark hover scrim). */
+.emp-photo-cam{position:absolute;right:-2px;bottom:-2px;width:26px;height:26px;border-radius:50%;background:var(--pv-primary);color:#fff;border:2.5px solid #131a2e;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.35);pointer-events:none;}
+.emp-photo-actions{display:flex;gap:8px;align-items:center;}
+.emp-photo-btn{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;padding:8px 15px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--pv-text-2);cursor:pointer;transition:.14s;font-family:'Manrope',system-ui,sans-serif;}
+.emp-photo-btn:hover{background:rgba(59,130,246,.16);border-color:rgba(96,165,250,.42);color:#fff;}
+.emp-photo-remove{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:8px 13px;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--pv-muted-2);cursor:pointer;transition:.14s;font-family:'Manrope',system-ui,sans-serif;}
+.emp-photo-remove:hover{color:var(--pv-neg);background:rgba(248,113,113,.1);}
+.emp-photo-remove.is-hidden{display:none;}
+[data-theme="light"] .emp-photo-ring{border-color:rgba(20,30,55,.12);}
+[data-theme="light"] .emp-photo-cam{border-color:#ffffff;}
+[data-theme="light"] .emp-photo-btn{background:rgba(20,30,55,.05);border-color:rgba(20,30,55,.14);color:#33415e;}
+[data-theme="light"] .emp-photo-btn:hover{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.32);color:#1d4ed8;}
 
 /* Documents */
 .upload-zone{border:2px dashed var(--pv-line);border-radius:16px;padding:38px 20px;text-align:center;transition:.15s;background:var(--pv-card);}
@@ -3309,6 +3329,12 @@ function bootApp(){
   document.getElementById('ms-overlay').style.display='none';
   document.getElementById('app').style.display='flex';
   loggedIn=true;
+  /* Move any app modals that were authored at body level INTO .pv-dashboard so
+     the themed tokens + [data-theme="light"] overrides reach them (emp-modal /
+     restore-modal previously sat outside it and stayed dark in light mode).
+     The password modal stays body-level on purpose (used over the login screen). */
+  (function(){ var d=document.querySelector('.pv-dashboard'); if(!d)return;
+    ['emp-modal','restore-modal'].forEach(function(id){ var m=document.getElementById(id); if(m&&!d.contains(m))d.appendChild(m); }); })();
   var u=_userFromEmail(currentUser);
   var n=document.querySelector('.pv-user-name'); if(n)n.textContent=u.name;
   var rl=document.querySelector('.pv-user-role'); if(rl)rl.textContent=u.title||'Team Member';
@@ -4983,11 +5009,13 @@ function handleEmpPhotoUpload(input){
       if(pv){pv.src=empPendingPhoto;pv.style.display='block';}
       if(ini)ini.style.display='none';
       if(ring)ring.style.background='transparent';
+      _empPhotoShowRemove(true);
     };
     img.src=e.target.result;
   };
   reader.readAsDataURL(file); input.value='';
 }
+function _empPhotoShowRemove(show){ var r=document.getElementById('emp-photo-remove'); if(r)r.classList.toggle('is-hidden',!show); }
 function clearEmpPhoto(){
   empPendingPhoto='__clear__';
   var pv=document.getElementById('emp-photo-preview'),ini=document.getElementById('emp-photo-initials'),ring=document.getElementById('emp-photo-ring');
@@ -4995,6 +5023,7 @@ function clearEmpPhoto(){
   var name=document.getElementById('emp-f-name').value||'';
   if(ini){ini.textContent=name?empInitials(name):'?';ini.style.display='';}
   if(ring)ring.style.background=name?empColor(name):'#41547e';
+  _empPhotoShowRemove(false);
 }
 function openEmpModal(idx){
   empEditIdx=(idx===undefined)?-1:idx;
@@ -5011,6 +5040,7 @@ function openEmpModal(idx){
   var pv=document.getElementById('emp-photo-preview'),ini=document.getElementById('emp-photo-initials'),ring=document.getElementById('emp-photo-ring');
   if(emp.photo){if(pv){pv.src=emp.photo;pv.style.display='block';}if(ini)ini.style.display='none';if(ring)ring.style.background='transparent';}
   else{if(pv){pv.src='';pv.style.display='none';}var nm=emp.name||'';if(ini){ini.textContent=nm?empInitials(nm):'?';ini.style.display='';}if(ring)ring.style.background=nm?empColor(nm):'#41547e';}
+  _empPhotoShowRemove(!!emp.photo);
   openFnModal('emp-modal',empEditIdx>=0?'Edit Employee':'Add Employee','emp-modal-ttl');
   setTimeout(function(){document.getElementById('emp-f-name').focus();},80);
 }
@@ -5576,14 +5606,17 @@ pvUpdateBell();
 
 <!-- Employee Modal (Team Directory) -->
 <div id="emp-modal" class="fn-modal" onclick="closeFnModalOnBg(event,'emp-modal')">
-  <div class="fn-modal-box" style="max-height:92vh;overflow-y:auto;">
+  <div class="fn-modal-box">
     <div class="fn-modal-hdr"><div class="fn-modal-ttl" id="emp-modal-ttl">Add Employee</div><button class="fn-modal-x" onclick="closeFnModal('emp-modal')">✕</button></div>
     <div class="emp-photo-area">
-      <div class="emp-photo-ring" id="emp-photo-ring" onclick="document.getElementById('emp-photo-input').click()" title="Click to upload photo">
+      <div class="emp-photo-ring" id="emp-photo-ring" onclick="document.getElementById('emp-photo-input').click()" title="Upload a photo">
         <img id="emp-photo-preview" alt=""><span id="emp-photo-initials">?</span>
-        <div class="emp-photo-overlay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        <span class="emp-photo-cam"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
       </div>
-      <div class="emp-photo-lbl"><a onclick="document.getElementById('emp-photo-input').click()">Upload photo</a> or <a onclick="clearEmpPhoto()">remove</a></div>
+      <div class="emp-photo-actions">
+        <button type="button" class="emp-photo-btn" onclick="document.getElementById('emp-photo-input').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload photo</button>
+        <button type="button" class="emp-photo-remove is-hidden" id="emp-photo-remove" onclick="clearEmpPhoto()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>Remove</button>
+      </div>
       <input type="file" id="emp-photo-input" accept="image/*" style="display:none;" onchange="handleEmpPhotoUpload(this)">
     </div>
     <div class="fn-field"><label>Full Name *</label><input id="emp-f-name" placeholder="e.g. Yahya Zoubi" oninput="updateModalPhotoInitials()"></div>

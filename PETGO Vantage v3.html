@@ -3518,6 +3518,10 @@ function fmtMoney(v){
   if(Math.abs(val)>=1e3)return s+(val/1e3).toFixed(1)+'K';
   return s+val.toFixed(2);
 }
+/* Payroll & payslips are denominated in LYD natively (values are stored as LYD,
+   not USD-base), so they bypass the dashboard currency toggle and show full,
+   thousands-separated figures. Single source of truth for both. */
+function fmtLYD(v){return 'LD '+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 
 // ── Shared helpers ───────────────────────────────────
 var _fnNextId=500;
@@ -4344,16 +4348,16 @@ function renderPayroll(){
   var total=list.reduce(function(s,p){return s+p.base-p.ded;},0);
   var avg=list.length?Math.round(list.reduce(function(s,p){return s+p.base;},0)/list.length):0;
   document.getElementById('pay-kpis').innerHTML=
-    fnKpi('Total Net Payroll',fmtMoney(total),month,'','','wallet')+
+    fnKpi('Total Net Payroll',fmtLYD(total),month,'','','wallet')+
     fnKpi('Headcount',list.length+' employees',month,'','','users')+
-    fnKpi('Avg Base Salary',fmtMoney(avg),'This period','','','coins')+
-    fnKpi('Total Deductions',fmtMoney(list.reduce(function(s,p){return s+p.ded;},0)),'This period','','','trending-down');
+    fnKpi('Avg Base Salary',fmtLYD(avg),'This period','','','coins')+
+    fnKpi('Total Deductions',fmtLYD(list.reduce(function(s,p){return s+p.ded;},0)),'This period','','','trending-down');
   var tb=document.getElementById('pay-tbody'); if(!tb)return;
   if(!list.length){tb.innerHTML='<tr><td colspan="8" class="fn-empty">No payroll data for this period.</td></tr>';return;}
   tb.innerHTML=list.map(function(p){
     var idx=payroll.indexOf(p);
     var eid=p.empId?'<span style="font-family:ui-monospace,\'SF Mono\',monospace;font-size:11px;font-weight:700;color:var(--pv-primary);">'+escH(p.empId)+'</span>':'<span style="color:var(--pv-muted-2);font-size:11px;">—</span>';
-    return '<tr><td>'+eid+'</td><td><strong>'+escH(p.name)+'</strong></td><td>'+escH(p.dept||'—')+'</td><td>'+fmtMoney(p.base)+'</td><td class="tr">-'+fmtMoney(p.ded)+'</td><td class="tg tw">'+fmtMoney(p.base-p.ded)+'</td><td>'+escH(p.month)+'</td>'+
+    return '<tr><td>'+eid+'</td><td><strong>'+escH(p.name)+'</strong></td><td>'+escH(p.dept||'—')+'</td><td>'+fmtLYD(p.base)+'</td><td class="tr">-'+fmtLYD(p.ded)+'</td><td class="tg tw">'+fmtLYD(p.base-p.ded)+'</td><td>'+escH(p.month)+'</td>'+
       '<td><div class="fn-row-actions"><button class="ps-btn" onclick="generatePayslip('+idx+')">Payslip</button><button class="fn-btn-edit" onclick="openPayModal('+idx+')">Edit</button><button class="fn-btn-del" onclick="delPay('+idx+')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></td></tr>';
   }).join('');
 }
@@ -4393,7 +4397,7 @@ function _psNumToWords(n){
 /* A payslip is a fixed-currency legal document: always LYD-native, with full
    precision and thousands separators. It must NOT follow the dashboard's display
    currency toggle (which would double-convert or mislabel these LYD figures). */
-function _psMoney(v){return 'LD '+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function _psMoney(v){return fmtLYD(v);}
 function _psIssueDate(){return new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});}
 function buildPayslipHTML(p,empTitle,empId,slipNo,issueDate){
   var gross=p.base,totalDed=p.ded,net=gross-totalDed;

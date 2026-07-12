@@ -2524,7 +2524,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
     Quarter: { cash:148.6, cashDelta:12.4, cashNote:'vs last quarter', rev:84.2,  revDelta:'+6.2%', ebitda:31.7,  ebitdaDelta:'+2.8%', nwc:52.9, nwcDelta:'−1.4%', nwcNeg:true  },
     Year:    { cash:148.6, cashDelta:31.8, cashNote:'vs FY25',         rev:318.4, revDelta:'+9.4%', ebitda:121.3, ebitdaDelta:'+7.1%', nwc:52.9, nwcDelta:'+2.2%', nwcNeg:false }
   };
-  var RATES = { LYD:1, USD:0.207, EUR:0.191 };
+  var RATES = { LYD:1, USD:0.1634, EUR:0.191 };
   var SYM   = { LYD:'LD ', USD:'$', EUR:'€' };
   function fmtMoney(base, dec, unit, cur){
     return SYM[cur] + (base*RATES[cur]).toLocaleString('en-US',{minimumFractionDigits:dec, maximumFractionDigits:dec}) + unit;
@@ -3059,7 +3059,7 @@ var currentCurrency={symbol:'$',rate:1,code:'USD'};
 var CURRENCIES={
   'USD ($)':{symbol:'$',rate:1,code:'USD'},
   'EUR (€)':{symbol:'€',rate:0.92,code:'EUR'},
-  'LYD (LD)':{symbol:'LD ',rate:4.85,code:'LYD'}
+  'LYD (LD)':{symbol:'LD ',rate:6.12,code:'LYD'}
 };
 function applyCurrency(key){
   currentCurrency=CURRENCIES[key]||{symbol:'$',rate:1,code:'USD'};

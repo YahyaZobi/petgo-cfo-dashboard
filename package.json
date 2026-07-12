@@ -1,0 +1,11 @@
+{
+  "name": "petgo-vantage",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "PETGO Vantage CFO dashboard — Netlify Functions (Board Pack scheduled email, Groq later)",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0",
+    "resend": "^4.5.1"
+  }
+}

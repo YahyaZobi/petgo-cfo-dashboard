@@ -1,8 +1,13 @@
 [build]
-  command = ""
+  command = "npm install"
   publish = "."
 
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Serve the Vantage v3 app at the site root (was pointing at the old CFO dashboard).
 [[redirects]]
   from = "/"
-  to = "/PETGO Finance CFO Dashboard.html"
+  to = "/PETGO Vantage v3.html"
   status = 200

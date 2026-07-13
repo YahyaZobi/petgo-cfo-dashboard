@@ -1193,6 +1193,107 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
 [data-theme="light"] .doc-prev-tbl th{background:rgba(20,30,55,.04);}
 /* ── PHASE 3: PEOPLE MODULE CSS ── */
 
+/* ── Reports — company reporting (Upstream / Downstream) ── */
+.rp-cat-bar{display:flex;justify-content:center;margin-bottom:18px;}
+.rp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));grid-auto-rows:1fr;gap:clamp(16px,1.4vw,24px);padding-bottom:20px;}
+.rp-co-card{position:relative;background:var(--pv-card);border-radius:16px;box-shadow:var(--pv-shadow-tile);padding:18px;cursor:pointer;overflow:hidden;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .18s ease, box-shadow .25s ease;}
+.rp-co-card:hover{transform:translateY(-2px);box-shadow:var(--pv-shadow-hover);}
+.rp-co-logo{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;overflow:hidden;flex:none;background:linear-gradient(135deg,var(--pv-primary-dk),var(--pv-primary-lt));transition:transform .18s ease;}
+.rp-co-logo img{width:100%;height:100%;object-fit:cover;display:block;}
+/* real uploaded logo: neutral backing plate + contain, subtle lift */
+.rp-co-logo.has-logo{background:#fff;padding:6px;border:1px solid rgba(255,255,255,.14);box-shadow:0 1px 2px rgba(0,0,0,.22),0 5px 12px -4px rgba(0,0,0,.38);}
+.rp-co-logo.has-logo img{object-fit:contain;border-radius:6px;}
+[data-theme="light"] .rp-co-logo.has-logo{border-color:rgba(20,30,55,.1);box-shadow:0 1px 2px rgba(30,50,90,.08),0 5px 12px -4px rgba(30,50,90,.16);}
+.rp-co-card:hover .rp-co-logo{transform:scale(1.03);}
+.rp-co-card .rp-co-logo{margin-bottom:12px;}
+.rp-co-name{font-size:14px;font-weight:800;color:var(--pv-text);line-height:1.3;}
+.rp-co-meta{font-size:11px;color:var(--pv-muted-2);margin-top:7px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.rp-co-meta b{color:var(--pv-text);font-weight:800;}
+.rp-co-dot{width:3px;height:3px;border-radius:50%;background:var(--pv-muted-3);flex:none;}
+.rp-co-add{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;min-height:132px;background:transparent;box-shadow:none;border:2px dashed var(--pv-line);color:var(--pv-muted-2);font-size:12.5px;font-weight:700;}
+.rp-co-add:hover{border-color:var(--pv-primary);color:#93c5fd;background:rgba(37,99,235,.06);box-shadow:none;}
+.rp-co-add svg{opacity:.8;}
+.rp-crumbs{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;margin-bottom:14px;}
+.rp-crumb-link{color:var(--pv-muted-2);cursor:pointer;transition:.12s;}
+.rp-crumb-link:hover{color:var(--pv-text);}
+.rp-crumb-sep{color:var(--pv-muted-3);font-weight:400;}
+.rp-crumb-cur{color:var(--pv-text);}
+.rp-co-head{display:flex;align-items:center;gap:14px;padding:16px 18px;margin-bottom:18px;border-radius:16px;background:var(--pv-card);box-shadow:var(--pv-shadow-tile);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+.rp-co-head .rp-co-logo{width:52px;height:52px;font-size:16px;}
+.rp-co-title{font-size:16px;font-weight:800;color:var(--pv-text);display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.rp-co-sub{font-size:11.5px;color:var(--pv-muted-2);margin-top:3px;line-height:1.45;}
+.rp-badge-down{background:rgba(34,211,238,.12);color:#67e8f9;border:1px solid rgba(34,211,238,.25);}
+[data-theme="light"] .rp-badge-down{background:rgba(8,145,178,.08);color:#0e7490;border-color:rgba(8,145,178,.25);}
+.rp-badge-muted{background:rgba(148,163,184,.12);color:var(--pv-muted);border:1px solid rgba(148,163,184,.25);}
+.rp-co-edit{margin-left:auto;flex:none;}
+.rp-btn-ghost{background:rgba(255,255,255,.07);box-shadow:none;color:var(--pv-muted);}
+.rp-btn-ghost:hover{background:rgba(255,255,255,.12);box-shadow:none;color:var(--pv-text);}
+[data-theme="light"] .rp-btn-ghost{background:rgba(20,30,55,.06);color:#47597a;}
+[data-theme="light"] .rp-btn-ghost:hover{background:rgba(20,30,55,.1);color:#141d33;}
+/* Toolbar: search + sort above the company grid */
+.rp-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.rp-search{position:relative;flex:0 1 320px;}
+.rp-search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--pv-muted-3);pointer-events:none;}
+.rp-search input{width:100%;padding:9px 12px 9px 34px;border-radius:12px;border:1px solid var(--pv-line);background:var(--pv-card);color:var(--pv-text);font-family:inherit;font-size:12.5px;font-weight:600;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .15s, box-shadow .15s;}
+.rp-search input::placeholder{color:var(--pv-muted-3);}
+.rp-search input:focus{border-color:rgba(96,165,250,.45);box-shadow:0 0 0 3px rgba(37,99,235,.14);}
+.rp-search input::-webkit-search-cancel-button{-webkit-appearance:none;}
+.rp-sort{margin-left:auto;flex:none;padding:9px 30px 9px 12px;border-radius:12px;border:1px solid var(--pv-line);background:var(--pv-card);color:var(--pv-muted);font-family:inherit;font-size:12px;font-weight:700;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;transition:border-color .15s;}
+.rp-sort:hover,.rp-sort:focus{border-color:rgba(96,165,250,.4);color:var(--pv-text);}
+[data-theme="light"] .rp-search input,[data-theme="light"] .rp-sort{background:rgba(255,255,255,.85);}
+/* Relationship-type tag (NOC-owned / Joint Venture / IOC Partner / Services) */
+.rp-co-tag{position:absolute;top:15px;right:15px;font-size:8.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(96,165,250,.1);color:#7ea8ee;border:1px solid rgba(96,165,250,.22);white-space:nowrap;}
+[data-theme="light"] .rp-co-tag{background:rgba(37,99,235,.06);color:#3b5fa8;border-color:rgba(37,99,235,.2);}
+/* Directory section headers (grouped by relationship type) */
+.rp-sec-label{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--pv-muted-2);margin:26px 2px 13px;}
+.rp-sec-label:first-child{margin-top:0;}
+.rp-sec-label em{font-style:normal;color:var(--pv-muted-3);font-weight:700;letter-spacing:.04em;}
+.rp-sec-label::after{content:'';flex:1;height:1px;background:var(--pv-line);}
+.rp-grid+.rp-grid{margin-top:24px;}
+/* Core-activity one-liner on the card (2-line clamp) */
+.rp-co-act{font-size:11px;color:var(--pv-muted-2);line-height:1.45;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+/* 3-letter initials (collision fallback) need a touch less type */
+.rp-co-logo.is-3i{font-size:12.5px;letter-spacing:-.01em;}
+.rp-co-tip .rp-co-logo.is-3i{font-size:14px;}
+.rp-co-empty{grid-column:1/-1;text-align:center;color:var(--pv-muted-2);font-size:12.5px;font-weight:600;padding:26px 0 10px;}
+/* Company hover tooltip — same elevation/glass treatment as .org-tip.
+   Interactive (pointer-events:auto) so the website link is clickable;
+   JS delays hide and keeps it open while hovered. */
+.rp-co-tip{position:fixed;z-index:3200;display:none;width:264px;background:rgba(17,24,44,.98);border:1px solid rgba(255,255,255,.1);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.55);padding:16px 16px 14px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);font-family:'Manrope',system-ui,sans-serif;}
+.rp-co-tip .rp-co-logo{width:56px;height:56px;border-radius:14px;font-size:17px;margin:0 auto 10px;box-shadow:0 6px 16px rgba(0,0,0,.3);}
+.rp-co-tip-name{font-size:14px;font-weight:800;color:var(--pv-text);text-align:center;line-height:1.3;}
+.rp-co-tip-badges{display:flex;justify-content:center;align-items:center;gap:6px;margin:7px 0 0;flex-wrap:wrap;}
+.rp-co-tip .rp-co-tag{position:static;}
+.rp-co-tip-act{font-size:11px;color:var(--pv-muted);line-height:1.55;text-align:center;margin:10px 0 0;}
+.rp-co-tip .org-tip-rows{margin-top:12px;}
+.rp-co-tip a{color:#60a5fa;text-decoration:none;}
+.rp-co-tip a:hover{text-decoration:underline;}
+[data-theme="light"] .rp-co-tip a{color:#1d4ed8;}
+[data-theme="light"] .rp-co-tip{background:rgba(255,255,255,.99);border-color:rgba(20,30,55,.1);box-shadow:0 24px 60px rgba(30,50,90,.22);}
+@keyframes pvTipIn{from{opacity:0;transform:translateY(5px) scale(.96);}to{opacity:1;transform:none;}}
+.org-tip,.rp-co-tip{animation:pvTipIn .18s ease-out;}
+@media (prefers-reduced-motion: reduce){.org-tip,.rp-co-tip{animation:none;}}
+.rp-zone{padding:24px 16px;}
+.rp-zone h3{font-size:13.5px;}
+.rp-or{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--pv-muted-3);text-align:center;margin:12px 0 10px;}
+.rp-gen-box{width:840px;max-width:94vw;}
+.rp-view-box{width:760px;max-width:94vw;}
+.rp-view-meta{font-size:11px;color:var(--pv-muted-2);font-weight:600;margin-top:3px;}
+.rp-file-chip{display:flex;align-items:center;gap:9px;margin-top:12px;padding:9px 12px;border-radius:10px;background:rgba(59,130,246,.08);border:1px solid rgba(96,165,250,.22);font-size:11.5px;font-weight:700;color:var(--pv-text);}
+.rp-file-chip svg{color:#60a5fa;flex:none;}
+.rp-file-chip span{color:var(--pv-muted-2);font-weight:600;}
+.rp-file-chip.is-hidden{display:none;}
+.rp-logo-pick{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.rp-logo-prev{cursor:pointer;}
+.rp-mini-btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:9px;padding:7px 12px;font-size:11px;font-weight:700;background:rgba(255,255,255,.06);color:var(--pv-muted);cursor:pointer;transition:.12s;font-family:inherit;}
+.rp-mini-btn:hover{background:rgba(255,255,255,.12);color:var(--pv-text);}
+.rp-mini-btn.is-hidden{display:none;}
+[data-theme="light"] .rp-mini-btn{background:rgba(20,30,55,.06);color:#47597a;}
+[data-theme="light"] .rp-mini-btn:hover{background:rgba(20,30,55,.1);color:#141d33;}
+.fn-del-link{border:none;background:transparent;color:var(--pv-neg);font-size:11.5px;font-weight:700;cursor:pointer;padding:10px 6px;font-family:inherit;transition:.12s;}
+.fn-del-link:hover{text-decoration:underline;}
+.fn-del-link.is-hidden{display:none;}
+
 /* Shared approve/leave urgency badges */
 .fn-urgent-r{background:rgba(248,113,113,.14);color:#dc2626;border:1px solid rgba(248,113,113,.28);}
 .fn-urgent-y{background:rgba(251,191,36,.14);color:#b45309;border:1px solid rgba(251,191,36,.28);}
@@ -2054,6 +2155,53 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
       </div>
     </section>
 
+    <!-- ══ REPORTS ══ -->
+    <section class="pv-page" data-page="Reports">
+      <div class="pv-header"><div><div class="pv-h1">Reports</div><div class="pv-h1-sub">Company reporting · Upstream &amp; Downstream</div></div></div>
+      <div style="overflow-y:auto;flex:1;min-height:0;">
+
+      <!-- overview: stats + category toggle + company grid -->
+      <div id="rp-overview">
+        <div class="fn-kpi-row" id="rp-kpis"></div>
+        <div class="rp-cat-bar">
+          <div class="pv-seg" id="rp-cat-seg">
+            <button data-rcat="upstream" class="is-active" onclick="rpSetCat('upstream',this)">Upstream</button>
+            <button data-rcat="downstream" onclick="rpSetCat('downstream',this)">Downstream</button>
+          </div>
+        </div>
+        <div class="rp-toolbar">
+          <div class="rp-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.3" y2="16.3"/></svg>
+            <input id="rp-search-input" type="search" placeholder="Search companies…" oninput="rpSetSearch(this.value)">
+          </div>
+          <select id="rp-sort" class="rp-sort" onchange="rpSetSort(this.value)" title="Sort companies">
+            <option value="name">Name A–Z</option>
+            <option value="reports">Most Reports</option>
+            <option value="recent">Recently Active</option>
+          </select>
+        </div>
+        <div id="rp-grid"></div>
+      </div>
+
+      <!-- company detail: breadcrumb + header + reports table -->
+      <div id="rp-detail" style="display:none;">
+        <div class="rp-crumbs" id="rp-crumbs"></div>
+        <div class="rp-co-head" id="rp-co-head"></div>
+        <div class="fn-card">
+          <div class="fn-tbar">
+            <div class="fn-tbar-left"><span class="fn-tbar-title">Company Reports</span><span class="pv-badge" id="rp-co-count"></span></div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button class="fn-add-btn rp-btn-ghost" onclick="rpOpenUpload()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload Report</button>
+              <button class="fn-add-btn" onclick="rpOpenGenerate()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="8"/><rect x="12" y="6" width="3" height="12"/><rect x="17" y="13" width="3" height="5"/></svg>Generate Report</button>
+            </div>
+          </div>
+          <div class="fn-tbl-wrap"><table class="fn-tbl" id="rp-tbl"><thead><tr><th>Title</th><th>Period</th><th>Type</th><th>Upload Date</th><th>Uploaded By</th><th></th></tr></thead><tbody id="rp-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      </div>
+    </section>
+
     <!-- ══ SETTINGS ══ -->
     <section class="pv-page" data-page="Settings">
       <div class="pv-header"><div><div class="pv-h1">Settings</div><div class="pv-h1-sub">Preferences · PETGO Vantage</div></div></div>
@@ -2540,6 +2688,103 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
     <div class="fn-modal-foot"><button class="fn-cancel-btn" onclick="closeFnModal('rev-modal')">Cancel</button><button class="fn-save-btn" onclick="saveRev()">Save</button></div>
   </div>
 </div>
+<!-- ══ REPORTS MODALS ══ -->
+<div id="rpco-modal" class="fn-modal" onclick="closeFnModalOnBg(event,'rpco-modal')">
+  <div class="fn-modal-box">
+    <div class="fn-modal-hdr"><div class="fn-modal-ttl" id="rpco-ttl">Add Company</div><button class="fn-modal-x" onclick="closeFnModal('rpco-modal')">✕</button></div>
+    <div class="rp-logo-pick">
+      <div class="rp-co-logo rp-logo-prev" id="rpco-logo-prev" onclick="document.getElementById('rpco-logo-input').click()" title="Upload a logo"><img id="rpco-logo-img" alt="" style="display:none;"><span id="rpco-logo-initials">?</span></div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <button type="button" class="rp-mini-btn" onclick="document.getElementById('rpco-logo-input').click()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload logo</button>
+        <button type="button" class="rp-mini-btn is-hidden" id="rpco-logo-remove" onclick="rpcoLogoClear()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Remove</button>
+      </div>
+      <input type="file" id="rpco-logo-input" accept="image/*" style="display:none;" onchange="rpcoLogoUpload(this)">
+    </div>
+    <div class="fn-field"><label>Company Name *</label><input id="rpco-f-name" placeholder="e.g. Arabian Gulf Oil Company" oninput="rpcoUpdateInitials()"></div>
+    <div class="fn-field-row">
+      <div class="fn-field"><label>Category</label><select id="rpco-f-cat"><option value="upstream">Upstream</option><option value="downstream">Downstream</option></select></div>
+      <div class="fn-field"><label>Status</label><select id="rpco-f-status"><option value="prospective">Prospective</option><option value="active">Active Client</option><option value="former">Former Client</option></select></div>
+    </div>
+    <div class="fn-field"><label>Core Activity</label><textarea id="rpco-f-act" rows="2" placeholder="One line on what they actually do"></textarea></div>
+    <div class="fn-field"><label>Website</label><input id="rpco-f-website" placeholder="https://…"></div>
+    <div class="fn-field-row">
+      <div class="fn-field"><label>Service Type</label><input id="rpco-f-service" placeholder="What PETGO provides them"></div>
+      <div class="fn-field"><label>Region</label><input id="rpco-f-region" placeholder="e.g. Sirte Basin"></div>
+    </div>
+    <div class="fn-field"><label>Primary Contact</label><input id="rpco-f-contact" placeholder="Name · title"></div>
+    <div class="fn-field-row">
+      <div class="fn-field"><label>Client Since</label><input id="rpco-f-start" type="date"></div>
+      <div class="fn-field"><label>Contract Value</label><input id="rpco-f-value" placeholder="Optional — e.g. 1.2M LYD"></div>
+    </div>
+    <div class="fn-field"><label>Notes</label><textarea id="rpco-f-notes" rows="2" placeholder="Optional — operating area, JV partners, reporting cadence…"></textarea></div>
+    <div class="fn-modal-foot"><button class="fn-del-link is-hidden" id="rpco-del-btn" onclick="rpDeleteCompany()">Delete</button><button class="fn-cancel-btn" onclick="closeFnModal('rpco-modal')">Cancel</button><button class="fn-save-btn" onclick="rpSaveCompany()">Save</button></div>
+  </div>
+</div>
+
+<div id="rp-upload-modal" class="fn-modal" onclick="closeFnModalOnBg(event,'rp-upload-modal')">
+  <div class="fn-modal-box">
+    <div class="fn-modal-hdr"><div class="fn-modal-ttl" id="rp-up-ttl">Upload Report</div><button class="fn-modal-x" onclick="closeFnModal('rp-upload-modal')">✕</button></div>
+    <div class="upload-zone rp-zone" id="rp-up-zone" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="rpUpDrop(event)">
+      <div style="color:var(--pv-muted-2);"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>
+      <h3>Drop the report workbook here</h3>
+      <p>Supports <span class="doc-ext">.xlsx</span> <span class="doc-ext">.xls</span></p>
+      <button class="doc-choose" onclick="document.getElementById('rp-up-input').click()">Choose File</button>
+      <input type="file" id="rp-up-input" accept=".xlsx,.xls" hidden onchange="rpUpSelect(event)">
+      <div class="doc-proc" id="rp-up-proc"><span>⏳ Processing file, please wait…</span></div>
+    </div>
+    <div class="rp-file-chip is-hidden" id="rp-up-chip"></div>
+    <div class="fn-field" style="margin-top:14px;"><label>Report Title *</label><input id="rp-up-title" placeholder="e.g. Monthly Production Report"></div>
+    <div class="fn-field"><label>Period</label><input id="rp-up-period" placeholder="e.g. Q2 2026 / June 2026"></div>
+    <div class="fn-modal-foot"><button class="fn-cancel-btn" onclick="closeFnModal('rp-upload-modal')">Cancel</button><button class="fn-save-btn" onclick="rpSaveUpload()">Save Report</button></div>
+  </div>
+</div>
+
+<div id="rp-gen-modal" class="fn-modal" onclick="closeFnModalOnBg(event,'rp-gen-modal')">
+  <div class="fn-modal-box rp-gen-box">
+    <div class="fn-modal-hdr"><div class="fn-modal-ttl" id="rp-gen-ttl">Generate Report</div><button class="fn-modal-x" onclick="closeFnModal('rp-gen-modal')">✕</button></div>
+    <div id="rp-gen-src">
+      <div class="upload-zone rp-zone" id="rp-gen-zone" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="rpGenDrop(event)">
+        <div style="color:var(--pv-muted-2);"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>
+        <h3>Drop an Excel workbook to visualise</h3>
+        <p>Supports <span class="doc-ext">.xlsx</span> <span class="doc-ext">.xls</span></p>
+        <button class="doc-choose" onclick="document.getElementById('rp-gen-input').click()">Choose File</button>
+        <input type="file" id="rp-gen-input" accept=".xlsx,.xls" hidden onchange="rpGenSelect(event)">
+        <div class="doc-proc" id="rp-gen-proc"><span>⏳ Processing file, please wait…</span></div>
+      </div>
+      <div class="rp-or" id="rp-gen-or">or use data from an uploaded report</div>
+      <div class="fn-field" id="rp-gen-src-row"><select id="rp-gen-source" onchange="rpGenUseExisting()"><option value="">Select an uploaded report…</option></select></div>
+    </div>
+    <div id="rp-gen-body" style="display:none;">
+      <div class="doc-suggest" id="rp-gen-suggest"></div>
+      <div class="doc-report-controls">
+        <div class="doc-ctl"><label>Category / X</label><select id="rp-gen-dim" onchange="rpGenRender()"></select></div>
+        <div class="doc-ctl"><label>Measure / Y</label><select id="rp-gen-meas" onchange="rpGenRender()"></select></div>
+        <div class="doc-chart-types" id="rp-gen-types">
+          <button data-t="bar" onclick="rpGenSetType('bar')">Bar</button>
+          <button data-t="line" onclick="rpGenSetType('line')">Line</button>
+          <button data-t="donut" onclick="rpGenSetType('donut')">Donut</button>
+        </div>
+      </div>
+      <div style="position:relative;height:300px;"><canvas id="rp-gen-chart"></canvas></div>
+      <div class="fn-field-row" style="margin-top:16px;">
+        <div class="fn-field"><label>Report Title *</label><input id="rp-gen-title" placeholder="e.g. Revenue by Field"></div>
+        <div class="fn-field"><label>Period</label><input id="rp-gen-period" placeholder="e.g. Q2 2026"></div>
+      </div>
+    </div>
+    <div class="fn-modal-foot"><button class="fn-cancel-btn" onclick="closeFnModal('rp-gen-modal')">Cancel</button><button class="fn-save-btn" onclick="rpSaveGenerate()">Save Report</button></div>
+  </div>
+</div>
+
+<div id="rp-view-modal" class="fn-modal" onclick="closeFnModalOnBg(event,'rp-view-modal')">
+  <div class="fn-modal-box rp-view-box">
+    <div class="fn-modal-hdr"><div><div class="fn-modal-ttl" id="rp-view-ttl">Report</div><div class="rp-view-meta" id="rp-view-meta"></div></div><button class="fn-modal-x" onclick="closeFnModal('rp-view-modal')">✕</button></div>
+    <div id="rp-view-chart-wrap" style="display:none;position:relative;height:320px;"><canvas id="rp-view-chart"></canvas></div>
+    <div id="rp-view-tbl-wrap" style="display:none;" class="doc-prev-wrap"><table class="doc-prev-tbl" id="rp-view-tbl"></table></div>
+    <div class="fn-empty" id="rp-view-empty" style="display:none;">No stored data for this report.</div>
+    <div class="fn-modal-foot"><button class="fn-cancel-btn" onclick="closeFnModal('rp-view-modal')">Close</button></div>
+  </div>
+</div>
+
 <div id="toast" class="pv-toast"></div>
 </div>
 
@@ -2576,6 +2821,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
     { name:'Home',     d:'M4 10.6l7-5.9a1.6 1.6 0 0 1 2 0l7 5.9M5.9 9.4v8.7a2 2 0 0 0 2 2h8.2a2 2 0 0 0 2-2V9.4M9.8 20v-4.2a2.2 2.2 0 0 1 4.4 0V20' },
     { name:'Finance',  d:'M17.8 5.5H6.2A2.8 2.8 0 0 0 3.4 8.3v7.4a2.8 2.8 0 0 0 2.8 2.8h11.6a2.8 2.8 0 0 0 2.8-2.8v-5.2a2 2 0 0 0-2-2H4.6M15.9 13.3h1.7' },
     { name:'People',   d:'M9.2 11.2a3.6 3.6 0 1 0 0-7.2 3.6 3.6 0 0 0 0 7.2zM3 20.2c.4-3.2 2.9-5 6.2-5s5.8 1.8 6.2 5M15.5 4.4a3.6 3.6 0 0 1 0 6.6M18 15.6c1.8.7 3.1 2 3.4 4.6' },
+    { name:'Reports',  d:'M6.8 3.5h10.4a2.3 2.3 0 0 1 2.3 2.3v12.4a2.3 2.3 0 0 1-2.3 2.3H6.8a2.3 2.3 0 0 1-2.3-2.3V5.8a2.3 2.3 0 0 1 2.3-2.3zM8.5 16v-3.2M12 16V8.4M15.5 16v-5.4' },
     { name:'Settings', d:'M15 6.2a1.8 1.8 0 1 0 3.6 0 1.8 1.8 0 0 0-3.6 0zM4 6.2h10.6M19 6.2h1M5.2 12a1.8 1.8 0 1 0 3.6 0 1.8 1.8 0 0 0-3.6 0zM4 12h.8M9.2 12H20M12.2 17.8a1.8 1.8 0 1 0 3.6 0 1.8 1.8 0 0 0-3.6 0zM4 17.8h7.8M16.2 17.8H20' }
   ];
 
@@ -2652,7 +2898,8 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
   function _navVisible(page){ return (typeof window.pvPageAllowed !== 'function') || window.pvPageAllowed(window.currentUser, page); }
   function _catVisible(catName){
     if (catName === 'Settings') return true;
-    return (NAV[catName] || []).some(function (it) { return _navVisible(it.label); });
+    if (!NAV[catName]) return _navVisible(catName); /* panel-less category (e.g. Reports): one page named after itself */
+    return NAV[catName].some(function (it) { return _navVisible(it.label); });
   }
   function buildRail(){
     railEl.innerHTML = RAIL.filter(function (r) { return _catVisible(r.name); }).map(function (r) {
@@ -2697,8 +2944,8 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
   }
   function renderPanel(animate) {
     var wasHidden = panelEl.classList.contains('is-hidden');
-    /* ---- collapse to Settings ---- */
-    if (nav.category === 'Settings') {
+    /* ---- collapse for panel-less categories (Settings, Reports) ---- */
+    if (!NAV[nav.category]) {
       if (window.gsap && !reduced && !wasHidden) {
         panelEl.style.overflow = 'hidden';
         gsap.to(panelEl, { width:0, paddingLeft:0, paddingRight:0, opacity:0, duration:PANEL_DUR, ease:PANEL_EASE,
@@ -2736,7 +2983,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
     var btn = e.target.closest('button[data-cat]');
     if (!btn || btn.dataset.cat === nav.category) return;
     nav.category = btn.dataset.cat;
-    nav.page = NAV[nav.category] ? NAV[nav.category][0].label : 'Settings';
+    nav.page = NAV[nav.category] ? NAV[nav.category][0].label : nav.category;
     railEl.querySelectorAll('.pv-rail-btn').forEach(function(b){ b.classList.toggle('is-active', b.dataset.cat===nav.category); });
     placeRail(true);
     renderPanel(true);
@@ -5189,10 +5436,10 @@ function _docIsDate(v){if(v instanceof Date)return !isNaN(v.getTime());var s=Str
 function _docColType(rows,ci){var d=0,n=0,t=0;for(var r=1;r<rows.length&&r<200;r++){var v=rows[r][ci];if(v==null||v==='')continue;t++;if(_docIsNum(v))n++;else if(_docIsDate(v))d++;}if(!t)return 'empty';if(d/t>=0.6)return 'date';if(n/t>=0.7)return 'number';return 'category';}
 function _docUnique(rows,ci){var s={},n=0;for(var r=1;r<rows.length;r++){var k=rows[r][ci];if(k==null||k==='')continue;k=String(k);if(!(k in s)){s[k]=1;n++;}}return n;}
 function _docDetectCols(rows){var head=rows[0]||[];return head.map(function(h,i){return {idx:i,name:(h==null||h==='')?('Column '+(i+1)):String(h),type:_docColType(rows,i)};});}
-function _docSuggest(cols){
+function _docSuggest(cols,rows){
   var dates=cols.filter(function(c){return c.type==='date';}),nums=cols.filter(function(c){return c.type==='number';}),cats=cols.filter(function(c){return c.type==='category';});
   if(dates.length&&nums.length)return {type:'line',dim:dates[0].idx,meas:nums[0].idx};
-  if(cats.length&&nums.length){var u=_docUnique(docLastData.rows,cats[0].idx);return {type:(u<=6?'donut':'bar'),dim:cats[0].idx,meas:nums[0].idx};}
+  if(cats.length&&nums.length){var u=_docUnique(rows,cats[0].idx);return {type:(u<=6?'donut':'bar'),dim:cats[0].idx,meas:nums[0].idx};}
   if(nums.length>=2)return {type:'bar',dim:(cols[0]?cols[0].idx:0),meas:nums[0].idx};
   return {type:'bar',dim:(cols[0]?cols[0].idx:0),meas:(cols[1]?cols[1].idx:(cols[0]?cols[0].idx:0))};
 }
@@ -5212,7 +5459,7 @@ function _docFmt(v){var a=Math.abs(v);if(a>=1e9)return (v/1e9).toFixed(2)+'B';if
 function docBuildReport(){
   if(!docLastData){showToast('Upload an Excel file first.');return;}
   var cols=_docDetectCols(docLastData.rows); docReport.cols=cols;
-  var s=_docSuggest(cols); docReport.type=s.type; docReport.dim=s.dim; docReport.meas=s.meas;
+  var s=_docSuggest(cols,docLastData.rows); docReport.type=s.type; docReport.dim=s.dim; docReport.meas=s.meas;
   function opts(sel){return cols.map(function(c){return '<option value="'+c.idx+'"'+(sel===c.idx?' selected':'')+'>'+escH(c.name)+(c.type!=='category'&&c.type!=='empty'?' · '+c.type:'')+'</option>';}).join('');}
   document.getElementById('doc-dim').innerHTML=opts(docReport.dim);
   document.getElementById('doc-meas').innerHTML=opts(docReport.meas);
@@ -5225,6 +5472,20 @@ function docBuildReport(){
   var rs=document.getElementById('doc-report-sec'); if(rs&&rs.scrollIntoView)rs.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function docSetType(t){docReport.type=t;document.querySelectorAll('#doc-chart-types button').forEach(function(b){b.classList.toggle('is-active',b.dataset.t===t);});docRenderReport();}
+/* Shared Chart.js config builder — used by Documents' Visual Report and the
+   Reports module's generate/view flows so both render identically. */
+function _docChartCfg(agg,type,measName){
+  pvChartDefaults();
+  var BLUES=['#1e3a8a','#1d4ed8','#2563eb','#3b82f6','#60a5fa','#93c5fd','#bfdbfe','#1e40af','#3060c0','#7fa8f0','#a9c8f8','#2b4c9e'];
+  var GRID='rgba(148,163,184,0.13)';
+  if(type==='donut'){
+    return {type:'doughnut',data:{labels:agg.labels,datasets:[{data:agg.data,backgroundColor:agg.labels.map(function(_,i){return BLUES[i%BLUES.length];}),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:10,padding:8,usePointStyle:true,pointStyle:'circle'}},tooltip:{callbacks:{label:function(c){return c.label+': '+_docFmt(c.raw);}}}}}};
+  }
+  if(type==='line'){
+    return {type:'line',data:{labels:agg.labels,datasets:[{label:measName,data:agg.data,borderColor:'#2563eb',backgroundColor:function(c){var a=c.chart.chartArea;if(!a)return 'rgba(37,99,235,0.12)';var g=c.chart.ctx.createLinearGradient(0,a.top,0,a.bottom);g.addColorStop(0,'rgba(37,99,235,0.30)');g.addColorStop(1,'rgba(37,99,235,0.02)');return g;},fill:true,tension:0.4,borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#3b82f6',pointBorderColor:'#fff',pointBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return measName+': '+_docFmt(c.raw);}}}},scales:{x:{grid:{display:false}},y:{border:{display:false},grid:{color:GRID},ticks:{callback:function(v){return _docFmt(v);}}}}}};
+  }
+  return {type:'bar',data:{labels:agg.labels,datasets:[{label:measName,data:agg.data,backgroundColor:'#2563eb',borderRadius:6,maxBarThickness:46}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return measName+': '+_docFmt(c.raw);}}}},scales:{x:{grid:{display:false}},y:{border:{display:false},grid:{color:GRID},ticks:{callback:function(v){return _docFmt(v);}}}}}};
+}
 function docRenderReport(){
   if(!docLastData)return;
   docReport.dim=parseInt(document.getElementById('doc-dim').value);
@@ -5232,18 +5493,8 @@ function docRenderReport(){
   var agg=_docAgg(docLastData.rows,docReport.dim,docReport.meas,docReport.type);
   var cv=document.getElementById('doc-report-chart'); if(!cv||typeof Chart==='undefined')return;
   if(docReportChart)docReportChart.destroy();
-  pvChartDefaults();
-  var BLUES=['#1e3a8a','#1d4ed8','#2563eb','#3b82f6','#60a5fa','#93c5fd','#bfdbfe','#1e40af','#3060c0','#7fa8f0','#a9c8f8','#2b4c9e'];
   var measName=(docReport.cols.filter(function(c){return c.idx===docReport.meas;})[0]||{}).name||'Value';
-  var GRID='rgba(148,163,184,0.13)', cfg;
-  if(docReport.type==='donut'){
-    cfg={type:'doughnut',data:{labels:agg.labels,datasets:[{data:agg.data,backgroundColor:agg.labels.map(function(_,i){return BLUES[i%BLUES.length];}),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:10,padding:8,usePointStyle:true,pointStyle:'circle'}},tooltip:{callbacks:{label:function(c){return c.label+': '+_docFmt(c.raw);}}}}}};
-  }else if(docReport.type==='line'){
-    cfg={type:'line',data:{labels:agg.labels,datasets:[{label:measName,data:agg.data,borderColor:'#2563eb',backgroundColor:function(c){var a=c.chart.chartArea;if(!a)return 'rgba(37,99,235,0.12)';var g=c.chart.ctx.createLinearGradient(0,a.top,0,a.bottom);g.addColorStop(0,'rgba(37,99,235,0.30)');g.addColorStop(1,'rgba(37,99,235,0.02)');return g;},fill:true,tension:0.4,borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#3b82f6',pointBorderColor:'#fff',pointBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return measName+': '+_docFmt(c.raw);}}}},scales:{x:{grid:{display:false}},y:{border:{display:false},grid:{color:GRID},ticks:{callback:function(v){return _docFmt(v);}}}}}};
-  }else{
-    cfg={type:'bar',data:{labels:agg.labels,datasets:[{label:measName,data:agg.data,backgroundColor:'#2563eb',borderRadius:6,maxBarThickness:46}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return measName+': '+_docFmt(c.raw);}}}},scales:{x:{grid:{display:false}},y:{border:{display:false},grid:{color:GRID},ticks:{callback:function(v){return _docFmt(v);}}}}}};
-  }
-  docReportChart=new Chart(cv,cfg);
+  docReportChart=new Chart(cv,_docChartCfg(agg,docReport.type,measName));
 }
 function docExportReport(){
   if(!docReportChart||!docLastData){showToast('Generate a report first.');return;}
@@ -5258,6 +5509,722 @@ function docExportReport(){
     '</body></html>');
   win.document.close();win.focus();setTimeout(function(){win.print();},500);
   showToast('Report ready — use the print dialog to save as PDF.');
+}
+
+/* ════════════════════════════════════════════════════════════
+   REPORTS MODULE — company reporting (Upstream / Downstream)
+   Reuses the Documents upload pattern + pivot-detection engine
+   (_docDetectCols/_docSuggest/_docAgg/_docChartCfg) but files each
+   result against a company record.
+   ════════════════════════════════════════════════════════════ */
+var rpCompanies=fnLoad('petgo_rp_companies',null);
+var rpReports=fnLoad('petgo_rp_reports',null);
+/* Company portfolio — sourced from NOC's official subsidiary listing (noc.ly)
+   plus research, July 2026. Everything seeds as status:'prospective' until real
+   client relationships are confirmed; serviceType/region/primaryContact are
+   filled in via Edit Company. The four Support/Services firms (NPCC, Taknia,
+   NOFCAT, Petro Air) are filed under upstream pending confirmation — flagged in
+   their notes. Logos live in assets/company-logos/ (fetched from each official
+   site); null logoUrl falls back to the blue-gradient initials tile. */
+var RP_SEED_COMPANIES=[
+  {id:'co-noc',name:'National Oil Corporation (NOC)',category:'upstream',website:'https://noc.ly',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-noc.svg',notes:'Libya’s state oil company — parent/regulator of most subsidiaries'},
+  {id:'co-agoco',name:'Arabian Gulf Oil Company (AGOCO)',category:'upstream',website:'https://www.agoco.com.ly',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-agoco.png',notes:'NOC-owned; one of Libya’s largest oil producers'},
+  {id:'co-waha',name:'Waha Oil Company',category:'upstream',website:'http://www.wahaoil.net',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:null,notes:'Joint venture — Marathon, ConocoPhillips, Hess, NOC'},
+  {id:'co-zoc',name:'Zueitina Oil Company (ZOC)',category:'upstream',website:'http://www.zueitina.com.ly',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-zoc.png',notes:'Joint venture, Sirte Basin'},
+  {id:'co-soc',name:'Sirte Oil Company (SOC)',category:'upstream',website:'http://www.sirteoil.com.ly',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-soc.png',notes:'NOC-owned; E&P plus processing'},
+  {id:'co-harouge',name:'Harouge Oil Operations',category:'upstream',website:'https://www.harouge.com',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-harouge.png',notes:'Joint venture'},
+  {id:'co-mellitah',name:'Mellitah Oil & Gas B.V.',category:'upstream',website:'http://www.mellitahog.com.ly',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-mellitah.png',notes:'Joint venture — Eni and NOC'},
+  {id:'co-akakus',name:'Akakus Oil Operations',category:'upstream',website:'http://www.akakuoil.com',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-akakus.png',notes:'Joint venture, Murzuq Basin area'},
+  {id:'co-mabrouk',name:'Mabrouk Oil Company',category:'upstream',website:'http://www.cptlibya.com',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-mabrouk.png',notes:'Joint venture'},
+  {id:'co-sarir',name:'Sarir Oil Operations Company',category:'upstream',website:'https://sarir-oil.com',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-sarir.png',notes:'Joint venture'},
+  {id:'co-nafusah',name:'Nafusah Oil Operations Company',category:'upstream',website:'https://nafusah.com',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-nafusah.png',notes:'Operator, Contract Area 47'},
+  {id:'co-murzuq-svc',name:'Murzuq Oil Services Ltd',category:'upstream',website:'https://murzuqoilservices.co.uk',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-murzuq-svc.png',notes:'Wholly NOC-owned oilfield services'},
+  {id:'co-zallaf',name:'Zallaf Libya Company',category:'upstream',website:'https://zallaf.com',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:null,notes:'NOC-owned E&P'},
+  {id:'co-jowfe',name:'Jowfe Oil Technology',category:'upstream',website:'https://jowfe.ly',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-jowfe.png',notes:'Drilling chemicals & well services'},
+  {id:'co-nwd',name:'National Drilling & Workover Company (NWD)',category:'upstream',website:'https://nwd.ly',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-nwd.png',notes:'Drilling and well maintenance'},
+  {id:'co-nageco',name:'North African Geophysical Exploration Co. (NAGECO)',category:'upstream',website:'http://www.nageco.com',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-nageco.png',notes:'Geophysical/seismic services'},
+  {id:'co-eni',name:'Eni North Africa B.V.',category:'upstream',website:'https://www.eni.com',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-eni.svg',notes:'International operator (IOC), active in Libya since the 1950s'},
+  {id:'co-sonatrach',name:'Sonatrach',category:'upstream',website:'https://sonatrach.com',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-sonatrach.svg',notes:'Algeria’s state oil company, EPSA partner in Libya'},
+  {id:'co-arc',name:'Zawia Oil Refining Company (ARC)',category:'downstream',website:'http://www.arc.com.ly',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-arc.png',notes:'Crude refining, asphalt manufacturing'},
+  {id:'co-rasco',name:'Ras Lanuf Oil & Gas Processing Company (RASCO)',category:'downstream',website:'http://www.raslanuf.ly',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-rasco.png',notes:'Petrochemicals, ethylene'},
+  {id:'co-brega',name:'Brega Petroleum Marketing Company',category:'downstream',website:'https://brega.ly',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-brega.png',notes:'Storage & distribution'},
+  {id:'co-lerco',name:'Libyan Emirates Refining Company (LERCO)',category:'downstream',website:'http://www.lercorefinery.com',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:null,notes:'Joint venture refinery'},
+  {id:'co-lifeco',name:'Libyan Fertilizer Company (LIFECO)',category:'downstream',website:'https://lifeco.com.ly',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-lifeco.svg',notes:'Fertilizer production'},
+  {id:'co-ola',name:'OLA Energy',category:'downstream',website:'https://www.olaenergy.com',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-ola.png',notes:'Formerly Libya Oil Holdings / OiLibya — pan-African downstream marketing'},
+  {id:'co-tamoil',name:'Tamoil',category:'downstream',website:'https://www.tamoil.com',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-tamoil.svg',notes:'Libyan-owned European downstream arm (Oilinvest Group)'},
+  {id:'co-npcc',name:'National Petroleum Construction Company (NPCC)',category:'upstream',website:'https://www.npcc.ly',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-npcc.png',notes:'Engineering, procurement, testing · Support/Services — filed under Upstream, verify'},
+  {id:'co-taknia',name:'Taknia Libya Engineering',category:'upstream',website:'http://www.taknia.ly',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-taknia.png',notes:'Onshore/offshore engineering services · Support/Services — filed under Upstream, verify'},
+  {id:'co-nofcat',name:'National Catering Company for Oil Fields & Terminals (NOFCAT)',category:'upstream',website:'https://www.nofcat.com',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:'assets/company-logos/co-nofcat.png',notes:'Catering, subsistence & accommodation for oil fields · Support/Services — filed under Upstream, verify'},
+  {id:'co-petroair',name:'Petro Air Company',category:'upstream',website:'http://www.petroair.ly',status:'prospective',serviceType:null,region:null,primaryContact:null,logoUrl:null,notes:'Transportation services to oil fields · Support/Services — filed under Upstream, verify'}
+];
+/* Core-activity one-liners parsed from reports_company_descriptions.md
+   (project root) — keyed by exact company name. Edit the md, re-sync here. */
+var RP_CORE_ACT={
+  'National Oil Corporation (NOC)':'State energy authority overseeing Libya’s entire oil and gas sector — upstream licensing, production oversight and export marketing.',
+  'Arabian Gulf Oil Company (AGOCO)':'Explores and produces crude across eastern Libya — Sarir, Messla and Nafoora — one of the country’s largest producers.',
+  'Waha Oil Company':'Produces crude from the Waha, Gialo and Dahra fields in the Sirte Basin, exporting through the Es Sider terminal.',
+  'Zueitina Oil Company (ZOC)':'Sirte Basin producer operating the Zueitina export terminal — crude and gas production, processing and lifting.',
+  'Sirte Oil Company (SOC)':'Produces oil and gas around Marsa el-Brega and runs gas processing plants and pipelines serving the coastal complex.',
+  'Harouge Oil Operations':'Produces crude from the Amal, En Naga and Ghani area fields, exporting via the Ras Lanuf terminal.',
+  'Mellitah Oil & Gas B.V.':'Operates western Libya’s major oil and gas assets — Wafa, El Feel and offshore Bahr Essalam — feeding the Mellitah export complex.',
+  'Akakus Oil Operations':'Operates the El Sharara field in the Murzuq Basin — light sweet crude piped to the Zawiya refinery and terminal.',
+  'Mabrouk Oil Company':'Redeveloping and producing the Mabrouk field cluster in the central Sirte Basin.',
+  'Sarir Oil Operations Company':'Produces crude and gas from the As-Sarah and Jakhira fields in concessions 96 and 97.',
+  'Nafusah Oil Operations Company':'Joint venture operator developing Contract Area 47 in the Ghadames Basin, ramping up new light crude production.',
+  'Murzuq Oil Services Ltd':'Oilfield services for southwest Libya — drilling support, logistics and maintenance for Murzuq Basin operators.',
+  'Zallaf Libya Company':'NOC’s frontier development arm — new fields such as Erawin and planned refinery projects in Libya’s southwest.',
+  'Jowfe Oil Technology':'Manufactures drilling fluids and production chemicals and provides cementing and well-stimulation services.',
+  'National Drilling & Workover Company (NWD)':'National drilling contractor — rig fleet for development wells, workovers and well maintenance nationwide.',
+  'North African Geophysical Exploration Co. (NAGECO)':'Acquires and processes 2D/3D seismic and provides geophysical survey services across Libya’s basins.',
+  'Eni North Africa B.V.':'Eni’s Libyan operating arm — major offshore and onshore gas producer and partner in the Mellitah complex.',
+  'Sonatrach':'Algeria’s state oil company exploring Libyan acreage in the Ghadames Basin under EPSA terms.',
+  'Zawia Oil Refining Company (ARC)':'Refines crude at the 120,000 b/d Zawia refinery — fuels and asphalt for the domestic market.',
+  'Ras Lanuf Oil & Gas Processing Company (RASCO)':'Runs the Ras Lanuf refining and petrochemical complex — naphtha, ethylene and polyethylene output.',
+  'Brega Petroleum Marketing Company':'Distributes fuels nationwide — storage depots, aviation fuelling and the country’s filling-station network.',
+  'Libyan Emirates Refining Company (LERCO)':'Joint venture rehabilitating the 220,000 b/d Ras Lanuf refinery toward restart.',
+  'Libyan Fertilizer Company (LIFECO)':'Produces ammonia and urea fertilizers at the Marsa el-Brega petrochemical complex.',
+  'OLA Energy':'Pan-African fuel marketer — service stations, lubricants and aviation fuelling across 17 countries.',
+  'Tamoil':'Markets fuels across Europe through the Tamoil retail network — Oilinvest’s downstream arm.',
+  'National Petroleum Construction Company (NPCC)':'Builds and maintains oil and gas infrastructure — pipelines, tanks and plant — with inspection and testing services.',
+  'Taknia Libya Engineering':'Engineering services for the oil sector — design, technical studies and EPC support, onshore and offshore.',
+  'National Catering Company for Oil Fields & Terminals (NOFCAT)':'Catering, accommodation and camp management for oil fields and export terminals across Libya.',
+  'Petro Air Company':'Air transport for the oil industry — crew rotations and cargo flights between the coast and desert fields.'
+};
+RP_SEED_COMPANIES.forEach(function(s){s.coreActivity=RP_CORE_ACT[s.name]||null;});
+if(!rpCompanies){
+  rpCompanies=RP_SEED_COMPANIES.slice();
+  fnSave('petgo_rp_companies',rpCompanies);
+  try{ localStorage.setItem('petgo_rp_seed_v2','1'); }catch(e){}
+}
+if(!rpReports){
+  rpReports=[];
+  fnSave('petgo_rp_reports',rpReports);
+}
+/* v2 reseed: browsers that stored the original fictional placeholders get them
+   (and their sample reports) swapped for the real list; user-added companies
+   and reports are preserved. */
+(function(){
+  try{ if(localStorage.getItem('petgo_rp_seed_v2')==='1')return; }catch(e){}
+  var ph=['co-u1','co-u2','co-u3','co-d1','co-d2','co-d3'];
+  rpCompanies=rpCompanies.filter(function(c){return ph.indexOf(c.id)<0;});
+  rpReports=rpReports.filter(function(r){return ph.indexOf(r.companyId)<0;});
+  RP_SEED_COMPANIES.forEach(function(s){
+    if(!rpCompanies.some(function(c){return c.id===s.id||c.name===s.name;}))rpCompanies.push(s);
+  });
+  fnSave('petgo_rp_companies',rpCompanies);
+  fnSave('petgo_rp_reports',rpReports);
+  try{ localStorage.setItem('petgo_rp_seed_v2','1'); }catch(e){}
+})();
+/* v3 logo fixes: Zallaf's fetched "logo" was a site photo (drop to initials),
+   Murzuq's wordmark swapped for its square flame mark, and several companies
+   whose own sites are dead/geo-blocked got clean emblems mirrored on
+   zallaf.com's partner carousel. Only records still holding the old seed
+   value are touched, so user-uploaded logos survive. */
+(function(){
+  try{ if(localStorage.getItem('petgo_rp_logo_v3')==='1')return; }catch(e){}
+  var fix={
+    'co-zallaf':{old:'assets/company-logos/co-zallaf.svg',nu:null},
+    'co-murzuq-svc':{old:'assets/company-logos/co-murzuq-svc.svg',nu:'assets/company-logos/co-murzuq-svc.png'},
+    'co-mellitah':{old:null,nu:'assets/company-logos/co-mellitah.png'},
+    'co-mabrouk':{old:null,nu:'assets/company-logos/co-mabrouk.png'},
+    'co-harouge':{old:null,nu:'assets/company-logos/co-harouge.png'},
+    'co-soc':{old:null,nu:'assets/company-logos/co-soc.png'},
+    'co-arc':{old:null,nu:'assets/company-logos/co-arc.png'},
+    'co-akakus':{old:null,nu:'assets/company-logos/co-akakus.png'}
+  };
+  var changed=false;
+  rpCompanies.forEach(function(c){
+    var f=fix[c.id]; if(!f)return;
+    if((f.old===null&&!c.logoUrl)||(f.old!==null&&c.logoUrl===f.old)){c.logoUrl=f.nu;changed=true;}
+  });
+  if(changed)fnSave('petgo_rp_companies',rpCompanies);
+  try{ localStorage.setItem('petgo_rp_logo_v3','1'); }catch(e){}
+})();
+/* v4 enrichment: apply coreActivity to stored records, matched by name;
+   never overwrites a description the user has already set. */
+(function(){
+  try{ if(localStorage.getItem('petgo_rp_desc_v4')==='1')return; }catch(e){}
+  var changed=false;
+  rpCompanies.forEach(function(c){
+    if(!c.coreActivity&&RP_CORE_ACT[c.name]){c.coreActivity=RP_CORE_ACT[c.name];changed=true;}
+  });
+  if(changed)fnSave('petgo_rp_companies',rpCompanies);
+  try{ localStorage.setItem('petgo_rp_desc_v4','1'); }catch(e){}
+})();
+function saveRpCompanies(){fnSave('petgo_rp_companies',rpCompanies);}
+function saveRpReports(){fnSave('petgo_rp_reports',rpReports);}
+/* Data hygiene: drop third-party-brand test entries (e.g. “Spotify”) added
+   while testing — real brand names/logos must not appear in the app. Runs at
+   boot so entries already saved in localStorage are cleaned too. */
+function _rpPurgeBrandTests(){
+  var bad=rpCompanies.filter(function(c){return /spotify/i.test(c.name||'');});
+  if(!bad.length)return false;
+  var ids=bad.map(function(c){return c.id;});
+  rpCompanies=rpCompanies.filter(function(c){return ids.indexOf(c.id)<0;});
+  rpReports=rpReports.filter(function(r){return ids.indexOf(r.companyId)<0;});
+  saveRpCompanies();saveRpReports();
+  return true;
+}
+_rpPurgeBrandTests();
+var rpState={cat:'upstream',companyId:null,editId:null,q:'',sort:'name'};
+function rpId(p){return p+Date.now().toString(36)+Math.floor(Math.random()*46656).toString(36);}
+function _rpReduced(){return !!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);}
+function rpFindCompany(id){for(var i=0;i<rpCompanies.length;i++)if(rpCompanies[i].id===id)return rpCompanies[i];return null;}
+function rpCompanyReports(cid){return rpReports.filter(function(r){return r.companyId===cid;});}
+function rpUserName(){var u=(typeof _userFromEmail==='function'&&currentUser)?_userFromEmail(currentUser):null;return (u&&u.name)||'—';}
+function rpInitials(name){var w=String(name||'').trim().split(/\s+/);return ((w[0]||'').charAt(0)+(w[1]||'').charAt(0)).toUpperCase()||'?';}
+/* Collision-aware initials: when two logo-less companies would share the same
+   2-letter badge (Mellitah/Mabrouk → "MO"), widen to 3 significant initials. */
+function _rpSigWords(name){
+  return String(name||'').trim().split(/\s+/).filter(function(w){
+    return /^[A-Za-z]/.test(w)&&!/^(of|for|the|and)$/i.test(w);
+  });
+}
+function rpInitialsN(name,n){
+  var w=_rpSigWords(name),s='';
+  for(var i=0;i<w.length&&s.length<n;i++)s+=w[i].charAt(0);
+  return (s||String(name||'').charAt(0)).toUpperCase()||'?';
+}
+function rpDisplayInitials(name){
+  var two=rpInitialsN(name,2);
+  var clash=rpCompanies.some(function(o){
+    return o.name!==name&&!o.logoUrl&&rpInitialsN(o.name,2)===two;
+  });
+  return clash?rpInitialsN(name,3):two;
+}
+/* Relationship-type tag derived from the notes + core-activity text. */
+function rpRelType(c){
+  var n=String(c.notes||'')+' '+String(c.coreActivity||'');
+  if(/joint[\s-]?venture/i.test(n))return 'Joint Venture';
+  if(/\bIOC\b|international operator|EPSA partner/i.test(n))return 'IOC Partner';
+  if(/support\/services|oilfield services|services to oil|drilling chemicals|well services|catering|engineering|geophysical|seismic|drilling and well/i.test(n))return 'Services';
+  if(/NOC-owned|wholly NOC/i.test(n))return 'NOC-owned';
+  return null;
+}
+/* Directory grouping. Downstream folds Services + untagged into a single
+   "Downstream Marketing" section; NOC itself files under NOC-Owned (its
+   badge stays absent — the section label carries the context). */
+var RP_GROUP_ORDER=['NOC-owned','Joint Venture','IOC Partner','Services','Downstream Marketing','Other'];
+function rpGroupOf(c){
+  var rel=rpRelType(c);
+  if(c.category==='downstream')return (!rel||rel==='Services')?'Downstream Marketing':rel;
+  if(!rel&&/state oil company|parent\/regulator/i.test(String(c.notes||'')))return 'NOC-owned';
+  return rel||'Other';
+}
+/* Initials fallback: same per-name hashing as Team Directory's avatars, but
+   constrained to brand-blue gradient shades (no off-palette hues). */
+var RP_BLUES=[
+  'linear-gradient(135deg,#1e3a8a,#3b82f6)',
+  'linear-gradient(135deg,#1d4ed8,#60a5fa)',
+  'linear-gradient(135deg,#172554,#2563eb)',
+  'linear-gradient(135deg,#1e40af,#38bdf8)',
+  'linear-gradient(135deg,#312e81,#4f7df0)',
+  'linear-gradient(135deg,#0c4a6e,#0ea5e9)'
+];
+function rpBlueGrad(name){name=String(name||'');var h=0;for(var i=0;i<name.length;i++)h=((h<<5)-h+name.charCodeAt(i))|0;return RP_BLUES[Math.abs(h)%RP_BLUES.length];}
+function rpLogoHTML(c){
+  if(c.logoUrl)return '<div class="rp-co-logo has-logo"><img src="'+c.logoUrl+'" alt=""></div>';
+  var ini=rpDisplayInitials(c.name);
+  return '<div class="rp-co-logo'+(ini.length>2?' is-3i':'')+'" style="background:'+rpBlueGrad(c.name)+'">'+escH(ini)+'</div>';
+}
+function rpLatestOf(list){
+  var d=null,rep=null;
+  list.forEach(function(r){if(r.uploadDate&&(!d||r.uploadDate>d)){d=r.uploadDate;rep=r;}});
+  return rep;
+}
+function rpShortDate(iso){
+  if(!iso)return '—';
+  var d=new Date(iso+'T00:00:00');
+  return d.getDate()+' '+d.toLocaleDateString('en-GB',{month:'short'});
+}
+function rpMonthYear(iso){
+  if(!iso)return '';
+  var d=new Date(iso+'T00:00:00');
+  return isNaN(d)?iso:d.toLocaleDateString('en-GB',{month:'short',year:'numeric'});
+}
+
+/* ── company hover tooltip (same pattern as the Org Chart employee tip,
+      but interactive: hide is delayed and hovering the tip keeps it open,
+      so the website link inside is clickable) ── */
+var _rpTipHideT=null;
+function _rpEnsureTip(){
+  if(document.getElementById('rp-co-tooltip'))return;
+  var t=document.createElement('div'); t.id='rp-co-tooltip'; t.className='rp-co-tip';
+  t.onmouseenter=function(){if(_rpTipHideT){clearTimeout(_rpTipHideT);_rpTipHideT=null;}};
+  t.onmouseleave=function(){rpCoTipHide();};
+  ((typeof _pvChartRoot!=='undefined'&&_pvChartRoot)||document.body).appendChild(t);
+}
+function _rpTipRow(k,v){return '<div class="org-tip-row"><span class="org-tip-k">'+k+'</span><span class="org-tip-v">'+v+'</span></div>';}
+function rpCoTip(e,id){
+  var c=rpFindCompany(id); if(!c)return;
+  _rpEnsureTip();
+  if(_rpTipHideT){clearTimeout(_rpTipHideT);_rpTipHideT=null;}
+  var tip=document.getElementById('rp-co-tooltip'); if(!tip)return;
+  var reps=rpCompanyReports(c.id), latest=rpLatestOf(reps);
+  var tag=rpRelType(c);
+  var badges=tag?'<span class="rp-co-tag">'+tag+'</span>':'';
+  var ST={prospective:['Prospective','fn-pending'],active:['Active Client','fn-approved'],former:['Former Client','rp-badge-muted']};
+  if(c.status&&ST[c.status])badges+='<span class="fn-badge '+ST[c.status][1]+'">'+ST[c.status][0]+'</span>';
+  var rows=_rpTipRow('Category',c.category==='downstream'?'Downstream':'Upstream');
+  if(c.website)rows+=_rpTipRow('Website','<a href="'+escH(c.website)+'" target="_blank" rel="noopener">'+escH(c.website.replace(/^https?:\/\/(www\.)?/,'').replace(/\/$/,''))+'</a>');
+  if(c.serviceType)rows+=_rpTipRow('Service',escH(c.serviceType));
+  if(c.region)rows+=_rpTipRow('Region',escH(c.region));
+  if(c.primaryContact)rows+=_rpTipRow('Contact',escH(c.primaryContact));
+  if(c.engagementStart)rows+=_rpTipRow('Client since',escH(rpMonthYear(c.engagementStart)));
+  if(c.contractValue)rows+=_rpTipRow('Contract value',escH(c.contractValue));
+  rows+=_rpTipRow('Reports',reps.length?reps.length+(latest?' · last '+rpShortDate(latest.uploadDate):''):'None yet');
+  tip.innerHTML=rpLogoHTML(c)+
+    '<div class="rp-co-tip-name">'+escH(c.name)+'</div>'+
+    (badges?'<div class="rp-co-tip-badges">'+badges+'</div>':'')+
+    (c.coreActivity?'<div class="rp-co-tip-act">'+escH(c.coreActivity)+'</div>':'')+
+    '<div class="org-tip-rows">'+rows+'</div>';
+  tip.style.display='block';
+  var r=e.currentTarget.getBoundingClientRect();
+  var tw=tip.offsetWidth||264, th=tip.offsetHeight||260;
+  var x=r.left+r.width/2-tw/2, y=r.top-th-12;
+  if(y<8)y=r.bottom+12;
+  x=Math.max(8,Math.min(x,window.innerWidth-tw-8));
+  tip.style.left=x+'px'; tip.style.top=y+'px';
+}
+function rpCoTipHide(now){
+  var t=document.getElementById('rp-co-tooltip'); if(!t)return;
+  if(_rpTipHideT)clearTimeout(_rpTipHideT);
+  if(now===true){_rpTipHideT=null;t.style.display='none';return;}
+  _rpTipHideT=setTimeout(function(){_rpTipHideT=null;t.style.display='none';},140);
+}
+window.rpCoTip=rpCoTip; window.rpCoTipHide=rpCoTipHide;
+
+/* ── main render ── */
+function renderReports(){
+  rpCoTipHide(true);
+  rpCompanies=fnLoad('petgo_rp_companies',rpCompanies);
+  rpReports=fnLoad('petgo_rp_reports',rpReports);
+  if(rpState.companyId&&!rpFindCompany(rpState.companyId))rpState.companyId=null;
+  var ov=document.getElementById('rp-overview'),dt=document.getElementById('rp-detail');
+  if(!ov||!dt)return;
+  if(rpState.companyId){ov.style.display='none';dt.style.display='';rpRenderDetail();}
+  else{dt.style.display='none';ov.style.display='';rpRenderOverview();}
+}
+
+/* ── overview: stat cards + category toggle + company grid ── */
+function rpRenderOverview(){
+  var now=new Date();
+  var qi=Math.floor(now.getMonth()/3);
+  var qStart=now.getFullYear()+'-'+('0'+(qi*3+1)).slice(-2)+'-01';
+  var qCount=rpReports.filter(function(r){return r.uploadDate&&r.uploadDate>=qStart;}).length;
+  var up=rpCompanies.filter(function(c){return c.category==='upstream';}).length;
+  var down=rpCompanies.length-up;
+  var latest=rpLatestOf(rpReports);
+  document.getElementById('rp-kpis').innerHTML=
+    fnKpi('Total Reports',rpReports.length,'across the portfolio','','','file-text')+
+    fnKpi('Companies Tracked',rpCompanies.length,up+' upstream · '+down+' downstream','','','briefcase')+
+    fnKpi('Reports This Quarter',qCount,'Q'+(qi+1)+' '+now.getFullYear(),'','','trending-up')+
+    fnKpi('Most Recent Upload',latest?rpShortDate(latest.uploadDate):'—',latest?escH(latest.title):'No reports yet','','','clock');
+  document.querySelectorAll('#rp-cat-seg button').forEach(function(b){b.classList.toggle('is-active',b.dataset.rcat===rpState.cat);});
+  rpSegPlace(false);
+  rpRenderGrid();
+}
+function rpCoCardHTML(c,st){
+  var tag=rpRelType(c);
+  return '<div class="rp-co-card" onclick="rpOpenCompany(\''+c.id+'\')" onmouseenter="rpCoTip(event,\''+c.id+'\')" onmouseleave="rpCoTipHide()">'+rpLogoHTML(c)+
+    (tag?'<span class="rp-co-tag">'+tag+'</span>':'')+
+    '<div class="rp-co-name">'+escH(c.name)+'</div>'+
+    (c.coreActivity?'<div class="rp-co-act">'+escH(c.coreActivity)+'</div>':'')+
+    (st.n?'<div class="rp-co-meta"><b>'+st.n+'</b>&nbsp;report'+(st.n>1?'s':'')+'<span class="rp-co-dot"></span>Last '+rpShortDate(st.last)+'</div>':'')+
+    '</div>';
+}
+function rpRenderGrid(){
+  rpCoTipHide(true);
+  var grid=document.getElementById('rp-grid'); if(!grid)return;
+  var q=(rpState.q||'').trim().toLowerCase();
+  var list=rpCompanies.filter(function(c){
+    return c.category===rpState.cat&&(!q||String(c.name).toLowerCase().indexOf(q)>=0);
+  });
+  var stats={};
+  list.forEach(function(c){
+    var reps=rpCompanyReports(c.id),latest=rpLatestOf(reps);
+    stats[c.id]={n:reps.length,last:latest?latest.uploadDate:''};
+  });
+  list.sort(function(a,b){
+    var sa=stats[a.id],sb=stats[b.id];
+    if(rpState.sort==='reports'&&sa.n!==sb.n)return sb.n-sa.n;
+    if(rpState.sort==='recent'&&sa.last!==sb.last)return sa.last>sb.last?-1:1;
+    return String(a.name).localeCompare(String(b.name));
+  });
+  var groups={};
+  list.forEach(function(c){
+    var g=rpGroupOf(c);
+    (groups[g]||(groups[g]=[])).push(c);
+  });
+  var html='';
+  RP_GROUP_ORDER.forEach(function(g){
+    var cos=groups[g]; if(!cos||!cos.length)return;
+    html+='<div class="rp-sec-label"><span>'+escH(g)+'</span><em>· '+cos.length+'</em></div>'+
+      '<div class="rp-grid">'+cos.map(function(c){return rpCoCardHTML(c,stats[c.id]);}).join('')+'</div>';
+  });
+  if(!list.length&&q)html='<div class="rp-co-empty">No companies match “'+escH(rpState.q.trim())+'”</div>';
+  grid.innerHTML=html+(q?'':
+    '<div class="rp-grid"><div class="rp-co-card rp-co-add" onclick="rpOpenCompanyModal()">'+
+    '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'+
+    'Add Company</div></div>');
+}
+function rpSetSearch(v){rpState.q=v;rpRenderGrid();}
+function rpSetSort(v){
+  rpState.sort=v;
+  rpRenderGrid();
+  if(window.gsap&&!_rpReduced())gsap.from('#rp-grid .rp-co-card',{y:8,opacity:0,duration:.24,ease:'power2.out',stagger:.03,clearProps:'opacity,transform'});
+}
+var _rpSegInd=null;
+function rpSegPlace(animate){
+  var seg=document.getElementById('rp-cat-seg'); if(!seg)return;
+  var act=seg.querySelector('button.is-active'); if(!act)return;
+  if(!_rpSegInd){
+    seg.style.position='relative';
+    _rpSegInd=document.createElement('span'); _rpSegInd.className='pv-slider-ind';
+    seg.insertBefore(_rpSegInd,seg.firstChild);
+    seg.querySelectorAll('button').forEach(function(b){b.style.position='relative';b.style.zIndex='1';});
+  }
+  var p={left:act.offsetLeft,top:act.offsetTop,width:act.offsetWidth,height:act.offsetHeight};
+  if(window.gsap&&animate&&!_rpReduced()){gsap.to(_rpSegInd,{duration:.28,ease:'power3.out',left:p.left,top:p.top,width:p.width,height:p.height});}
+  else if(window.gsap){gsap.set(_rpSegInd,p);}
+  else{_rpSegInd.style.left=p.left+'px';_rpSegInd.style.top=p.top+'px';_rpSegInd.style.width=p.width+'px';_rpSegInd.style.height=p.height+'px';}
+}
+function rpSetCat(cat,btn){
+  if(rpState.cat===cat)return;
+  rpState.cat=cat;
+  document.querySelectorAll('#rp-cat-seg button').forEach(function(b){b.classList.toggle('is-active',b===btn||b.dataset.rcat===cat);});
+  rpSegPlace(true);
+  rpRenderGrid();
+  if(window.gsap&&!_rpReduced())gsap.from('#rp-grid .rp-co-card',{y:10,opacity:0,duration:.28,ease:'power2.out',stagger:.04,clearProps:'opacity,transform'});
+}
+
+/* ── company detail: breadcrumb + header + reports table ── */
+function rpOpenCompany(id){
+  rpState.companyId=id;
+  renderReports();
+  if(window.gsap&&!_rpReduced())gsap.from('#rp-detail .rp-co-head, #rp-detail .fn-card',{y:14,opacity:0,duration:.35,ease:'power2.out',stagger:.06,clearProps:'opacity,transform'});
+}
+function rpCrumbBack(cat){
+  if(cat)rpState.cat=cat;
+  rpState.companyId=null;
+  renderReports();
+  if(window.gsap&&!_rpReduced())gsap.from('#rp-overview .fn-kpi, #rp-grid .rp-co-card',{y:12,opacity:0,duration:.3,ease:'power2.out',stagger:.04,clearProps:'opacity,transform'});
+}
+function rpRenderDetail(){
+  var c=rpFindCompany(rpState.companyId); if(!c)return;
+  var catLabel=c.category==='downstream'?'Downstream':'Upstream';
+  document.getElementById('rp-crumbs').innerHTML=
+    '<span class="rp-crumb-link" onclick="rpCrumbBack()">Reports</span><span class="rp-crumb-sep">›</span>'+
+    '<span class="rp-crumb-link" onclick="rpCrumbBack(\''+c.category+'\')">'+catLabel+'</span><span class="rp-crumb-sep">›</span>'+
+    '<span class="rp-crumb-cur">'+escH(c.name)+'</span>';
+  var reps=rpCompanyReports(c.id);
+  var latest=rpLatestOf(reps);
+  var badge=c.category==='downstream'?'<span class="fn-badge rp-badge-down">Downstream</span>':'<span class="fn-badge fn-active-s">Upstream</span>';
+  var ST={prospective:['Prospective','fn-pending'],active:['Active Client','fn-approved'],former:['Former Client','rp-badge-muted']};
+  var st=ST[c.status]||ST.prospective;
+  badge+='<span class="fn-badge '+st[1]+'">'+st[0]+'</span>';
+  var subBits=[];
+  if(c.notes)subBits.push(escH(c.notes));
+  var info=[];
+  if(c.website)info.push('<a href="'+escH(c.website)+'" target="_blank" rel="noopener">'+escH(c.website.replace(/^https?:\/\/(www\.)?/,''))+'</a>');
+  if(c.serviceType)info.push(escH(c.serviceType));
+  if(c.region)info.push(escH(c.region));
+  if(c.primaryContact)info.push(escH(c.primaryContact));
+  if(info.length)subBits.push(info.join(' · '));
+  subBits.push(reps.length+' report'+(reps.length===1?'':'s')+(latest?' · last upload '+fmtDate(latest.uploadDate):''));
+  document.getElementById('rp-co-head').innerHTML=rpLogoHTML(c)+
+    '<div style="min-width:0;"><div class="rp-co-title">'+escH(c.name)+badge+'</div>'+
+    '<div class="rp-co-sub">'+subBits.join('<br>')+'</div></div>'+
+    '<button class="fn-add-btn rp-btn-ghost rp-co-edit" onclick="rpOpenCompanyModal(\''+c.id+'\')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Edit</button>';
+  document.getElementById('rp-co-count').textContent=reps.length+' report'+(reps.length===1?'':'s');
+  var tb=document.getElementById('rp-tbody');
+  if(!reps.length){tb.innerHTML='<tr><td colspan="6" class="fn-empty">No reports yet — upload one or generate a visual report.</td></tr>';return;}
+  var sorted=reps.slice().sort(function(a,b){return (b.uploadDate||'')<(a.uploadDate||'')?-1:1;});
+  tb.innerHTML=sorted.map(function(r){
+    var badge=r.type==='generated'
+      ? '<span class="fn-badge fn-approved">Generated</span>'
+      : '<span class="fn-badge fn-active-s">Uploaded</span>';
+    return '<tr><td><strong>'+escH(r.title)+'</strong></td><td>'+escH(r.period||'—')+'</td><td>'+badge+'</td>'+
+      '<td>'+fmtDate(r.uploadDate)+'</td><td>'+escH(r.uploadedBy||'—')+'</td>'+
+      '<td><div class="fn-row-actions"><button class="fn-btn-edit" onclick="rpViewReport(\''+r.id+'\')">View</button>'+
+      '<button class="fn-btn-del" onclick="rpDelReport(\''+r.id+'\')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></td></tr>';
+  }).join('');
+}
+function rpDelReport(id){
+  var r=rpReports.filter(function(x){return x.id===id;})[0]; if(!r)return;
+  if(!confirm('Delete report “'+r.title+'”?'))return;
+  rpReports=rpReports.filter(function(x){return x.id!==id;});
+  saveRpReports();
+  addAudit('Reports','Deleted report '+r.title,'#dc2626');
+  showToast('Report deleted.');
+  renderReports();
+}
+
+/* ── company add / edit modal ── */
+var _rpcoLogo=null;
+function rpOpenCompanyModal(editId){
+  rpState.editId=editId||null;
+  var c=editId?rpFindCompany(editId):null;
+  _rpcoLogo=c?(c.logoUrl||null):null;
+  document.getElementById('rpco-f-name').value=c?c.name:'';
+  document.getElementById('rpco-f-cat').value=c?c.category:rpState.cat;
+  document.getElementById('rpco-f-status').value=c?(c.status||'prospective'):'prospective';
+  document.getElementById('rpco-f-act').value=c?(c.coreActivity||''):'';
+  document.getElementById('rpco-f-website').value=c?(c.website||''):'';
+  document.getElementById('rpco-f-service').value=c?(c.serviceType||''):'';
+  document.getElementById('rpco-f-region').value=c?(c.region||''):'';
+  document.getElementById('rpco-f-contact').value=c?(c.primaryContact||''):'';
+  document.getElementById('rpco-f-start').value=c?(c.engagementStart||''):'';
+  document.getElementById('rpco-f-value').value=c?(c.contractValue||''):'';
+  document.getElementById('rpco-f-notes').value=c?(c.notes||''):'';
+  document.getElementById('rpco-del-btn').classList.toggle('is-hidden',!c);
+  rpcoRefreshLogo();
+  openFnModal('rpco-modal',c?'Edit Company':'Add Company','rpco-ttl');
+}
+function rpcoRefreshLogo(){
+  var img=document.getElementById('rpco-logo-img'),ini=document.getElementById('rpco-logo-initials');
+  var prev=document.getElementById('rpco-logo-prev');
+  prev.classList.toggle('has-logo',!!_rpcoLogo);
+  if(_rpcoLogo){img.src=_rpcoLogo;img.style.display='block';ini.style.display='none';}
+  else{img.style.display='none';img.removeAttribute('src');ini.style.display='';rpcoUpdateInitials();}
+  document.getElementById('rpco-logo-remove').classList.toggle('is-hidden',!_rpcoLogo);
+}
+function rpcoUpdateInitials(){
+  if(_rpcoLogo)return;
+  document.getElementById('rpco-logo-initials').textContent=rpDisplayInitials(document.getElementById('rpco-f-name').value)||'?';
+}
+function rpcoLogoUpload(input){
+  var f=input.files&&input.files[0]; input.value=''; if(!f)return;
+  if(f.type.indexOf('image/')!==0){showToast('Please choose an image file for the logo.');return;}
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    var img=new Image();
+    img.onload=function(){
+      var s=Math.min(1,128/Math.max(img.width,img.height));
+      var cv=document.createElement('canvas');
+      cv.width=Math.max(1,Math.round(img.width*s)); cv.height=Math.max(1,Math.round(img.height*s));
+      cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+      _rpcoLogo=cv.toDataURL('image/png');
+      rpcoRefreshLogo();
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(f);
+}
+function rpcoLogoClear(){_rpcoLogo=null;rpcoRefreshLogo();}
+function rpSaveCompany(){
+  var name=document.getElementById('rpco-f-name').value.trim();
+  if(!name){showToast('Company name is required.');return;}
+  var cat=document.getElementById('rpco-f-cat').value==='downstream'?'downstream':'upstream';
+  var notes=document.getElementById('rpco-f-notes').value.trim();
+  var extra={
+    status:document.getElementById('rpco-f-status').value||'prospective',
+    coreActivity:document.getElementById('rpco-f-act').value.trim()||null,
+    website:document.getElementById('rpco-f-website').value.trim()||null,
+    serviceType:document.getElementById('rpco-f-service').value.trim()||null,
+    region:document.getElementById('rpco-f-region').value.trim()||null,
+    primaryContact:document.getElementById('rpco-f-contact').value.trim()||null,
+    engagementStart:document.getElementById('rpco-f-start').value||null,
+    contractValue:document.getElementById('rpco-f-value').value.trim()||null
+  };
+  if(rpState.editId){
+    var c=rpFindCompany(rpState.editId); if(!c)return;
+    c.name=name;c.category=cat;c.logoUrl=_rpcoLogo;c.notes=notes;
+    c.status=extra.status;c.coreActivity=extra.coreActivity;c.website=extra.website;c.serviceType=extra.serviceType;c.region=extra.region;c.primaryContact=extra.primaryContact;
+    c.engagementStart=extra.engagementStart;c.contractValue=extra.contractValue;
+    addAudit('Reports','Updated company '+name,'#2563eb');
+  }else{
+    rpCompanies.push({id:rpId('c'),name:name,category:cat,logoUrl:_rpcoLogo,notes:notes,
+      status:extra.status,coreActivity:extra.coreActivity,website:extra.website,serviceType:extra.serviceType,region:extra.region,primaryContact:extra.primaryContact,
+      engagementStart:extra.engagementStart,contractValue:extra.contractValue});
+    rpState.cat=cat;
+    addAudit('Reports','Added company '+name,'#2563eb');
+  }
+  saveRpCompanies();
+  closeFnModal('rpco-modal');
+  showToast('Company saved.');
+  renderReports();
+}
+function rpDeleteCompany(){
+  var c=rpFindCompany(rpState.editId); if(!c)return;
+  var n=rpCompanyReports(c.id).length;
+  if(!confirm('Delete '+c.name+(n?' and its '+n+' report'+(n>1?'s':''):'')+'? This can\'t be undone.'))return;
+  rpCompanies=rpCompanies.filter(function(x){return x.id!==c.id;});
+  rpReports=rpReports.filter(function(x){return x.companyId!==c.id;});
+  saveRpCompanies();saveRpReports();
+  addAudit('Reports','Deleted company '+c.name,'#dc2626');
+  closeFnModal('rpco-modal');
+  rpState.companyId=null;
+  showToast('Company deleted.');
+  renderReports();
+}
+
+/* ── shared xlsx parse (same behaviour as the Documents upload) ── */
+function _rpParseXlsx(file,procId,cb){
+  var ext=file.name.split('.').pop().toLowerCase();
+  if(['xlsx','xls'].indexOf(ext)<0){showToast('Only Excel files are supported — please upload a .xlsx or .xls workbook.');return;}
+  var proc=document.getElementById(procId); if(proc)proc.style.display='block';
+  setTimeout(function(){
+    if(typeof XLSX==='undefined'){if(proc)proc.style.display='none';showToast('Excel parser still loading, try again.');return;}
+    var r=new FileReader();
+    r.onload=function(ev){
+      try{
+        var wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array',cellDates:true});
+        var rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:null,blankrows:false}).slice(0,5001);
+        if(proc)proc.style.display='none';
+        if(!rows.length){showToast('That workbook looks empty.');return;}
+        cb(rows,file,ext);
+      }catch(er){if(proc)proc.style.display='none';showToast('Error reading file: '+er.message);}
+    };
+    r.readAsArrayBuffer(file);
+  },60);
+}
+function _rpCapRows(rows){return rows.slice(0,201);} /* header + 200 rows kept in localStorage */
+
+/* ── upload report flow ── */
+var _rpUpRows=null,_rpUpFile=null;
+function rpOpenUpload(){
+  _rpUpRows=null;_rpUpFile=null;
+  document.getElementById('rp-up-title').value='';
+  document.getElementById('rp-up-period').value='';
+  document.getElementById('rp-up-chip').classList.add('is-hidden');
+  var z=document.getElementById('rp-up-zone'); if(z)z.classList.remove('drag-over');
+  openFnModal('rp-upload-modal','Upload Report — '+((rpFindCompany(rpState.companyId)||{}).name||''),'rp-up-ttl');
+}
+function rpUpDrop(e){e.preventDefault();document.getElementById('rp-up-zone').classList.remove('drag-over');var f=e.dataTransfer.files[0];if(f)rpUpProcess(f);}
+function rpUpSelect(e){var f=e.target.files[0];if(f){rpUpProcess(f);e.target.value='';}}
+function rpUpProcess(file){
+  _rpParseXlsx(file,'rp-up-proc',function(rows,f,ext){
+    _rpUpRows=rows;_rpUpFile={name:f.name,size:f.size,ext:ext,rows:rows.length-1};
+    var kb=f.size<1048576?((f.size/1024).toFixed(1)+' KB'):((f.size/1048576).toFixed(1)+' MB');
+    var chip=document.getElementById('rp-up-chip');
+    chip.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'+
+      escH(f.name)+'<span>'+ext.toUpperCase()+' · '+kb+' · '+(_rpUpFile.rows)+' rows</span>';
+    chip.classList.remove('is-hidden');
+    var t=document.getElementById('rp-up-title');
+    if(!t.value.trim())t.value=f.name.replace(/\.(xlsx|xls)$/i,'').replace(/[_-]+/g,' ');
+  });
+}
+function rpSaveUpload(){
+  if(!_rpUpRows){showToast('Drop or choose an Excel file first.');return;}
+  var title=document.getElementById('rp-up-title').value.trim();
+  if(!title){showToast('Report title is required.');return;}
+  var c=rpFindCompany(rpState.companyId); if(!c)return;
+  rpReports.unshift({id:rpId('r'),companyId:c.id,title:title,period:document.getElementById('rp-up-period').value.trim(),
+    type:'uploaded',fileMeta:_rpUpFile,fileData:_rpCapRows(_rpUpRows),
+    uploadedBy:rpUserName(),uploadDate:today()});
+  saveRpReports();
+  addAudit('Reports','Uploaded '+title+' for '+c.name,'#2563eb');
+  closeFnModal('rp-upload-modal');
+  showToast('“'+title+'” filed under '+c.name+'.');
+  renderReports();
+}
+
+/* ── generate report flow (pivot-detection engine, saved against the company) ── */
+var _rpGenRows=null,_rpGenChart=null,_rpGenSrcName='';
+var _rpGenCfg={type:'bar',dim:0,meas:1,cols:[]};
+function rpOpenGenerate(){
+  _rpGenRows=null;_rpGenSrcName='';
+  if(_rpGenChart){_rpGenChart.destroy();_rpGenChart=null;}
+  document.getElementById('rp-gen-body').style.display='none';
+  document.getElementById('rp-gen-title').value='';
+  document.getElementById('rp-gen-period').value='';
+  var z=document.getElementById('rp-gen-zone'); if(z)z.classList.remove('drag-over');
+  var c=rpFindCompany(rpState.companyId)||{};
+  var srcs=rpCompanyReports(rpState.companyId).filter(function(r){return r.fileData&&r.fileData.length>1;});
+  var sel=document.getElementById('rp-gen-source');
+  sel.innerHTML='<option value="">Select an uploaded report…</option>'+srcs.map(function(r){
+    return '<option value="'+r.id+'">'+escH(r.title)+(r.period?' ('+escH(r.period)+')':'')+'</option>';
+  }).join('');
+  document.getElementById('rp-gen-or').style.display=srcs.length?'':'none';
+  document.getElementById('rp-gen-src-row').style.display=srcs.length?'':'none';
+  openFnModal('rp-gen-modal','Generate Report — '+(c.name||''),'rp-gen-ttl');
+}
+function rpGenDrop(e){e.preventDefault();document.getElementById('rp-gen-zone').classList.remove('drag-over');var f=e.dataTransfer.files[0];if(f)rpGenProcess(f);}
+function rpGenSelect(e){var f=e.target.files[0];if(f){rpGenProcess(f);e.target.value='';}}
+function rpGenProcess(file){
+  _rpParseXlsx(file,'rp-gen-proc',function(rows,f){
+    document.getElementById('rp-gen-source').value='';
+    rpGenPrepare(rows,f.name);
+  });
+}
+function rpGenUseExisting(){
+  var id=document.getElementById('rp-gen-source').value; if(!id)return;
+  var r=rpReports.filter(function(x){return x.id===id;})[0];
+  if(!r||!r.fileData){showToast('No stored data on that report.');return;}
+  rpGenPrepare(r.fileData,r.title);
+}
+function rpGenPrepare(rows,srcName){
+  _rpGenRows=rows;_rpGenSrcName=srcName;
+  var cols=_docDetectCols(rows); _rpGenCfg.cols=cols;
+  var s=_docSuggest(cols,rows); _rpGenCfg.type=s.type;_rpGenCfg.dim=s.dim;_rpGenCfg.meas=s.meas;
+  function opts(sel){return cols.map(function(c){return '<option value="'+c.idx+'"'+(sel===c.idx?' selected':'')+'>'+escH(c.name)+(c.type!=='category'&&c.type!=='empty'?' · '+c.type:'')+'</option>';}).join('');}
+  document.getElementById('rp-gen-dim').innerHTML=opts(s.dim);
+  document.getElementById('rp-gen-meas').innerHTML=opts(s.meas);
+  document.querySelectorAll('#rp-gen-types button').forEach(function(b){b.classList.toggle('is-active',b.dataset.t===s.type);});
+  var dc=cols.filter(function(c){return c.idx===s.dim;})[0],mc=cols.filter(function(c){return c.idx===s.meas;})[0];
+  document.getElementById('rp-gen-suggest').innerHTML='Auto-detected <b>'+escH(dc?dc.name:'—')+'</b> ('+(dc?dc.type:'?')+') against <b>'+escH(mc?mc.name:'—')+'</b> from “'+escH(srcName)+'” — suggested a <b>'+s.type+'</b> chart. Override the columns or chart type below.';
+  document.getElementById('rp-gen-body').style.display='';
+  var t=document.getElementById('rp-gen-title');
+  if(!t.value.trim()&&mc&&dc)t.value=mc.name+' by '+dc.name;
+  rpGenRender();
+}
+function rpGenSetType(t){_rpGenCfg.type=t;document.querySelectorAll('#rp-gen-types button').forEach(function(b){b.classList.toggle('is-active',b.dataset.t===t);});rpGenRender();}
+function rpGenRender(){
+  if(!_rpGenRows)return;
+  _rpGenCfg.dim=parseInt(document.getElementById('rp-gen-dim').value);
+  _rpGenCfg.meas=parseInt(document.getElementById('rp-gen-meas').value);
+  var agg=_docAgg(_rpGenRows,_rpGenCfg.dim,_rpGenCfg.meas,_rpGenCfg.type);
+  var cv=document.getElementById('rp-gen-chart'); if(!cv||typeof Chart==='undefined')return;
+  if(_rpGenChart)_rpGenChart.destroy();
+  var measName=(_rpGenCfg.cols.filter(function(c){return c.idx===_rpGenCfg.meas;})[0]||{}).name||'Value';
+  _rpGenChart=new Chart(cv,_docChartCfg(agg,_rpGenCfg.type,measName));
+}
+function rpSaveGenerate(){
+  if(!_rpGenRows){showToast('Add a data source first — drop an Excel file or pick an uploaded report.');return;}
+  var title=document.getElementById('rp-gen-title').value.trim();
+  if(!title){showToast('Report title is required.');return;}
+  var c=rpFindCompany(rpState.companyId); if(!c)return;
+  var dc=_rpGenCfg.cols.filter(function(x){return x.idx===_rpGenCfg.dim;})[0];
+  var mc=_rpGenCfg.cols.filter(function(x){return x.idx===_rpGenCfg.meas;})[0];
+  rpReports.unshift({id:rpId('r'),companyId:c.id,title:title,period:document.getElementById('rp-gen-period').value.trim(),
+    type:'generated',fileMeta:{name:_rpGenSrcName,rows:_rpGenRows.length-1},fileData:_rpCapRows(_rpGenRows),
+    chartConfig:{type:_rpGenCfg.type,dim:_rpGenCfg.dim,meas:_rpGenCfg.meas,dimName:dc?dc.name:'',measName:mc?mc.name:'Value'},
+    uploadedBy:rpUserName(),uploadDate:today()});
+  saveRpReports();
+  addAudit('Reports','Generated report '+title+' for '+c.name,'#2563eb');
+  closeFnModal('rp-gen-modal');
+  showToast('“'+title+'” saved to '+c.name+'.');
+  renderReports();
+}
+
+/* ── report viewer ── */
+var _rpViewChart=null;
+function rpViewReport(id){
+  var r=rpReports.filter(function(x){return x.id===id;})[0]; if(!r)return;
+  var c=rpFindCompany(r.companyId)||{};
+  document.getElementById('rp-view-ttl').textContent=r.title;
+  document.getElementById('rp-view-meta').textContent=[(c.name||''),(r.period||''),(r.type==='generated'?'Generated':'Uploaded'),fmtDate(r.uploadDate),'by '+(r.uploadedBy||'—')].filter(Boolean).join(' · ');
+  var cw=document.getElementById('rp-view-chart-wrap'),tw=document.getElementById('rp-view-tbl-wrap'),em=document.getElementById('rp-view-empty');
+  cw.style.display='none';tw.style.display='none';em.style.display='none';
+  if(_rpViewChart){_rpViewChart.destroy();_rpViewChart=null;}
+  openFnModal('rp-view-modal');
+  if(r.type==='generated'&&r.chartConfig&&r.fileData&&r.fileData.length>1){
+    cw.style.display='';
+    var cc=r.chartConfig;
+    var agg=_docAgg(r.fileData,cc.dim,cc.meas,cc.type);
+    _rpViewChart=new Chart(document.getElementById('rp-view-chart'),_docChartCfg(agg,cc.type,cc.measName||'Value'));
+  }else if(r.fileData&&r.fileData.length){
+    tw.style.display='';
+    var head=r.fileData[0]||[];
+    var shown=r.fileData.slice(1,31);
+    document.getElementById('rp-view-tbl').innerHTML=
+      '<thead><tr>'+head.map(function(h){return '<th>'+escH(h==null?'':h)+'</th>';}).join('')+'</tr></thead>'+
+      '<tbody>'+shown.map(function(row){return '<tr>'+head.map(function(_,i){return '<td>'+escH(row[i]==null?'':row[i])+'</td>';}).join('')+'</tr>';}).join('')+
+      (r.fileData.length>31?'<tr><td colspan="'+head.length+'" class="fn-empty">Showing first 30 of '+(r.fileData.length-1)+' rows</td></tr>':'')+'</tbody>';
+  }else{
+    em.style.display='';
+  }
 }
 
 /* ── charts (Chart.js), pv-tinted ── */
@@ -5555,6 +6522,7 @@ var PV_PAGE_RENDER={
   'Settings':function(){renderSettings();},
   'Analytics':function(){renderAnalytics();},
   'Documents':function(){renderDocuments();},
+  'Reports':function(){renderReports();},
   'Team directory':function(){renderEmpGrid();},
   'Audit log':function(){renderAuditLog();renderHistoryTimeline();},
   'Budget tracker':function(){renderBudget();renderBudVsActChart();},
@@ -5584,7 +6552,7 @@ window.pvPageShown=function(label,animate){
   if(window.pvUpdateBell)pvUpdateBell();
   if(animate&&window.gsap&&!_pvReduced){
     var sec=document.querySelector('.pv-page[data-page="'+label+'"]');
-    if(sec)gsap.from(sec.querySelectorAll('.fn-kpi, .pv-card, .fn-card'),
+    if(sec)gsap.from(sec.querySelectorAll('.fn-kpi, .pv-card, .fn-card, .rp-co-card, .rp-co-head'),
       {y:16,opacity:0,duration:.4,ease:'power2.out',stagger:.05,clearProps:'opacity,transform'});
   }
 };

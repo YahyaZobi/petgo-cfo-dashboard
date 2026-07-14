@@ -29,6 +29,10 @@
   --pv-muted-2:#66738c;
   --pv-muted-3:#5a6680;
   --pv-card:rgba(23,30,50,.6);
+  /* Opaque composite of the translucent card over --pv-bg: rings/cutouts that
+     must visually match the card surface (avatar stacks) need a solid color —
+     a translucent ring blends into whatever it overlaps instead of separating. */
+  --pv-av-ring:#121626;
   --pv-line:rgba(255,255,255,.07);
   --pv-pos:#6ee7a0;
   --pv-neg:#f87171;
@@ -385,7 +389,7 @@
 .pv-dashboard[data-theme="light"]{
   --pv-bg:#e9edf4; --pv-text:#141d33; --pv-text-2:#33415e;
   --pv-muted:#586780; --pv-muted-2:#7a889f; --pv-muted-3:#9aa6bc;
-  --pv-card:#ffffff; --pv-line:rgba(20,30,55,.10);
+  --pv-card:#ffffff; --pv-av-ring:#ffffff; --pv-line:rgba(20,30,55,.10);
   --pv-shadow-tile:0 1px 2px rgba(30,50,90,.06), 0 6px 16px -5px rgba(30,50,90,.12);
   --pv-shadow-card:0 1px 3px rgba(30,50,90,.07), 0 10px 22px -7px rgba(30,50,90,.14);
   --pv-shadow-hover:0 2px 8px rgba(30,50,90,.10), 0 18px 38px -10px rgba(30,50,90,.18);
@@ -1269,6 +1273,167 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
 .rp-co-tip a{color:#60a5fa;text-decoration:none;}
 .rp-co-tip a:hover{text-decoration:underline;}
 [data-theme="light"] .rp-co-tip a{color:#1d4ed8;}
+/* ── Tenders & Bids tab ── */
+.rp-tn-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.rp-tn-bar .fn-add-btn{margin-left:auto;}
+.rp-tn-note{font-size:11px;font-weight:600;color:var(--pv-muted-3);}
+.rp-tn-note.is-err{color:#f87171;}
+.rp-tn-list{display:flex;flex-direction:column;gap:14px;padding-bottom:20px;}
+.rp-tn-row{display:flex;align-items:center;gap:14px;background:var(--pv-card);border-radius:16px;box-shadow:var(--pv-shadow-tile);padding:14px 16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .18s ease, box-shadow .25s ease;}
+.rp-tn-row:hover{transform:translateY(-1px);box-shadow:var(--pv-shadow-hover);}
+.rp-tn-row.is-closed{opacity:.62;}
+.rp-tn-row .rp-co-logo{width:42px;height:42px;font-size:13px;margin:0;cursor:pointer;}
+.rp-tn-logo-un{width:42px;height:42px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;background:rgba(148,163,184,.14);color:var(--pv-muted-2);border:1px dashed var(--pv-line);}
+.rp-tn-main{flex:1;min-width:0;}
+.rp-tn-title{font-size:13px;font-weight:800;color:var(--pv-text);line-height:1.35;}
+.rp-tn-meta{font-size:11px;color:var(--pv-muted-2);margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.rp-tn-meta b{color:var(--pv-text);font-weight:800;cursor:pointer;}
+.rp-tn-meta b:hover{color:#93c5fd;}
+.rp-tn-ref{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(96,165,250,.1);color:#7ea8ee;border:1px solid rgba(96,165,250,.22);}
+[data-theme="light"] .rp-tn-ref{background:rgba(37,99,235,.06);color:#3b5fa8;border-color:rgba(37,99,235,.2);}
+.rp-tn-exp-soon{color:#fbbf24;font-weight:800;}
+.rp-tn-open{flex:none;text-decoration:none;}
+.rp-tn-empty{text-align:center;color:var(--pv-muted-2);font-size:12.5px;font-weight:600;padding:34px 16px;line-height:1.7;background:var(--pv-card);border-radius:16px;box-shadow:var(--pv-shadow-tile);}
+/* "Open Tenders (N)" chip on tooltip + company detail header */
+.rp-tn-chip{cursor:pointer;background:rgba(52,211,153,.12);color:#34d399;border:1px solid rgba(52,211,153,.28);}
+.rp-tn-chip:hover{background:rgba(52,211,153,.2);}
+[data-theme="light"] .rp-tn-chip{background:rgba(5,150,105,.08);color:#047857;border-color:rgba(5,150,105,.3);}
+.rp-co-tip .rp-tn-link{color:#34d399;cursor:pointer;font-weight:800;}
+.rp-co-tip .rp-tn-link:hover{text-decoration:underline;}
+[data-theme="light"] .rp-co-tip .rp-tn-link{color:#047857;}
+/* ── Pipeline module (Business Development + Operations) ── */
+.pl-funnel{display:flex;flex-direction:column;gap:10px;padding:6px 2px 4px;}
+.pl-funnel-row{display:grid;grid-template-columns:120px 1fr 170px;align-items:center;gap:14px;}
+.pl-funnel-lbl{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--pv-muted-2);text-align:right;}
+.pl-funnel-track{height:26px;border-radius:8px;background:rgba(148,163,184,.08);overflow:hidden;}
+.pl-funnel-bar{height:100%;border-radius:8px;min-width:8px;transition:width .5s cubic-bezier(.22,.8,.3,1);}
+.pl-funnel-meta{font-size:11.5px;color:var(--pv-muted);white-space:nowrap;}
+.pl-funnel-meta b{color:var(--pv-text);font-weight:800;}
+[data-theme="light"] .pl-funnel-track{background:rgba(20,30,55,.06);}
+.pl-av{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;overflow:hidden;flex:none;vertical-align:middle;}
+.pl-owner{display:inline-flex;align-items:center;gap:8px;}
+.pl-stack{display:inline-flex;align-items:center;padding:2px 2px 2px 0;}
+.pl-stack .pl-av{width:32px;height:32px;font-size:11px;box-shadow:0 0 0 2px var(--pv-av-ring);}
+.pl-stack .pl-av+.pl-av,.pl-stack .pl-more{margin-left:-8px;}
+.pl-stack .pl-more{width:32px;height:32px;border-radius:50%;background:rgba(148,163,184,.18);color:var(--pv-muted);font-size:10.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px var(--pv-av-ring);flex:none;}
+.pl-prob{display:inline-flex;align-items:center;gap:8px;}
+.pl-prob-track{width:56px;height:5px;border-radius:3px;background:rgba(148,163,184,.15);overflow:hidden;}
+.pl-prob-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,#1d4ed8,#3b82f6);}
+.pl-cap-card{display:flex;align-items:center;gap:14px;padding:14px 18px;margin-bottom:18px;}
+.pl-cap-ic{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:none;background:rgba(59,130,246,.14);color:#93c5fd;}
+[data-theme="light"] .pl-cap-ic{background:rgba(37,99,235,.08);color:#1d4ed8;}
+.pl-cap-body{flex:1;min-width:0;}
+.pl-cap-txt{font-size:12.5px;font-weight:600;color:var(--pv-muted);}
+.pl-cap-txt b{color:var(--pv-text);font-weight:800;}
+.pl-cap-track{height:8px;border-radius:4px;background:rgba(148,163,184,.12);overflow:hidden;margin-top:8px;}
+[data-theme="light"] .pl-cap-track{background:rgba(20,30,55,.06);}
+.pl-cap-bar{height:100%;border-radius:4px;min-width:4px;transition:width .5s cubic-bezier(.22,.8,.3,1);}
+.pl-cap-pct{flex:none;text-align:right;font-size:17px;font-weight:800;color:var(--pv-text);line-height:1;}
+.pl-cap-pct small{display:block;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--pv-muted-3);margin-top:4px;}
+.pl-cap-note{display:flex;align-items:flex-start;gap:8px;font-size:11px;font-weight:600;line-height:1.5;color:var(--pv-muted);background:rgba(59,130,246,.07);border:1px solid rgba(96,165,250,.18);border-radius:9px;padding:8px 11px;margin-bottom:12px;}
+.pl-cap-note svg{width:13px;height:13px;flex:none;color:#60a5fa;margin-top:2px;}
+.pl-cap-note b{color:var(--pv-text);}
+.pl-cap-note.is-hidden{display:none;}
+[data-theme="light"] .pl-cap-note{background:rgba(37,99,235,.05);border-color:rgba(37,99,235,.14);}
+[data-theme="light"] .pl-cap-note svg{color:#1d4ed8;}
+.pl-b-ident{background:rgba(148,163,184,.12);color:var(--pv-muted);border:1px solid rgba(148,163,184,.25);}
+.pl-b-qual{background:rgba(59,130,246,.14);color:#93c5fd;border:1px solid rgba(96,165,250,.28);}
+.pl-b-bid{background:rgba(129,140,248,.14);color:#a5b4fc;border:1px solid rgba(129,140,248,.3);}
+.pl-b-lost{background:rgba(248,113,113,.12);color:#fca5a5;border:1px solid rgba(248,113,113,.28);}
+[data-theme="light"] .pl-b-qual{color:#1d4ed8;}
+[data-theme="light"] .pl-b-bid{background:rgba(99,102,241,.1);color:#4338ca;}
+[data-theme="light"] .pl-b-lost{background:rgba(220,38,38,.08);color:#b91c1c;}
+.pl-pick{display:flex;flex-wrap:wrap;gap:6px;max-height:132px;overflow:auto;padding:2px;}
+.pl-pick-chip{font-size:11px;font-weight:700;padding:5px 11px;border-radius:20px;border:1px solid var(--pv-line);color:var(--pv-muted);cursor:pointer;user-select:none;transition:.15s;}
+.pl-pick-chip.is-on{background:rgba(37,99,235,.16);color:#93c5fd;border-color:rgba(96,165,250,.45);}
+[data-theme="light"] .pl-pick-chip.is-on{background:rgba(37,99,235,.09);color:#1d4ed8;}
+.pl-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;}
+@media(max-width:1100px){.pl-detail-grid{grid-template-columns:1fr;}}
+.pl-team-list{display:flex;flex-direction:column;}
+.pl-team-row{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--pv-line);}
+.pl-team-row:last-child{border-bottom:none;}
+.pl-team-row .pl-av{width:34px;height:34px;font-size:12px;}
+.pl-team-name{font-size:12.5px;font-weight:800;color:var(--pv-text);}
+.pl-team-role{font-size:11px;color:var(--pv-muted-2);margin-top:1px;}
+.pl-notes{padding:4px 2px;}
+.pl-notes-txt{font-size:12.5px;color:var(--pv-muted);line-height:1.6;padding-bottom:12px;border-bottom:1px solid var(--pv-line);margin-bottom:12px;}
+.pl-tl-row{display:flex;gap:12px;padding:7px 0;align-items:baseline;}
+.pl-tl-dot{width:8px;height:8px;border-radius:50%;background:#3b82f6;flex:none;transform:translateY(-1px);}
+.pl-tl-date{font-size:11px;color:var(--pv-muted-2);font-weight:700;white-space:nowrap;min-width:78px;}
+.pl-tl-txt{font-size:12px;color:var(--pv-text);font-weight:600;}
+.pl-conv-link{font-size:11px;font-weight:700;color:#60a5fa;cursor:pointer;white-space:nowrap;}
+.pl-conv-link:hover{text-decoration:underline;}
+[data-theme="light"] .pl-conv-link{color:#1d4ed8;}
+
+/* ── Pipeline Overview (combined landing page) ── */
+.pl-ov-links{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,1.4vw,24px);margin-bottom:18px;}
+@media(max-width:1100px){.pl-ov-links{grid-template-columns:1fr;}}
+.pl-ov-link{background:var(--pv-card);border-radius:16px;box-shadow:var(--pv-shadow-tile);padding:18px;cursor:pointer;overflow:hidden;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .18s ease, box-shadow .25s ease;}
+.pl-ov-link:hover{transform:translateY(-2px);box-shadow:var(--pv-shadow-hover);}
+.pl-ov-link-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.pl-ov-link-ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex:none;background:rgba(37,99,235,.14);color:#60a5fa;}
+[data-theme="light"] .pl-ov-link-ic{background:rgba(37,99,235,.08);color:#1d4ed8;}
+.pl-ov-link-title{font-size:13.5px;font-weight:800;color:var(--pv-text);}
+.pl-ov-link-sub{font-size:11px;color:var(--pv-muted-2);margin-top:1px;}
+.pl-ov-link-arrow{margin-left:auto;color:var(--pv-muted-3);flex:none;transition:transform .18s, color .18s;}
+.pl-ov-link:hover .pl-ov-link-arrow{transform:translateX(3px);color:#60a5fa;}
+.pl-ov-seg{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px;margin-bottom:11px;background:rgba(148,163,184,.08);}
+[data-theme="light"] .pl-ov-seg{background:rgba(20,30,55,.06);}
+.pl-ov-seg span{height:100%;min-width:6px;}
+.pl-ov-legend{display:flex;flex-wrap:wrap;gap:6px 14px;}
+.pl-ov-leg{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--pv-muted);}
+.pl-ov-leg i{width:8px;height:8px;border-radius:3px;flex:none;}
+.pl-ov-leg b{color:var(--pv-text);font-weight:800;}
+.pl-ov-grid{display:grid;grid-template-columns:1.45fr 1fr;gap:clamp(16px,1.4vw,24px);align-items:start;}
+@media(max-width:1100px){.pl-ov-grid{grid-template-columns:1fr;}}
+.pl-ov-act{display:flex;align-items:flex-start;gap:12px;padding:10px 4px;border-bottom:1px solid var(--pv-line);}
+.pl-ov-act:last-child{border-bottom:none;}
+.pl-ov-act-dot{width:9px;height:9px;border-radius:50%;flex:none;margin-top:4px;}
+.pl-ov-act-txt{font-size:12.5px;font-weight:600;color:var(--pv-text);line-height:1.45;}
+.pl-ov-act-sub{font-size:11px;color:var(--pv-muted-2);margin-top:1px;}
+.pl-ov-act-date{margin-left:auto;font-size:11px;font-weight:700;color:var(--pv-muted-3);white-space:nowrap;padding-top:2px;}
+.pl-ov-conv{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--pv-line);cursor:pointer;transition:background .15s;}
+.pl-ov-conv:hover{background:rgba(59,130,246,.06);}
+.pl-ov-conv:last-child{border-bottom:none;}
+.pl-ov-conv-logo{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex:none;}
+.pl-ov-conv-co{font-size:12.5px;font-weight:800;color:var(--pv-text);display:flex;align-items:center;gap:8px;min-width:0;}
+.pl-ov-conv-path{font-size:11px;color:var(--pv-muted-2);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.pl-ov-conv-path svg{color:#60a5fa;flex:none;}
+.pl-ov-chip-new{font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#4ade80;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);padding:2px 7px;border-radius:12px;flex:none;}
+[data-theme="light"] .pl-ov-chip-new{color:#15803d;background:rgba(22,163,74,.08);border-color:rgba(22,163,74,.25);}
+
+/* ── Renewal-opportunity prompts (Ops → BD loop) ── */
+.pl-renew-chip{display:inline-block;margin-left:8px;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;background:rgba(37,99,235,.16);color:#93c5fd;border:1px solid rgba(96,165,250,.35);cursor:pointer;white-space:nowrap;vertical-align:middle;transition:.15s;}
+.pl-renew-chip:hover{background:rgba(37,99,235,.3);color:#dbeafe;}
+[data-theme="light"] .pl-renew-chip{background:rgba(37,99,235,.09);color:#1d4ed8;border-color:rgba(37,99,235,.28);}
+[data-theme="light"] .pl-renew-chip:hover{background:rgba(37,99,235,.16);}
+.pl-renew-tag{display:inline-block;margin-left:8px;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:12px;background:rgba(139,92,246,.14);color:#a78bfa;border:1px solid rgba(139,92,246,.3);vertical-align:middle;}
+[data-theme="light"] .pl-renew-tag{background:rgba(124,58,237,.08);color:#7c3aed;border-color:rgba(124,58,237,.25);}
+.pl-renew-banner{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:14px;background:rgba(37,99,235,.1);border:1px solid rgba(96,165,250,.25);margin-bottom:18px;}
+.pl-renew-ic{width:34px;height:34px;border-radius:10px;background:rgba(37,99,235,.16);color:#60a5fa;display:flex;align-items:center;justify-content:center;flex:none;}
+.pl-renew-txt{font-size:12.5px;color:var(--pv-muted);line-height:1.5;flex:1;min-width:0;}
+.pl-renew-txt b{color:var(--pv-text);font-weight:800;}
+.pl-renew-banner .fn-add-btn{flex:none;}
+.pl-renew-banner.is-done{background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.22);}
+.pl-renew-banner.is-done .pl-renew-ic{background:rgba(74,222,128,.14);color:#4ade80;}
+[data-theme="light"] .pl-renew-banner{background:rgba(37,99,235,.05);border-color:rgba(37,99,235,.18);}
+[data-theme="light"] .pl-renew-ic{background:rgba(37,99,235,.08);color:#1d4ed8;}
+[data-theme="light"] .pl-renew-banner.is-done{background:rgba(22,163,74,.05);border-color:rgba(22,163,74,.2);}
+[data-theme="light"] .pl-renew-banner.is-done .pl-renew-ic{background:rgba(22,163,74,.08);color:#15803d;}
+.pl-risk-tag{display:inline-flex;align-items:center;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#fbbf24;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);padding:2px 7px;border-radius:12px;flex:none;margin-left:6px;vertical-align:2px;}
+[data-theme="light"] .pl-risk-tag{color:#b45309;background:rgba(180,83,9,.06);border-color:rgba(180,83,9,.28);}
+/* Stacked (not side-by-side): a side column starves the 7-column engagements
+   table and clips the Team avatar stack behind the fn-tbl-wrap scroll edge. */
+.pl-ops-grid{display:flex;flex-direction:column;gap:clamp(16px,1.4vw,24px);}
+#pl-rr-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,340px));gap:0 36px;}
+#pl-rr-list .pl-rr-note,#pl-rr-list .fn-empty{grid-column:1/-1;}
+.pl-rr-row{display:flex;align-items:center;gap:10px;padding:9px 2px;}
+.pl-rr-lbl{font-size:11.5px;font-weight:700;color:var(--pv-muted);min-width:76px;}
+.pl-rr-bar{flex:1;display:block;height:8px;border-radius:4px;background:rgba(148,163,184,.08);overflow:hidden;}
+[data-theme="light"] .pl-rr-bar{background:rgba(20,30,55,.06);}
+.pl-rr-fill{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#b45309,#fbbf24);}
+.pl-rr-n{font-size:11.5px;font-weight:800;color:var(--pv-text);min-width:16px;text-align:right;}
+.pl-rr-note{font-size:11px;color:var(--pv-muted-2);padding:2px 2px 8px;line-height:1.5;}
 [data-theme="light"] .rp-co-tip{background:rgba(255,255,255,.99);border-color:rgba(20,30,55,.1);box-shadow:0 24px 60px rgba(30,50,90,.22);}
 @keyframes pvTipIn{from{opacity:0;transform:translateY(5px) scale(.96);}to{opacity:1;transform:none;}}
 .org-tip,.rp-co-tip{animation:pvTipIn .18s ease-out;}
@@ -1666,7 +1831,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
       <div class="pv-date">
         <span id="pv-live-date">—</span>
         <span class="pv-dot">•</span>
-        <span class="pv-chip-info" id="pv-quarter-chip">Q2 close in 4 days</span>
+        <span class="pv-chip-info" id="pv-quarter-chip">—</span>
       </div>
       <div class="pv-search">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#66738c" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
@@ -2052,8 +2217,8 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
         <div class="pv-card"><div class="pv-card-head"><span class="pv-card-title">Cash Position Trend</span></div><div style="position:relative;height:220px;"><canvas id="an-cash-chart"></canvas></div></div>
       </div>
       <div class="pv-card">
-        <div class="pv-card-head"><span class="pv-card-title">Key Financial Ratios — Q1 &amp; Q2 2026</span></div>
-        <div class="fn-tbl-wrap"><table class="fn-tbl"><thead><tr><th>Metric</th><th>Q1 2026</th><th>Q2 2026</th><th>Change</th><th>Target</th><th>Status</th></tr></thead><tbody>
+        <div class="pv-card-head"><span class="pv-card-title" id="an-ratio-title">Key Financial Ratios</span></div>
+        <div class="fn-tbl-wrap"><table class="fn-tbl"><thead><tr><th>Metric</th><th id="an-ratio-th-prev">Prior Quarter</th><th id="an-ratio-th-cur">Current Quarter</th><th>Change</th><th>Target</th><th>Status</th></tr></thead><tbody>
           <tr><td><strong>Gross Margin</strong></td><td>28.8%</td><td>27.9%</td><td class="tr">−0.9 pts</td><td>30%</td><td><span class="an-badge y">Watch</span></td></tr>
           <tr><td><strong>Net Profit Margin</strong></td><td>11.2%</td><td>10.5%</td><td class="tr">−0.7 pts</td><td>12%</td><td><span class="an-badge y">Watch</span></td></tr>
           <tr><td><strong>Revenue Growth (MoM)</strong></td><td>+5.1%</td><td>+3.8%</td><td class="tr">−1.3 pts</td><td>+5%</td><td><span class="an-badge y">Near Target</span></td></tr>
@@ -2167,6 +2332,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
           <div class="pv-seg" id="rp-cat-seg">
             <button data-rcat="upstream" class="is-active" onclick="rpSetCat('upstream',this)">Upstream</button>
             <button data-rcat="downstream" onclick="rpSetCat('downstream',this)">Downstream</button>
+            <button data-rcat="tenders" onclick="rpSetCat('tenders',this)">Tenders &amp; Bids</button>
           </div>
         </div>
         <div class="rp-toolbar">
@@ -2181,6 +2347,21 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
           </select>
         </div>
         <div id="rp-grid"></div>
+
+        <!-- Tenders & Bids: live noc.ly tenders scanned daily by a Netlify
+             scheduled function (tender-scan) and read back here via the
+             `tenders` function. Local-file mode falls back to the last
+             fetched copy cached in localStorage. -->
+        <div id="rp-tenders" style="display:none;">
+          <div class="rp-tn-bar">
+            <select id="rp-tn-filter" class="rp-sort" style="margin-left:0;" onchange="rpTnSetFilter(this.value)" title="Filter tenders by company"></select>
+            <span class="rp-tn-note" id="rp-tn-note"></span>
+            <button class="fn-add-btn rp-btn-ghost" id="rp-tn-scan" onclick="rpTnScanNow()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Scan now</button>
+          </div>
+          <div id="rp-tn-list" class="rp-tn-list"></div>
+        </div>
       </div>
 
       <!-- company detail: breadcrumb + header + reports table -->
@@ -2202,7 +2383,102 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
       </div>
     </section>
 
-    <!-- ══ SETTINGS ══ -->
+    <!-- ══ PIPELINE ══ -->
+    <section class="pv-page" data-page="Overview">
+      <div class="pv-header"><div><div class="pv-h1">Overview</div><div class="pv-h1-sub">Pipeline · business development &amp; operations at a glance</div></div></div>
+      <div class="fn-kpi-row" id="pl-ov-kpis"></div>
+      <div class="pl-ov-links" id="pl-ov-links"></div>
+      <div class="pl-ov-grid">
+        <div class="fn-card">
+          <div class="fn-tbar"><div class="fn-tbar-left"><span class="fn-tbar-title">Recent Activity</span><span class="pv-badge">opportunities + engagements</span></div></div>
+          <div class="pl-ov-feed" id="pl-ov-feed"></div>
+        </div>
+        <div class="fn-card">
+          <div class="fn-tbar"><div class="fn-tbar-left"><span class="fn-tbar-title">Won &rarr; Engagement Handoffs</span><span class="pv-badge" id="pl-ov-conv-badge"></span></div></div>
+          <div class="pl-ov-convs" id="pl-ov-convs"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pv-page" data-page="Business Development">
+      <div class="pv-header"><div><div class="pv-h1">Business Development</div><div class="pv-h1-sub">Pipeline · opportunities &amp; bids</div></div></div>
+      <div class="fn-kpi-row" id="pl-bd-kpis"></div>
+      <div class="pv-card pl-cap-card" id="pl-bd-cap"></div>
+      <div class="pv-card" style="margin-bottom:18px;">
+        <div class="pv-card-head"><span class="pv-card-title">Stage Funnel</span><span class="pv-badge" id="pl-funnel-badge"></span></div>
+        <div class="pl-funnel" id="pl-funnel"></div>
+      </div>
+      <div class="fn-card" style="margin-bottom:18px;">
+        <div class="fn-tbar">
+          <div class="fn-tbar-left">
+            <span class="fn-tbar-title">Opportunities</span>
+            <div class="fn-filter-row" id="pl-fil-stage">
+              <span class="fn-filter active" onclick="plFilterStage('All',this)">All</span>
+              <span class="fn-filter" onclick="plFilterStage('identified',this)">Identified</span>
+              <span class="fn-filter" onclick="plFilterStage('qualifying',this)">Qualifying</span>
+              <span class="fn-filter" onclick="plFilterStage('bid_submitted',this)">Bid Submitted</span>
+              <span class="fn-filter" onclick="plFilterStage('negotiation',this)">Negotiation</span>
+            </div>
+          </div>
+          <button class="fn-add-btn" onclick="plOpenOppModal()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Opportunity
+          </button>
+        </div>
+        <div class="fn-tbl-wrap"><table class="fn-tbl" id="pl-opp-tbl"><thead><tr><th>Company</th><th>Value</th><th>Probability</th><th>Expected Close</th><th>Owner</th><th>Stage</th><th></th></tr></thead><tbody id="pl-opp-tbody"></tbody></table></div>
+      </div>
+      <div class="fn-card">
+        <div class="fn-tbar"><div class="fn-tbar-left"><span class="fn-tbar-title">Won / Lost Log</span><span class="pv-badge" id="pl-log-badge"></span></div></div>
+        <div class="fn-tbl-wrap"><table class="fn-tbl"><thead><tr><th>Company</th><th>Outcome</th><th>Final Value</th><th>Owner</th><th>Closed</th><th></th></tr></thead><tbody id="pl-log-tbody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="pv-page" data-page="Operations">
+      <div class="pv-header"><div><div class="pv-h1">Operations</div><div class="pv-h1-sub">Pipeline · active client engagements</div></div></div>
+      <div id="pl-ops-overview">
+        <div class="fn-kpi-row" id="pl-ops-kpis"></div>
+        <div class="pl-ops-grid">
+        <div class="fn-card">
+          <div class="fn-tbar">
+            <div class="fn-tbar-left">
+              <span class="fn-tbar-title">Engagements</span>
+              <div class="fn-filter-row" id="pl-fil-status">
+                <span class="fn-filter active" onclick="plFilterStatus('All',this)">All</span>
+                <span class="fn-filter" onclick="plFilterStatus('on_track',this)">On Track</span>
+                <span class="fn-filter" onclick="plFilterStatus('at_risk',this)">At Risk</span>
+                <span class="fn-filter" onclick="plFilterStatus('delayed',this)">Delayed</span>
+              </div>
+            </div>
+            <button class="fn-add-btn" onclick="plOpenEngModal()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Engagement
+            </button>
+          </div>
+          <div class="fn-tbl-wrap"><table class="fn-tbl" id="pl-eng-tbl"><thead><tr><th>Client</th><th>Engagement</th><th>Status</th><th>Start</th><th>Target</th><th>Team</th><th></th></tr></thead><tbody id="pl-eng-tbody"></tbody></table></div>
+        </div>
+        <div class="fn-card">
+          <div class="fn-tbar"><div class="fn-tbar-left"><span class="fn-tbar-title">At Risk Reasons</span><span class="pv-badge" id="pl-rr-badge"></span></div></div>
+          <div id="pl-rr-list"></div>
+        </div>
+        </div>
+      </div>
+      <div id="pl-eng-detail" style="display:none;">
+        <div class="rp-crumbs" id="pl-eng-crumbs"></div>
+        <div class="rp-co-head" id="pl-eng-head"></div>
+        <div id="pl-eng-renew"></div>
+        <div class="pl-detail-grid">
+          <div class="fn-card">
+            <div class="fn-tbar"><div class="fn-tbar-left"><span class="fn-tbar-title">Assigned Team</span><span class="pv-badge" id="pl-eng-team-count"></span></div></div>
+            <div class="pl-team-list" id="pl-eng-team"></div>
+          </div>
+          <div class="fn-card">
+            <div class="fn-tbar"><div class="fn-tbar-left"><span class="fn-tbar-title">Notes &amp; Timeline</span></div></div>
+            <div class="pl-notes" id="pl-eng-notes"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="pv-page" data-page="Settings">
       <div class="pv-header"><div><div class="pv-h1">Settings</div><div class="pv-h1-sub">Preferences · PETGO Vantage</div></div></div>
       <div style="overflow-y:auto;flex:1;min-height:0;display:flex;flex-direction:column;gap:20px;max-width:840px;padding-bottom:20px;">
@@ -2689,6 +2965,51 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
   </div>
 </div>
 <!-- ══ REPORTS MODALS ══ -->
+<div id="pl-opp-modal" class="fn-modal" onclick="closeFnModalOnBg(event,'pl-opp-modal')">
+  <div class="fn-modal-box">
+    <div class="fn-modal-hdr"><div class="fn-modal-ttl" id="pl-opp-ttl">Add Opportunity</div><button class="fn-modal-x" onclick="closeFnModal('pl-opp-modal')">✕</button></div>
+    <div class="fn-field"><label>Company Name *</label><input id="plo-f-company" placeholder="e.g. Arabian Gulf Oil Company"></div>
+    <div class="fn-field-row">
+      <div class="fn-field"><label>Estimated Value (USD) *</label><input id="plo-f-value" type="number" min="0" step="1000" placeholder="e.g. 250000" oninput="plOppCapNote()"></div>
+      <div class="fn-field"><label>Probability %</label><input id="plo-f-prob" type="number" min="0" max="100" step="5" placeholder="0–100"></div>
+    </div>
+    <div class="pl-cap-note is-hidden" id="plo-cap-note"></div>
+    <div class="fn-field-row">
+      <div class="fn-field"><label>Stage</label><select id="plo-f-stage">
+        <option value="identified">Identified</option><option value="qualifying">Qualifying</option>
+        <option value="bid_submitted">Bid Submitted</option><option value="negotiation">Negotiation</option>
+        <option value="won">Won</option><option value="lost">Lost</option></select></div>
+      <div class="fn-field"><label>Expected Close</label><input id="plo-f-close" type="date"></div>
+    </div>
+    <div class="fn-field"><label>Owner</label><select id="plo-f-owner"></select></div>
+    <div class="fn-field"><label>Notes</label><textarea id="plo-f-notes" rows="2" placeholder="Optional — context, next steps, blockers…"></textarea></div>
+    <div class="fn-modal-foot"><button class="fn-del-link is-hidden" id="plo-del-btn" onclick="plDeleteOpp()">Delete</button><button class="fn-cancel-btn" onclick="closeFnModal('pl-opp-modal')">Cancel</button><button class="fn-save-btn" onclick="plSaveOpp()">Save</button></div>
+  </div>
+</div>
+
+<div id="pl-eng-modal" class="fn-modal" onclick="closeFnModalOnBg(event,'pl-eng-modal')">
+  <div class="fn-modal-box">
+    <div class="fn-modal-hdr"><div class="fn-modal-ttl" id="pl-eng-ttl">Add Engagement</div><button class="fn-modal-x" onclick="closeFnModal('pl-eng-modal')">✕</button></div>
+    <div class="fn-field"><label>Client Name *</label><input id="ple-f-client" placeholder="e.g. Sarir Oil Operations"></div>
+    <div class="fn-field"><label>Engagement Type *</label><input id="ple-f-type" placeholder="e.g. Reservoir Intelligence Retainer"></div>
+    <div class="fn-field-row">
+      <div class="fn-field"><label>Status</label><select id="ple-f-status" onchange="plRiskFieldsSync()">
+        <option value="on_track">On Track</option><option value="at_risk">At Risk</option><option value="delayed">Delayed</option></select></div>
+      <div class="fn-field"><label>Start Date</label><input id="ple-f-start" type="date"></div>
+    </div>
+    <div class="fn-field-row" id="ple-risk-wrap" style="display:none;">
+      <div class="fn-field"><label>Risk Reason *</label><select id="ple-f-riskreason">
+        <option value="">Select reason…</option><option value="schedule">Schedule</option><option value="budget">Budget</option>
+        <option value="client">Client</option><option value="safety">Safety</option><option value="other">Other</option></select></div>
+      <div class="fn-field"><label>Risk Note</label><input id="ple-f-risknote" placeholder="Optional — short context"></div>
+    </div>
+    <div class="fn-field"><label>Target Completion</label><input id="ple-f-target" type="date"></div>
+    <div class="fn-field"><label>Assigned Team</label><div class="pl-pick" id="ple-f-team"></div></div>
+    <div class="fn-field"><label>Notes</label><textarea id="ple-f-notes" rows="2" placeholder="Optional — scope, risks, delivery cadence…"></textarea></div>
+    <div class="fn-modal-foot"><button class="fn-del-link is-hidden" id="ple-del-btn" onclick="plDeleteEng()">Delete</button><button class="fn-cancel-btn" onclick="closeFnModal('pl-eng-modal')">Cancel</button><button class="fn-save-btn" onclick="plSaveEng()">Save</button></div>
+  </div>
+</div>
+
 <div id="rpco-modal" class="fn-modal" onclick="closeFnModalOnBg(event,'rpco-modal')">
   <div class="fn-modal-box">
     <div class="fn-modal-hdr"><div class="fn-modal-ttl" id="rpco-ttl">Add Company</div><button class="fn-modal-x" onclick="closeFnModal('rpco-modal')">✕</button></div>
@@ -2801,6 +3122,11 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
       { label:'Team directory', d:'M9.2 11.2a3.6 3.6 0 1 0 0-7.2 3.6 3.6 0 0 0 0 7.2zM3 20.2c.4-3.2 2.9-5 6.2-5s5.8 1.8 6.2 5M15.5 4.4a3.6 3.6 0 0 1 0 6.6M18 15.6c1.8.7 3.1 2 3.4 4.6' },
       { label:'Audit log',      d:'M11.5 3.4a1.3 1.3 0 0 1 1 0l6 2.6a1.3 1.3 0 0 1 .8 1.2v4.3c0 4.3-2.9 7.2-6.6 8.4a1.9 1.9 0 0 1-1.4 0c-3.7-1.2-6.6-4.1-6.6-8.4V7.2a1.3 1.3 0 0 1 .8-1.2zM9.3 12.1l1.9 1.9 3.7-3.7' }
     ],
+    Pipeline: [
+      { label:'Overview',             d:'M4.5 16.3a8.5 8.5 0 1 1 15 0M12 12.3l3.5-3.5' },
+      { label:'Business Development', d:'M3.5 4.5h17l-6.6 7.5v5.3l-3.8 2.2v-7.5z' },
+      { label:'Operations',           d:'M3.5 12h4.1l2.5-7 3.8 14 2.5-7h4.1' }
+    ],
     Finance: [
       { label:'Budget tracker', d:'M20.4 13.4A8.6 8.6 0 1 1 10.6 3.6M13.6 3.6a8.6 8.6 0 0 1 6.8 6.8h-6.3a.5.5 0 0 1-.5-.5z' },
       { label:'Invoices',       d:'M6.5 3.5h11a1 1 0 0 1 1 1v15.2a.6.6 0 0 1-1 .5l-2.2-1.6-2.9 1.8a.8.8 0 0 1-.8 0l-2.9-1.8-2.2 1.6a.6.6 0 0 1-1-.5V4.5a1 1 0 0 1 1-1zM9.3 8.3h5.4M9.3 11.8h5.4' },
@@ -2819,6 +3145,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
   };
   var RAIL = [
     { name:'Home',     d:'M4 10.6l7-5.9a1.6 1.6 0 0 1 2 0l7 5.9M5.9 9.4v8.7a2 2 0 0 0 2 2h8.2a2 2 0 0 0 2-2V9.4M9.8 20v-4.2a2.2 2.2 0 0 1 4.4 0V20' },
+    { name:'Pipeline', d:'M3.5 4.5h17l-6.6 7.5v5.3l-3.8 2.2v-7.5z' },
     { name:'Finance',  d:'M17.8 5.5H6.2A2.8 2.8 0 0 0 3.4 8.3v7.4a2.8 2.8 0 0 0 2.8 2.8h11.6a2.8 2.8 0 0 0 2.8-2.8v-5.2a2 2 0 0 0-2-2H4.6M15.9 13.3h1.7' },
     { name:'People',   d:'M9.2 11.2a3.6 3.6 0 1 0 0-7.2 3.6 3.6 0 0 0 0 7.2zM3 20.2c.4-3.2 2.9-5 6.2-5s5.8 1.8 6.2 5M15.5 4.4a3.6 3.6 0 0 1 0 6.6M18 15.6c1.8.7 3.1 2 3.4 4.6' },
     { name:'Reports',  d:'M6.8 3.5h10.4a2.3 2.3 0 0 1 2.3 2.3v12.4a2.3 2.3 0 0 1-2.3 2.3H6.8a2.3 2.3 0 0 1-2.3-2.3V5.8a2.3 2.3 0 0 1 2.3-2.3zM8.5 16v-3.2M12 16V8.4M15.5 16v-5.4' },
@@ -2856,7 +3183,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
       contentEl.insertAdjacentHTML('beforeend', placeholderSection(it.label, cat, it.d));
     });
   });
-  if (!contentEl.querySelector('.pv-page[data-page="Settings"]')) contentEl.insertAdjacentHTML('beforeend', placeholderSection('Settings', 'System', RAIL[3].d));
+  if (!contentEl.querySelector('.pv-page[data-page="Settings"]')) contentEl.insertAdjacentHTML('beforeend', placeholderSection('Settings', 'System', RAIL[RAIL.length-1].d));
 
   function showPage(label, animate) {
     var target = null;
@@ -5666,7 +5993,7 @@ function _rpPurgeBrandTests(){
   return true;
 }
 _rpPurgeBrandTests();
-var rpState={cat:'upstream',companyId:null,editId:null,q:'',sort:'name'};
+var rpState={cat:'upstream',companyId:null,editId:null,q:'',sort:'name',tnFilter:'all'};
 function rpId(p){return p+Date.now().toString(36)+Math.floor(Math.random()*46656).toString(36);}
 function _rpReduced(){return !!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);}
 function rpFindCompany(id){for(var i=0;i<rpCompanies.length;i++)if(rpCompanies[i].id===id)return rpCompanies[i];return null;}
@@ -5773,6 +6100,8 @@ function rpCoTip(e,id){
   if(c.engagementStart)rows+=_rpTipRow('Client since',escH(rpMonthYear(c.engagementStart)));
   if(c.contractValue)rows+=_rpTipRow('Contract value',escH(c.contractValue));
   rows+=_rpTipRow('Reports',reps.length?reps.length+(latest?' · last '+rpShortDate(latest.uploadDate):''):'None yet');
+  var otn=rpTnOpenCount(c.id);
+  if(otn)rows+=_rpTipRow('Open tenders','<span class="rp-tn-link" onclick="rpGoTenders(\''+c.id+'\')">'+otn+' open — view</span>');
   tip.innerHTML=rpLogoHTML(c)+
     '<div class="rp-co-tip-name">'+escH(c.name)+'</div>'+
     (badges?'<div class="rp-co-tip-badges">'+badges+'</div>':'')+
@@ -5794,9 +6123,205 @@ function rpCoTipHide(now){
 }
 window.rpCoTip=rpCoTip; window.rpCoTipHide=rpCoTipHide;
 
+/* ── Tenders & Bids ─────────────────────────────────────────────
+   Live noc.ly tender listings, scanned daily by the Netlify scheduled
+   function netlify/functions/tender-scan.mjs and stored in Netlify Blobs;
+   read here via GET /.netlify/functions/tenders (POST {scan:1} = scan now).
+   The endpoints only exist on the deployed site, so local-file mode shows
+   the last fetched copy from localStorage. Company matching runs on BOTH
+   sides: the server matches against its embedded seed list, and this client
+   re-matches against the live rpCompanies (which includes user-added
+   companies) with the SAME algorithm — keep rpTnMatch in sync with
+   matchCompany in netlify/functions/lib/tenders.mjs. */
+var PV_FN_TENDERS='/.netlify/functions/tenders';
+var _rpTnCache=fnLoad('petgo_rp_tenders_cache',null)||{};
+var rpTenders=_rpTnCache.tenders||[];
+var rpTnLastScan=_rpTnCache.lastScan||null;
+var _rpTnFetchAt=0,_rpTnErr=null,_rpTnBusy=false;
+var RP_TN_GENERIC={oil:1,gas:1,company:1,co:1,corporation:1,operations:1,operation:1,petroleum:1,national:1,ltd:1,limited:1,inc:1,plc:1,bv:1,b:1,v:1,the:1,of:1,'for':1,and:1,amp:1,libya:1,libyan:1,branch:1,holding:1,group:1};
+function rpTnNorm(s){return String(s||'').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();}
+function rpTnTokens(s){return rpTnNorm(s).split(' ').filter(function(t){return t&&!RP_TN_GENERIC[t];});}
+function rpTnLev(a,b){
+  if(a===b)return 0;
+  if(Math.abs(a.length-b.length)>2)return 3;
+  var prev=[],cur,i,j;
+  for(j=0;j<=b.length;j++)prev[j]=j;
+  for(i=1;i<=a.length;i++){
+    cur=[i];
+    for(j=1;j<=b.length;j++)cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    prev=cur;
+  }
+  return prev[b.length];
+}
+function _rpTnHit(rt,kt){
+  if(rt===kt)return 2;
+  if(rt.length>=5&&kt.length>=5&&rpTnLev(rt,kt)<=1)return 1;
+  return 0;
+}
+function rpTnMatch(rawName,companies){
+  var rawFull=rpTnNorm(rawName); if(!rawFull)return null;
+  var rawToks=rpTnTokens(rawName);
+  var best=null,second=null;
+  companies.forEach(function(c){
+    var keyToks=rpTnTokens(c.name);
+    var nameNP=rpTnNorm(String(c.name).replace(/\([^)]*\)/g,''));
+    var score=0;
+    rawToks.forEach(function(rt){
+      var hit=0;
+      keyToks.forEach(function(kt){var h=_rpTnHit(rt,kt);if(h>hit)hit=h;});
+      score+=hit;
+    });
+    if(rawFull.length>=8&&(nameNP.indexOf(rawFull)>=0||rawFull.indexOf(nameNP)>=0))score+=3;
+    if(!score)return;
+    var cand={id:c.id,score:score};
+    if(!best||cand.score>best.score){second=best;best=cand;}
+    else if(cand.score===best.score){second=cand;}
+  });
+  if(!best)return null;
+  if(second&&second.score===best.score)return null; /* ambiguous → Unmatched */
+  if(best.score>=2||(best.score>=1&&rawToks.length<=1))return best;
+  return null;
+}
+function rpTnCompanyOf(t){
+  var m=rpTnMatch(t.companyNameRaw||t.title,rpCompanies);
+  if(m)return rpFindCompany(m.id);
+  return t.companyId?rpFindCompany(t.companyId):null;
+}
+function rpTnToday(){return new Date().toISOString().slice(0,10);}
+function rpTnIsOpen(t){return !t.delisted&&(!t.expiryDate||t.expiryDate>=rpTnToday());}
+function rpTnOpenCount(cid){
+  var n=0;
+  rpTenders.forEach(function(t){
+    if(!rpTnIsOpen(t))return;
+    var c=rpTnCompanyOf(t);
+    if(c&&c.id===cid)n++;
+  });
+  return n;
+}
+function rpTnDate(iso){
+  if(!iso)return '';
+  var d=new Date(iso+'T00:00:00'); if(isNaN(d))return iso;
+  var o={day:'numeric',month:'short'};
+  if(d.getFullYear()!==new Date().getFullYear())o.year='numeric';
+  return d.toLocaleDateString('en-GB',o);
+}
+function rpTnFetch(force){
+  if(_rpTnBusy)return;
+  if(!force&&Date.now()-_rpTnFetchAt<5*60*1000)return;
+  _rpTnBusy=true;_rpTnFetchAt=Date.now();
+  try{
+    fetch(PV_FN_TENDERS)
+      .then(function(r){if(!r||!r.ok)throw new Error('HTTP '+(r&&r.status));return r.json();})
+      .then(function(d){_rpTnBusy=false;_rpTnErr=null;rpTnApply(d);})
+      .catch(function(){_rpTnBusy=false;_rpTnErr=(location.protocol==='file:')?'local file — showing last fetched data':'live data unavailable — showing last fetched data';rpTnNote();});
+  }catch(e){_rpTnBusy=false;}
+}
+function rpTnApply(d){
+  if(!d||!Array.isArray(d.tenders))return;
+  rpTenders=d.tenders;rpTnLastScan=d.lastScan||null;
+  fnSave('petgo_rp_tenders_cache',{tenders:rpTenders,lastScan:rpTnLastScan});
+  if(rpState.cat==='tenders'&&!rpState.companyId){rpRenderTenders();rpRenderKpis();}
+}
+function rpTnScanNow(){
+  var btn=document.getElementById('rp-tn-scan');
+  if(btn){btn.disabled=true;btn.style.opacity='.6';}
+  fetch(PV_FN_TENDERS,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({scan:1})})
+    .then(function(r){if(!r||!r.ok)throw new Error('HTTP '+(r&&r.status));return r.json();})
+    .then(function(d){rpTnApply(d);showToast(d.throttled?'A recent scan is already stored — showing latest.':'Tender scan complete.');})
+    .catch(function(){showToast('Scan runs on the deployed site only — open the Netlify URL.');})
+    .finally(function(){if(btn){btn.disabled=false;btn.style.opacity='';}});
+}
+window.rpTnScanNow=rpTnScanNow;
+function rpTnSetFilter(v){rpState.tnFilter=v;rpRenderTenders();}
+window.rpTnSetFilter=rpTnSetFilter;
+function rpGoTenders(cid){
+  rpCoTipHide(true);
+  rpState.companyId=null;rpState.cat='tenders';rpState.tnFilter=cid||'all';
+  renderReports();
+}
+window.rpGoTenders=rpGoTenders;
+function rpTnNote(){
+  var el=document.getElementById('rp-tn-note'); if(!el)return;
+  var bits=['Source: noc.ly/en/tenders'];
+  if(rpTnLastScan&&rpTnLastScan.at){
+    var d=new Date(rpTnLastScan.at);
+    bits.push('last scan '+d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+(rpTnLastScan.ok?'':' — failed: '+(rpTnLastScan.error||'unknown error')));
+  }
+  if(_rpTnErr)bits.push(_rpTnErr);
+  el.textContent=bits.join(' · ');
+  el.className='rp-tn-note'+(((rpTnLastScan&&!rpTnLastScan.ok)||_rpTnErr)?' is-err':'');
+}
+function rpTnRowHTML(t,c){
+  var open=rpTnIsOpen(t);
+  var logo=c
+    ? '<span style="display:flex;flex:none;" onmouseenter="rpCoTip(event,\''+c.id+'\')" onmouseleave="rpCoTipHide()" onclick="rpOpenCompany(\''+c.id+'\')">'+rpLogoHTML(c)+'</span>'
+    : '<div class="rp-tn-logo-un" title="No tracked company matched"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg></div>';
+  var meta=[];
+  meta.push(c
+    ? '<b onclick="rpOpenCompany(\''+c.id+'\')" onmouseenter="rpCoTip(event,\''+c.id+'\')" onmouseleave="rpCoTipHide()">'+escH(c.name)+'</b>'
+    : '<span class="fn-badge rp-badge-muted" style="cursor:default;">Unmatched'+(t.companyNameRaw?' · '+escH(t.companyNameRaw):'')+'</span>');
+  if(t.referenceNumber)meta.push('<span class="rp-tn-ref">'+escH(t.referenceNumber)+'</span>');
+  if(t.delisted)meta.push('Removed from listing '+rpTnDate(t.lastSeenDate));
+  else if(!t.expiryDate)meta.push('No closing date listed');
+  else if(t.expiryDate<rpTnToday())meta.push('Expired '+rpTnDate(t.expiryDate));
+  else{
+    var soon=(new Date(t.expiryDate+'T00:00:00')-new Date())/864e5<=10;
+    meta.push(soon?'<span class="rp-tn-exp-soon">Closes '+rpTnDate(t.expiryDate)+'</span>':'Closes '+rpTnDate(t.expiryDate));
+  }
+  meta.push('First seen '+rpTnDate(t.scannedDate));
+  return '<div class="rp-tn-row'+(open?'':' is-closed')+'">'+logo+
+    '<div class="rp-tn-main"><div class="rp-tn-title">'+escH(t.title)+'</div>'+
+    '<div class="rp-tn-meta">'+meta.join('<span class="rp-co-dot"></span>')+'</div></div>'+
+    '<a class="fn-add-btn rp-tn-open" href="'+escH(t.tenderLinkUrl)+'" target="_blank" rel="noopener">Open Tender&nbsp;→</a></div>';
+}
+function rpRenderTenders(){
+  var list=document.getElementById('rp-tn-list'),sel=document.getElementById('rp-tn-filter');
+  if(!list||!sel)return;
+  rpTnNote();
+  var resolved=rpTenders.map(function(t){return {t:t,c:rpTnCompanyOf(t)};});
+  var counts={},unmatched=0;
+  resolved.forEach(function(r){if(r.c)counts[r.c.id]=(counts[r.c.id]||0)+1;else unmatched++;});
+  if(rpState.tnFilter!=='all'&&rpState.tnFilter!=='unmatched'&&!counts[rpState.tnFilter])rpState.tnFilter='all';
+  var opts='<option value="all">All tenders ('+rpTenders.length+')</option>'+
+    '<option value="unmatched">Unmatched ('+unmatched+')</option>';
+  Object.keys(counts).map(rpFindCompany).filter(Boolean)
+    .sort(function(a,b){return String(a.name).localeCompare(String(b.name));})
+    .forEach(function(c){opts+='<option value="'+c.id+'">'+escH(c.name)+' ('+counts[c.id]+')</option>';});
+  sel.innerHTML=opts;sel.value=rpState.tnFilter;
+  var rows=resolved.filter(function(r){
+    if(rpState.tnFilter==='all')return true;
+    if(rpState.tnFilter==='unmatched')return !r.c;
+    return r.c&&r.c.id===rpState.tnFilter;
+  });
+  if(!rows.length){
+    list.innerHTML='<div class="rp-tn-empty">'+(rpTenders.length
+      ? 'No tenders match this filter.'
+      : (location.protocol==='file:'
+        ? 'Live tender data comes from the deployed site — the daily scan and its storage run as Netlify functions.<br>Open the Netlify URL to see current noc.ly tenders.'
+        : 'No tenders stored yet. The scan runs daily at 07:30 Tripoli — or press <b>Scan now</b>.'))+'</div>';
+    return;
+  }
+  rows.sort(function(a,b){
+    var oa=rpTnIsOpen(a.t)?0:1,ob=rpTnIsOpen(b.t)?0:1;
+    if(oa!==ob)return oa-ob;
+    if(a.t.scannedDate!==b.t.scannedDate)return a.t.scannedDate>b.t.scannedDate?-1:1;
+    return String(a.t.title).localeCompare(String(b.t.title));
+  });
+  var html='',closedShown=false;
+  rows.forEach(function(r){
+    if(!rpTnIsOpen(r.t)&&!closedShown){
+      closedShown=true;
+      html+='<div class="rp-sec-label"><span>Closed or delisted</span><em>· '+rows.filter(function(x){return !rpTnIsOpen(x.t);}).length+'</em></div>';
+    }
+    html+=rpTnRowHTML(r.t,r.c);
+  });
+  list.innerHTML=html;
+}
+
 /* ── main render ── */
 function renderReports(){
   rpCoTipHide(true);
+  rpTnFetch();  /* throttled — keeps tender counts on tooltips/detail fresh */
   rpCompanies=fnLoad('petgo_rp_companies',rpCompanies);
   rpReports=fnLoad('petgo_rp_reports',rpReports);
   if(rpState.companyId&&!rpFindCompany(rpState.companyId))rpState.companyId=null;
@@ -5806,8 +6331,31 @@ function renderReports(){
   else{dt.style.display='none';ov.style.display='';rpRenderOverview();}
 }
 
-/* ── overview: stat cards + category toggle + company grid ── */
+/* ── overview: stat cards + category toggle + company grid / tenders ── */
 function rpRenderOverview(){
+  document.querySelectorAll('#rp-cat-seg button').forEach(function(b){b.classList.toggle('is-active',b.dataset.rcat===rpState.cat);});
+  rpSegPlace(false);
+  rpRenderCatViews();
+}
+function rpRenderKpis(){
+  var el=document.getElementById('rp-kpis'); if(!el)return;
+  if(rpState.cat==='tenders'){
+    var resolved=rpTenders.map(function(t){return {t:t,c:rpTnCompanyOf(t)};});
+    var open=resolved.filter(function(r){return rpTnIsOpen(r.t);});
+    var matched=open.filter(function(r){return !!r.c;}).length;
+    var scanV='—',scanS='no scan yet';
+    if(rpTnLastScan&&rpTnLastScan.at){
+      var d=new Date(rpTnLastScan.at);
+      scanV=d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+      scanS=(rpTnLastScan.ok?'daily 07:30 Tripoli':'FAILED — '+escH(rpTnLastScan.error||'error'));
+    }
+    el.innerHTML=
+      fnKpi('Open Tenders',open.length,rpTenders.length+' tracked in total','','','file-text')+
+      fnKpi('Matched',matched,'linked to tracked companies','','','briefcase')+
+      fnKpi('Unmatched',open.length-matched,'no tracked company yet','','','trending-up')+
+      fnKpi('Last Scan',scanV,scanS,'','','clock');
+    return;
+  }
   var now=new Date();
   var qi=Math.floor(now.getMonth()/3);
   var qStart=now.getFullYear()+'-'+('0'+(qi*3+1)).slice(-2)+'-01';
@@ -5815,14 +6363,20 @@ function rpRenderOverview(){
   var up=rpCompanies.filter(function(c){return c.category==='upstream';}).length;
   var down=rpCompanies.length-up;
   var latest=rpLatestOf(rpReports);
-  document.getElementById('rp-kpis').innerHTML=
+  el.innerHTML=
     fnKpi('Total Reports',rpReports.length,'across the portfolio','','','file-text')+
     fnKpi('Companies Tracked',rpCompanies.length,up+' upstream · '+down+' downstream','','','briefcase')+
     fnKpi('Reports This Quarter',qCount,'Q'+(qi+1)+' '+now.getFullYear(),'','','trending-up')+
     fnKpi('Most Recent Upload',latest?rpShortDate(latest.uploadDate):'—',latest?escH(latest.title):'No reports yet','','','clock');
-  document.querySelectorAll('#rp-cat-seg button').forEach(function(b){b.classList.toggle('is-active',b.dataset.rcat===rpState.cat);});
-  rpSegPlace(false);
-  rpRenderGrid();
+}
+function rpRenderCatViews(){
+  var isT=rpState.cat==='tenders';
+  var tb=document.querySelector('#rp-overview .rp-toolbar'); if(tb)tb.style.display=isT?'none':'';
+  var gr=document.getElementById('rp-grid'); if(gr)gr.style.display=isT?'none':'';
+  var tn=document.getElementById('rp-tenders'); if(tn)tn.style.display=isT?'':'none';
+  rpRenderKpis();
+  if(isT){rpRenderTenders();rpTnFetch();}
+  else rpRenderGrid();
 }
 function rpCoCardHTML(c,st){
   var tag=rpRelType(c);
@@ -5894,8 +6448,8 @@ function rpSetCat(cat,btn){
   rpState.cat=cat;
   document.querySelectorAll('#rp-cat-seg button').forEach(function(b){b.classList.toggle('is-active',b===btn||b.dataset.rcat===cat);});
   rpSegPlace(true);
-  rpRenderGrid();
-  if(window.gsap&&!_rpReduced())gsap.from('#rp-grid .rp-co-card',{y:10,opacity:0,duration:.28,ease:'power2.out',stagger:.04,clearProps:'opacity,transform'});
+  rpRenderCatViews();
+  if(window.gsap&&!_rpReduced())gsap.from(cat==='tenders'?'#rp-tn-list .rp-tn-row':'#rp-grid .rp-co-card',{y:10,opacity:0,duration:.28,ease:'power2.out',stagger:.04,clearProps:'opacity,transform'});
 }
 
 /* ── company detail: breadcrumb + header + reports table ── */
@@ -5923,6 +6477,8 @@ function rpRenderDetail(){
   var ST={prospective:['Prospective','fn-pending'],active:['Active Client','fn-approved'],former:['Former Client','rp-badge-muted']};
   var st=ST[c.status]||ST.prospective;
   badge+='<span class="fn-badge '+st[1]+'">'+st[0]+'</span>';
+  var otn=rpTnOpenCount(c.id);
+  if(otn)badge+='<span class="fn-badge rp-tn-chip" onclick="rpGoTenders(\''+c.id+'\')" title="View in Tenders &amp; Bids">Open Tenders ('+otn+')</span>';
   var subBits=[];
   if(c.notes)subBits.push(escH(c.notes));
   var info=[];
@@ -6518,8 +7074,756 @@ function renderSettings(){
 }
 window.renderSettings=renderSettings;
 
+/* ════════════════════════════════════════════════════════════
+   PIPELINE MODULE — the app's core feature.
+   Page 1 "Overview": combined landing snapshot (KPIs, mixed
+   activity feed from petgo_pl_activity, quick links, handoffs).
+   Page 2 "Business Development": opportunity pipeline (funnel,
+   weighted value, win rate, won/lost log).
+   Page 3 "Operations": client engagements with team deployment.
+   Renewal loop: plRenewalDue → passive "Renewal?" prompts on Ops
+   rows/detail open a pre-filled BD opportunity stamped with
+   originEngagementId (mirror of originOpportunityId), so the full
+   lifecycle opp → engagement → renewal opp stays traceable.
+   Independent module — no data links to Projects or Reports.
+   `owner` / `assignedEmployeeIds` hold Team-Directory NAME keys
+   (the directory has no stable empIds; the shared avatar system
+   resolves by name via empLookup).
+   Money is stored USD-base like Budgets/Projects so the global
+   currency toggle (fmtMoney) converts correctly.
+   ════════════════════════════════════════════════════════════ */
+var PL_STAGES=['identified','qualifying','bid_submitted','negotiation'];
+var PL_STAGE_LABEL={identified:'Identified',qualifying:'Qualifying',bid_submitted:'Bid Submitted',negotiation:'Negotiation',won:'Won',lost:'Lost'};
+var PL_STAGE_BADGE={identified:'pl-b-ident',qualifying:'pl-b-qual',bid_submitted:'pl-b-bid',negotiation:'fn-pending',won:'fn-approved',lost:'pl-b-lost'};
+var PL_STATUS_LABEL={on_track:'On Track',at_risk:'At Risk',delayed:'Delayed'};
+var PL_STATUS_BADGE={on_track:'fn-approved',at_risk:'fn-pending',delayed:'pl-b-lost'};
+/* At-Risk reason taxonomy. `riskReason`/`riskNote` live on the engagement
+   only while status==='at_risk' (cleared when the status moves on) so the
+   reason always describes the CURRENT risk, never a stale one. */
+var PL_RISK_REASONS=['schedule','budget','client','safety','other'];
+var PL_RISK_LABEL={schedule:'Schedule',budget:'Budget',client:'Client',safety:'Safety',other:'Other',unspecified:'Unspecified'};
+var opportunities=fnLoad('petgo_pl_opps',null);
+var engagements=fnLoad('petgo_pl_engs',null);
+if(!opportunities){
+  opportunities=[
+    {id:'op-1',companyName:'Arabian Gulf Oil Company (AGOCO)',estimatedValue:450000,stage:'negotiation',probability:70,expectedCloseDate:'2026-08-30',owner:'Bassam Drebika',notes:'Reservoir surveillance retainer — technical evaluation passed, commercial terms in review.',createdDate:'2026-03-04',closedDate:null},
+    {id:'op-2',companyName:'Waha Oil Company',estimatedValue:280000,stage:'bid_submitted',probability:55,expectedCloseDate:'2026-09-15',owner:'Mohammed Alrimali',notes:'Production data platform bid submitted 2 Jul.',createdDate:'2026-04-18',closedDate:null},
+    {id:'op-3',companyName:'Mellitah Oil & Gas B.V.',estimatedValue:620000,stage:'qualifying',probability:35,expectedCloseDate:'2026-11-01',owner:'Bassam Drebika',notes:'Offshore data integration scoping — awaiting technical workshop.',createdDate:'2026-05-22',closedDate:null},
+    {id:'op-4',companyName:'Zueitina Oil Company (ZOC)',estimatedValue:150000,stage:'identified',probability:15,expectedCloseDate:'2026-12-10',owner:'Mohammed Alrimali',notes:'Intro meeting held; needs assessment pending.',createdDate:'2026-06-30',closedDate:null},
+    {id:'op-5',companyName:'Akakus Oil Operations',estimatedValue:380000,stage:'qualifying',probability:40,expectedCloseDate:'2026-10-20',owner:'Karen Mombay',notes:'El Sharara analytics pilot — budget owner identified.',createdDate:'2026-05-02',closedDate:null},
+    {id:'op-6',companyName:'Sirte Oil Company (SOC)',estimatedValue:210000,stage:'identified',probability:20,expectedCloseDate:'2027-01-15',owner:'Bassam Drebika',notes:'Gas processing dashboard concept shared.',createdDate:'2026-07-01',closedDate:null},
+    {id:'op-7',companyName:'National Oil Corporation (NOC)',estimatedValue:900000,stage:'bid_submitted',probability:45,expectedCloseDate:'2026-09-30',owner:'Nezar Atiega',notes:'HQ-level data platform framework — strategic bid.',createdDate:'2026-02-10',closedDate:null},
+    {id:'op-8',companyName:'Sarir Oil Operations Company',estimatedValue:175000,stage:'won',probability:100,expectedCloseDate:'2026-05-30',owner:'Bassam Drebika',notes:'Production data platform — signed.',createdDate:'2026-01-20',closedDate:'2026-05-28'},
+    {id:'op-9',companyName:'Jowfe Oil Technology',estimatedValue:95000,stage:'won',probability:100,expectedCloseDate:'2026-03-20',owner:'Mohammed Alrimali',notes:'Lab data digitisation — signed.',createdDate:'2025-11-05',closedDate:'2026-03-14'},
+    {id:'op-10',companyName:'Harouge Oil Operations',estimatedValue:260000,stage:'lost',probability:0,expectedCloseDate:'2026-04-15',owner:'Karen Mombay',notes:'Went with incumbent service provider.',createdDate:'2025-12-15',closedDate:'2026-04-22'},
+    {id:'op-11',companyName:'OLA Energy',estimatedValue:120000,stage:'lost',probability:0,expectedCloseDate:'2025-11-01',owner:'Mohammed Alrimali',notes:'Budget cycle deferred to FY27.',createdDate:'2025-08-20',closedDate:'2025-10-30'}
+  ];
+  fnSave('petgo_pl_opps',opportunities);
+}
+if(!engagements){
+  engagements=[
+    {id:'en-1',clientName:'Arabian Gulf Oil Company (AGOCO)',engagementType:'Reservoir Intelligence Retainer',status:'on_track',startDate:'2026-04-01',targetCompletionDate:'2026-12-31',assignedEmployeeIds:['Mohamed Elwkhi','Asil Abduldaem','Yahya Zoubi'],notes:'Monthly surveillance reports delivered on schedule; Q3 scope confirmed.'},
+    {id:'en-2',clientName:'Sarir Oil Operations Company',engagementType:'Production Data Platform',status:'on_track',startDate:'2026-06-01',targetCompletionDate:'2026-11-30',assignedEmployeeIds:['Asil Abduldaem','Abdulmalik Almaghbub','Abdulfatah Etarhouni'],notes:'Ingestion pipeline live; dashboard build phase started.',originOpportunityId:'op-8'},
+    {id:'en-3',clientName:'Jowfe Oil Technology',engagementType:'Lab Data Digitisation',status:'delayed',startDate:'2026-03-15',targetCompletionDate:'2026-06-30',assignedEmployeeIds:['Abdulrahman Elfgi','Abdulfatah Etarhouni'],notes:'Client-side data access delays — revised delivery plan awaiting sign-off.'},
+    {id:'en-4',clientName:'Zallaf Libya Company',engagementType:'Field Development Study',status:'at_risk',riskReason:'client',riskNote:'Scope creep on subsurface deliverables',startDate:'2026-05-10',targetCompletionDate:'2026-09-15',assignedEmployeeIds:['Mohamed Elwkhi','Ahmed Sudgey'],notes:'Scope creep on subsurface deliverables; change request drafted.'},
+    {id:'en-5',clientName:'Brega Petroleum Marketing Company',engagementType:'Distribution Analytics Pilot',status:'on_track',startDate:'2026-07-01',targetCompletionDate:'2026-08-05',assignedEmployeeIds:['Yahya Zoubi','Abdulmalik Almaghbub'],notes:'Pilot kicked off; first depot dataset received.'}
+  ];
+  fnSave('petgo_pl_engs',engagements);
+}
+function savePlOpps(){fnSave('petgo_pl_opps',opportunities);}
+function savePlEngs(){fnSave('petgo_pl_engs',engagements);}
+/* Seed fixup for browsers that stored the pre-conversion seeds: the Sarir
+   engagement (en-2) originated from won deal op-8. Idempotent, en-2 only. */
+(function(){
+  var e=null,o=null;
+  engagements.forEach(function(x){if(x.id==='en-2')e=x;});
+  opportunities.forEach(function(x){if(x.id==='op-8')o=x;});
+  if(e&&o&&e.originOpportunityId===undefined){e.originOpportunityId='op-8';savePlEngs();}
+})();
+/* Seed fixup: stored en-4 seeds predate riskReason — classify its known
+   scope-creep risk so the seed matches fresh installs. Idempotent, en-4 only.
+   Other legacy at_risk records stay reason-less and render as Unspecified. */
+(function(){
+  var changed=false;
+  engagements.forEach(function(x){
+    if(x.id==='en-4'&&x.status==='at_risk'&&x.riskReason===undefined){
+      x.riskReason='client';x.riskNote='Scope creep on subsurface deliverables';changed=true;
+    }
+  });
+  if(changed)savePlEngs();
+})();
+/* ── Pipeline activity feed (petgo_pl_activity) ──
+   Chronological event log across BOTH opportunities and engagements,
+   powering the Overview page. Events are appended by the save/delete
+   paths below; on first run the feed is backfilled from record dates
+   (createdDate/closedDate/startDate) so it isn't empty. Dates are ISO
+   strings (date-only for backfill, full datetime for live events) so
+   plain string sort keeps them chronological. `amt` is USD-base and
+   formatted with fmtMoney at render time like all Pipeline money. */
+var plActivity=fnLoad('petgo_pl_activity',null);
+if(!plActivity){
+  plActivity=[];
+  opportunities.forEach(function(o){
+    var v=+o.estimatedValue||0;
+    if(o.createdDate)plActivity.push({id:rpId('pa'),type:'opp_new',date:o.createdDate,text:'New opportunity — '+o.companyName,amt:v,sub:o.owner||''});
+    if(o.stage==='won'&&o.closedDate)plActivity.push({id:rpId('pa'),type:'opp_won',date:o.closedDate,text:'Opportunity won — '+o.companyName,amt:v,sub:o.owner||''});
+    if(o.stage==='lost'&&o.closedDate)plActivity.push({id:rpId('pa'),type:'opp_lost',date:o.closedDate,text:'Opportunity lost — '+o.companyName,amt:v,sub:o.owner||''});
+  });
+  engagements.forEach(function(e){
+    if(e.startDate){
+      if(e.originOpportunityId)plActivity.push({id:rpId('pa'),type:'convert',date:e.startDate,text:'Won deal converted to engagement — '+e.clientName,sub:e.engagementType||''});
+      else plActivity.push({id:rpId('pa'),type:'eng_new',date:e.startDate,text:'Engagement kicked off — '+e.clientName,sub:e.engagementType||''});
+    }
+    /* status-change dates aren't stored on the record, so approximate the
+       backfilled event at start + 45 days, capped at today */
+    if(e.status==='at_risk'||e.status==='delayed'){
+      var d=e.startDate?new Date(new Date(e.startDate).getTime()+45*864e5).toISOString().slice(0,10):today();
+      if(d>today())d=today();
+      plActivity.push({id:rpId('pa'),type:e.status==='at_risk'?'eng_at_risk':'eng_delayed',date:d,
+        text:'Engagement marked '+(e.status==='at_risk'?'at risk':'delayed')+' — '+e.clientName,sub:e.engagementType||'',
+        risk:e.status==='at_risk'?(e.riskReason||null):null});
+    }
+  });
+  plActivity.sort(function(a,b){return a.date<b.date?1:-1;});
+  plActivity=plActivity.slice(0,50);
+  fnSave('petgo_pl_activity',plActivity);
+}
+function plLogActivity(type,text,amt,sub,risk){
+  plActivity.unshift({id:rpId('pa'),type:type,date:new Date().toISOString(),text:text,amt:amt||null,sub:sub||'',risk:risk||null});
+  if(plActivity.length>50)plActivity=plActivity.slice(0,50);
+  fnSave('petgo_pl_activity',plActivity);
+}
+/* The engagement created from a won opportunity, if any (conversion link). */
+function plEngForOpp(oppId){
+  for(var i=0;i<engagements.length;i++)if(engagements[i].originOpportunityId===oppId)return engagements[i];
+  return null;
+}
+/* The renewal opportunity spawned from an engagement, if any. Live lookup
+   (mirrors plEngForOpp) — deleting the opportunity re-arms the prompt. */
+function plOppForEng(engId){
+  for(var i=0;i<opportunities.length;i++)if(opportunities[i].originEngagementId===engId)return opportunities[i];
+  return null;
+}
+/* Renewal prompt eligibility: active engagement (on_track/at_risk) whose
+   target completion is within 30 days — or already passed — and that has
+   no renewal opportunity in the pipeline yet. */
+function plRenewalDue(e){
+  if(!e.targetCompletionDate||(e.status!=='on_track'&&e.status!=='at_risk'))return false;
+  if(daysBetween(today(),e.targetCompletionDate)>30)return false;
+  return !plOppForEng(e.id);
+}
+/* Open a pre-filled BD opportunity from an Ops renewal prompt. */
+function plRenewOpp(engId){
+  plGotoPage('Business Development');
+  plOpenOppModal(null,engId);
+}
+var plState={stage:'All',status:'All',engId:null,editOppId:null,editEngId:null};
+function plFindOpp(id){for(var i=0;i<opportunities.length;i++)if(opportunities[i].id===id)return opportunities[i];return null;}
+function plFindEng(id){for(var i=0;i<engagements.length;i++)if(engagements[i].id===id)return engagements[i];return null;}
+function plBadge(cls,label){return '<span class="fn-badge '+cls+'">'+label+'</span>';}
+function plStageBadge(s){return plBadge(PL_STAGE_BADGE[s]||'pl-b-ident',PL_STAGE_LABEL[s]||s);}
+function plStatusBadge(s){return plBadge(PL_STATUS_BADGE[s]||'pl-b-ident',PL_STATUS_LABEL[s]||s);}
+/* Small reason tag rendered beside the At Risk badge; the optional note
+   surfaces as a hover tooltip. Empty for other statuses / legacy records. */
+function plRiskTag(e){
+  if(!e||e.status!=='at_risk'||!e.riskReason)return '';
+  return '<span class="pl-risk-tag"'+(e.riskNote?' title="'+escH(e.riskNote)+'"':'')+'>'+escH(PL_RISK_LABEL[e.riskReason]||e.riskReason)+'</span>';
+}
+function plAv(name,title){
+  var e=empLookup({name:name});
+  return '<span class="pl-av" style="background:'+empColor(name||'?')+'"'+(title?' title="'+escH(name)+'"':'')+'>'+empAvatarInner(e,name)+'</span>';
+}
+function plOwnerHTML(name){
+  if(!name)return '<span style="color:var(--pv-muted-3);">—</span>';
+  return '<span class="pl-owner">'+plAv(name)+'<span>'+escH(name)+'</span></span>';
+}
+function plStackHTML(names){
+  names=names||[];
+  if(!names.length)return '<span style="color:var(--pv-muted-3);">—</span>';
+  var shown=names.slice(0,3);
+  var html='<span class="pl-stack">'+shown.map(function(n){return plAv(n,true);}).join('');
+  if(names.length>3)html+='<span class="pl-more" title="'+escH(names.slice(3).join(', '))+'">+'+(names.length-3)+'</span>';
+  return html+'</span>';
+}
+
+/* ── Business Development page ── */
+/* Team capacity (BD banner + opportunity-modal note). "Deployed" =
+   unique people assigned to active (on_track / at_risk) engagements;
+   assignedEmployeeIds holds Team Directory names — the directory has
+   no separate id space. Total = directory headcount. */
+function plCapacityStats(){
+  engagements=fnLoad('petgo_pl_engs',engagements);
+  var seen={};
+  engagements.forEach(function(e){
+    if(e.status!=='on_track'&&e.status!=='at_risk')return;
+    (e.assignedEmployeeIds||[]).forEach(function(n){if(n)seen[n]=1;});
+  });
+  var deployed=Object.keys(seen).length,total=empDirectory().length;
+  return {deployed:deployed,total:total,pct:total?Math.round(deployed/total*100):0};
+}
+function _plBDCapacity(){
+  var el=document.getElementById('pl-bd-cap'); if(!el)return;
+  var c=plCapacityStats();
+  if(!c.total){
+    el.innerHTML='<div class="pl-cap-ic">'+_fnIcon('users')+'</div>'+
+      '<div class="pl-cap-body"><div class="pl-cap-txt"><b>'+c.deployed+'</b> people deployed on active engagements — add employees in the Team Directory to see capacity.</div></div>';
+    return;
+  }
+  var bar=c.pct>=90?PL_OV_STATUS_BARS.delayed:c.pct>=70?PL_OV_STATUS_BARS.at_risk:PL_OV_STATUS_BARS.on_track;
+  el.innerHTML='<div class="pl-cap-ic">'+_fnIcon('users')+'</div>'+
+    '<div class="pl-cap-body">'+
+      '<div class="pl-cap-txt"><b>'+c.deployed+' of '+c.total+'</b> team members currently deployed on active engagements</div>'+
+      '<div class="pl-cap-track"><div class="pl-cap-bar" style="width:'+Math.min(100,c.pct)+'%;background:'+bar+'"></div></div>'+
+    '</div>'+
+    '<div class="pl-cap-pct">'+c.pct+'%<small>deployed</small></div>';
+}
+/* Deals at/above this USD value typically need a dedicated delivery
+   team, so the modal surfaces current capacity next to the estimate. */
+var PL_CAP_NOTE_VALUE=250000;
+function plOppCapNote(){
+  var el=document.getElementById('plo-cap-note'); if(!el)return;
+  var v=parseFloat(document.getElementById('plo-f-value').value);
+  if(!(v>=PL_CAP_NOTE_VALUE)){el.classList.add('is-hidden');return;}
+  var c=plCapacityStats();
+  el.innerHTML=_fnIcon('users')+'<span>A deal this size will need a delivery team — <b>'+
+    (c.total?c.deployed+' of '+c.total:c.deployed)+'</b> team members are already deployed on active engagements.</span>';
+  el.classList.remove('is-hidden');
+}
+function renderPlBD(){
+  opportunities=fnLoad('petgo_pl_opps',opportunities);
+  var open=opportunities.filter(function(o){return PL_STAGES.indexOf(o.stage)>=0;});
+  var total=0,weighted=0;
+  open.forEach(function(o){total+=(+o.estimatedValue||0);weighted+=(+o.estimatedValue||0)*((+o.probability||0)/100);});
+  var cutoff=new Date(Date.now()-365*864e5).toISOString().slice(0,10);
+  var won12=opportunities.filter(function(o){return o.stage==='won'&&o.closedDate&&o.closedDate>=cutoff;}).length;
+  var lost12=opportunities.filter(function(o){return o.stage==='lost'&&o.closedDate&&o.closedDate>=cutoff;}).length;
+  var wr=(won12+lost12)?Math.round(won12/(won12+lost12)*100)+'%':'—';
+  var kEl=document.getElementById('pl-bd-kpis');
+  if(kEl)kEl.innerHTML=
+    fnKpi('Total Pipeline Value',fmtMoney(total),open.length+' open opportunit'+(open.length===1?'y':'ies'),'','','circle-dollar')+
+    fnKpi('Weighted Pipeline',fmtMoney(weighted),'probability-adjusted value','','','percent')+
+    fnKpi('Win Rate',wr,'trailing 12 months · '+won12+' won / '+lost12+' lost','','','trending-up')+
+    fnKpi('Active Opportunities',open.length,open.filter(function(o){return o.stage==='negotiation';}).length+' in negotiation','','','briefcase');
+  _plBDCapacity();
+  _plFunnel(open);
+  _plOppTable();
+  _plLogTable();
+}
+var PL_FUNNEL_BARS={
+  identified:'linear-gradient(90deg,#475569,#94a3b8)',
+  qualifying:'linear-gradient(90deg,#1e40af,#3b82f6)',
+  bid_submitted:'linear-gradient(90deg,#4338ca,#818cf8)',
+  negotiation:'linear-gradient(90deg,#0e7490,#22d3ee)',
+  won:'linear-gradient(90deg,#15803d,#4ade80)'
+};
+function _plFunnel(open){
+  var el=document.getElementById('pl-funnel'); if(!el)return;
+  var cutoff=new Date(Date.now()-365*864e5).toISOString().slice(0,10);
+  var rows=PL_STAGES.map(function(s){
+    var list=open.filter(function(o){return o.stage===s;});
+    var v=list.reduce(function(a,o){return a+(+o.estimatedValue||0);},0);
+    return {stage:s,n:list.length,v:v};
+  });
+  var won=opportunities.filter(function(o){return o.stage==='won'&&o.closedDate&&o.closedDate>=cutoff;});
+  rows.push({stage:'won',n:won.length,v:won.reduce(function(a,o){return a+(+o.estimatedValue||0);},0)});
+  var max=Math.max.apply(null,rows.map(function(r){return r.v;}).concat([1]));
+  el.innerHTML=rows.map(function(r){
+    var w=Math.max(4,Math.round(r.v/max*100));
+    return '<div class="pl-funnel-row">'+
+      '<div class="pl-funnel-lbl">'+PL_STAGE_LABEL[r.stage]+(r.stage==='won'?' · 12m':'')+'</div>'+
+      '<div class="pl-funnel-track"><div class="pl-funnel-bar" style="width:'+(r.v?w:0)+'%;background:'+PL_FUNNEL_BARS[r.stage]+'"></div></div>'+
+      '<div class="pl-funnel-meta"><b>'+r.n+'</b> · '+fmtMoney(r.v)+'</div></div>';
+  }).join('');
+  var badge=document.getElementById('pl-funnel-badge');
+  if(badge)badge.textContent='open pipeline + won, trailing 12 months';
+}
+function _plOppTable(){
+  var tb=document.getElementById('pl-opp-tbody'); if(!tb)return;
+  var list=opportunities.filter(function(o){
+    return PL_STAGES.indexOf(o.stage)>=0&&(plState.stage==='All'||o.stage===plState.stage);
+  }).sort(function(a,b){return (a.expectedCloseDate||'9999')<(b.expectedCloseDate||'9999')?-1:1;});
+  if(!list.length){tb.innerHTML='<tr><td colspan="7" class="fn-empty">No open opportunities'+(plState.stage!=='All'?' in this stage':'')+' — add one to start tracking the pipeline.</td></tr>';return;}
+  tb.innerHTML=list.map(function(o){
+    var p=+o.probability||0;
+    var renew='';
+    if(o.originEngagementId){
+      var re=plFindEng(o.originEngagementId);
+      renew=' <span class="pl-renew-tag" title="Renewal of engagement: '+escH(re?((re.engagementType?re.engagementType+' — ':'')+re.clientName):'a completed engagement')+'">Renewal</span>';
+    }
+    return '<tr><td><strong>'+escH(o.companyName)+'</strong>'+renew+'</td>'+
+      '<td>'+fmtMoney(+o.estimatedValue||0)+'</td>'+
+      '<td><span class="pl-prob"><span class="pl-prob-track"><span class="pl-prob-bar" style="display:block;width:'+p+'%"></span></span>'+p+'%</span></td>'+
+      '<td>'+fmtDate(o.expectedCloseDate)+'</td>'+
+      '<td>'+plOwnerHTML(o.owner)+'</td>'+
+      '<td>'+plStageBadge(o.stage)+'</td>'+
+      '<td><div class="fn-row-actions"><button class="fn-btn-edit" onclick="plOpenOppModal(\''+o.id+'\')">Edit</button></div></td></tr>';
+  }).join('');
+}
+function _plLogTable(){
+  var tb=document.getElementById('pl-log-tbody'); if(!tb)return;
+  var closed=opportunities.filter(function(o){return o.stage==='won'||o.stage==='lost';})
+    .sort(function(a,b){return (b.closedDate||'')<(a.closedDate||'')?-1:1;});
+  var badge=document.getElementById('pl-log-badge');
+  if(badge)badge.textContent=closed.length+' closed';
+  if(!closed.length){tb.innerHTML='<tr><td colspan="6" class="fn-empty">No closed opportunities yet.</td></tr>';return;}
+  tb.innerHTML=closed.map(function(o){
+    var act='';
+    if(o.stage==='won'){
+      var eng=plEngForOpp(o.id);
+      act=eng
+        ? '<span class="pl-conv-link" onclick="plGotoEng(\''+eng.id+'\')" title="Open engagement">Converted → '+escH(eng.engagementType||eng.clientName)+'</span>'
+        : '<button class="fn-btn-edit" onclick="plConvertOpp(\''+o.id+'\')">Convert to Engagement</button>';
+    }
+    return '<tr><td><strong>'+escH(o.companyName)+'</strong></td>'+
+      '<td>'+plStageBadge(o.stage)+'</td>'+
+      '<td>'+fmtMoney(+o.estimatedValue||0)+'</td>'+
+      '<td>'+plOwnerHTML(o.owner)+'</td>'+
+      '<td>'+fmtDate(o.closedDate)+'</td>'+
+      '<td><div class="fn-row-actions" style="justify-content:flex-end;">'+act+'</div></td></tr>';
+  }).join('');
+}
+function plFilterStage(s,el){
+  plState.stage=s;
+  document.querySelectorAll('#pl-fil-stage .fn-filter').forEach(function(f){f.classList.toggle('active',f===el);});
+  _plOppTable();
+}
+
+/* ── opportunity modal ── */
+/* Renewal path: plOpenOppModal(null, engId) pre-fills the form from the
+   engagement — never creates the record automatically (passive prompt).
+   _plRenewFromId is reset on every open so a cancelled renewal can't
+   leak into a later plain Add (same pattern as _plConvertFromId). */
+var _plRenewFromId=null;
+function plOpenOppModal(editId,renewFromEngId){
+  plState.editOppId=editId||null;
+  _plRenewFromId=(!editId&&renewFromEngId)?renewFromEngId:null;
+  var o=editId?plFindOpp(editId):null;
+  var re=_plRenewFromId?plFindEng(_plRenewFromId):null;
+  if(!re)_plRenewFromId=null;
+  var sel=document.getElementById('plo-f-owner');
+  var names=empDirectory().map(function(e){return e.name;});
+  if(o&&o.owner&&names.indexOf(o.owner)<0)names.unshift(o.owner);
+  sel.innerHTML='<option value="">— Unassigned —</option>'+names.map(function(n){return '<option value="'+escH(n)+'">'+escH(n)+'</option>';}).join('');
+  document.getElementById('plo-f-company').value=o?o.companyName:(re?re.clientName:'');
+  document.getElementById('plo-f-value').value=o?(o.estimatedValue||''):'';
+  document.getElementById('plo-f-prob').value=o?(o.probability!=null?o.probability:''):'';
+  document.getElementById('plo-f-stage').value=o?o.stage:'identified';
+  document.getElementById('plo-f-close').value=o?(o.expectedCloseDate||''):'';
+  sel.value=o?(o.owner||''):'';
+  document.getElementById('plo-f-notes').value=o?(o.notes||''):(re?('Potential renewal — following engagement: '+(re.engagementType||re.clientName)+', ending '+fmtDate(re.targetCompletionDate)):'');
+  document.getElementById('plo-del-btn').classList.toggle('is-hidden',!o);
+  plOppCapNote();
+  openFnModal('pl-opp-modal',o?'Edit Opportunity':(re?'Add Renewal Opportunity':'Add Opportunity'),'pl-opp-ttl');
+}
+function plSaveOpp(){
+  var company=document.getElementById('plo-f-company').value.trim();
+  var value=parseFloat(document.getElementById('plo-f-value').value);
+  if(!company){showToast('Company name is required.');return;}
+  if(!(value>=0)){showToast('Estimated value is required.');return;}
+  var stage=document.getElementById('plo-f-stage').value;
+  var prob=Math.max(0,Math.min(100,parseFloat(document.getElementById('plo-f-prob').value)||0));
+  if(stage==='won')prob=100; if(stage==='lost')prob=0;
+  var o=plState.editOppId?plFindOpp(plState.editOppId):null;
+  var prevStage=o?o.stage:null;
+  var renewed=false;
+  if(!o){
+    o={id:rpId('op'),createdDate:today(),closedDate:null};
+    if(_plRenewFromId){o.originEngagementId=_plRenewFromId;renewed=true;}
+    opportunities.push(o);
+  }
+  o.companyName=company;o.estimatedValue=value;o.stage=stage;o.probability=prob;
+  o.expectedCloseDate=document.getElementById('plo-f-close').value||null;
+  o.owner=document.getElementById('plo-f-owner').value||null;
+  o.notes=document.getElementById('plo-f-notes').value.trim();
+  if(stage==='won'||stage==='lost'){if(!o.closedDate)o.closedDate=today();}
+  else o.closedDate=null;
+  _plRenewFromId=null;
+  savePlOpps();
+  closeFnModal('pl-opp-modal');
+  addAudit('Pipeline',renewed?('Added renewal opportunity '+company):((plState.editOppId?'Updated':'Added')+' opportunity '+company),'#2563eb');
+  if(renewed){
+    var _re=plFindEng(o.originEngagementId);
+    plLogActivity('opp_renew','Renewal opportunity created — '+company,value,_re?('following '+(_re.engagementType||_re.clientName)):'');
+    renderPlOps();
+  }
+  else if(!prevStage)plLogActivity('opp_new','New opportunity — '+company,value,o.owner||'');
+  else if(prevStage!==stage){
+    if(stage==='won')plLogActivity('opp_won','Opportunity won — '+company,value,o.owner||'');
+    else if(stage==='lost')plLogActivity('opp_lost','Opportunity lost — '+company,value,o.owner||'');
+    else plLogActivity('opp_stage','Stage changed — '+company,value,PL_STAGE_LABEL[prevStage]+' → '+PL_STAGE_LABEL[stage]);
+  }
+  showToast('Opportunity saved.');
+  renderPlBD();
+}
+function plDeleteOpp(){
+  var o=plFindOpp(plState.editOppId); if(!o)return;
+  if(!confirm('Delete opportunity “'+o.companyName+'”? This can\'t be undone.'))return;
+  opportunities=opportunities.filter(function(x){return x.id!==o.id;});
+  savePlOpps();
+  closeFnModal('pl-opp-modal');
+  addAudit('Pipeline','Deleted opportunity '+o.companyName,'#dc2626');
+  plLogActivity('opp_del','Opportunity removed — '+o.companyName);
+  showToast('Opportunity deleted.');
+  renderPlBD();
+}
+
+/* ── Operations page ── */
+function renderPlOps(){
+  engagements=fnLoad('petgo_pl_engs',engagements);
+  if(plState.engId&&!plFindEng(plState.engId))plState.engId=null;
+  var ov=document.getElementById('pl-ops-overview'),dt=document.getElementById('pl-eng-detail');
+  if(!ov||!dt)return;
+  if(plState.engId){ov.style.display='none';dt.style.display='';_plEngDetail();}
+  else{dt.style.display='none';ov.style.display='';_plOpsOverview();}
+}
+function _plOpsOverview(){
+  var atRisk=engagements.filter(function(e){return e.status==='at_risk';}).length;
+  var delayed=engagements.filter(function(e){return e.status==='delayed';}).length;
+  var team={};
+  engagements.forEach(function(e){(e.assignedEmployeeIds||[]).forEach(function(n){team[n]=1;});});
+  var durs=engagements.filter(function(e){return e.startDate&&e.targetCompletionDate;})
+    .map(function(e){return daysBetween(e.startDate,e.targetCompletionDate);});
+  var avg=durs.length?(durs.reduce(function(a,b){return a+b;},0)/durs.length/30.44).toFixed(1)+' mo':'—';
+  var kEl=document.getElementById('pl-ops-kpis');
+  if(kEl)kEl.innerHTML=
+    fnKpi('Active Engagements',engagements.length,engagements.filter(function(e){return e.status==='on_track';}).length+' on track','','','layers')+
+    fnKpi('At Risk',atRisk,delayed+' delayed','','','alert-triangle')+
+    fnKpi('Team Members Deployed',Object.keys(team).length,'across all engagements','','','users')+
+    fnKpi('Avg. Engagement Duration',avg,'start to target','','','clock');
+  _plEngTable();
+  _plRiskBreakdown();
+}
+/* "At Risk Reasons" card: counts CURRENT at-risk engagements per reason
+   category so recurring patterns (e.g. mostly budget) become visible. */
+function _plRiskBreakdown(){
+  var el=document.getElementById('pl-rr-list'); if(!el)return;
+  var atRisk=engagements.filter(function(e){return e.status==='at_risk';});
+  var badge=document.getElementById('pl-rr-badge');
+  if(badge)badge.textContent=atRisk.length+' at risk';
+  if(!atRisk.length){el.innerHTML='<div class="fn-empty">No engagements are at risk right now.</div>';return;}
+  var counts={};
+  atRisk.forEach(function(e){
+    var r=(e.riskReason&&PL_RISK_LABEL[e.riskReason])?e.riskReason:'unspecified';
+    counts[r]=(counts[r]||0)+1;
+  });
+  var max=1;
+  Object.keys(counts).forEach(function(r){if(counts[r]>max)max=counts[r];});
+  el.innerHTML='<div class="pl-rr-note">Why current engagements are flagged at risk.</div>'+
+    PL_RISK_REASONS.concat(['unspecified']).filter(function(r){return counts[r];}).map(function(r){
+      return '<div class="pl-rr-row"><span class="pl-rr-lbl">'+PL_RISK_LABEL[r]+'</span>'+
+        '<span class="pl-rr-bar"><span class="pl-rr-fill" style="width:'+Math.round(counts[r]/max*100)+'%"></span></span>'+
+        '<span class="pl-rr-n">'+counts[r]+'</span></div>';
+    }).join('');
+}
+function _plEngTable(){
+  var tb=document.getElementById('pl-eng-tbody'); if(!tb)return;
+  var sev={delayed:0,at_risk:1,on_track:2};
+  var list=engagements.filter(function(e){return plState.status==='All'||e.status===plState.status;})
+    .sort(function(a,b){
+      if(sev[a.status]!==sev[b.status])return sev[a.status]-sev[b.status];
+      return (a.targetCompletionDate||'9999')<(b.targetCompletionDate||'9999')?-1:1;
+    });
+  if(!list.length){tb.innerHTML='<tr><td colspan="7" class="fn-empty">No engagements'+(plState.status!=='All'?' with this status':'')+' — add one to start tracking delivery.</td></tr>';return;}
+  tb.innerHTML=list.map(function(e){
+    return '<tr style="cursor:pointer;" onclick="plOpenEng(\''+e.id+'\')">'+
+      '<td><strong>'+escH(e.clientName)+'</strong>'+(plRenewalDue(e)?' <span class="pl-renew-chip" title="Ending soon — start a renewal opportunity in Business Development" onclick="event.stopPropagation();plRenewOpp(\''+e.id+'\')">Renewal?</span>':'')+'</td>'+
+      '<td>'+escH(e.engagementType||'—')+'</td>'+
+      '<td>'+plStatusBadge(e.status)+plRiskTag(e)+'</td>'+
+      '<td>'+fmtDate(e.startDate)+'</td>'+
+      '<td>'+fmtDate(e.targetCompletionDate)+'</td>'+
+      '<td>'+plStackHTML(e.assignedEmployeeIds)+'</td>'+
+      '<td><div class="fn-row-actions"><button class="fn-btn-edit" onclick="event.stopPropagation();plOpenEngModal(\''+e.id+'\')">Edit</button></div></td></tr>';
+  }).join('');
+}
+function plFilterStatus(s,el){
+  plState.status=s;
+  document.querySelectorAll('#pl-fil-status .fn-filter').forEach(function(f){f.classList.toggle('active',f===el);});
+  _plEngTable();
+}
+function plOpenEng(id){
+  plState.engId=id;
+  renderPlOps();
+  if(window.gsap&&!_pvReduced)gsap.from('#pl-eng-detail .rp-co-head, #pl-eng-detail .pl-renew-banner, #pl-eng-detail .fn-card',{y:14,opacity:0,duration:.35,ease:'power2.out',stagger:.06,clearProps:'opacity,transform'});
+}
+function plEngBack(){
+  plState.engId=null;
+  renderPlOps();
+  if(window.gsap&&!_pvReduced)gsap.from('#pl-ops-overview .fn-kpi, #pl-ops-overview .fn-card',{y:12,opacity:0,duration:.3,ease:'power2.out',stagger:.05,clearProps:'opacity,transform'});
+}
+function _plEngDetail(){
+  var e=plFindEng(plState.engId); if(!e)return;
+  document.getElementById('pl-eng-crumbs').innerHTML=
+    '<span class="rp-crumb-link" onclick="plEngBack()">Operations</span><span class="rp-crumb-sep">›</span>'+
+    '<span class="rp-crumb-cur">'+escH(e.clientName)+'</span>';
+  var team=e.assignedEmployeeIds||[];
+  document.getElementById('pl-eng-head').innerHTML=
+    '<div class="rp-co-logo" style="background:'+rpBlueGrad(e.clientName)+'">'+escH(rpInitials(e.clientName))+'</div>'+
+    '<div style="min-width:0;"><div class="rp-co-title">'+escH(e.clientName)+plStatusBadge(e.status)+plRiskTag(e)+'</div>'+
+    '<div class="rp-co-sub">'+escH(e.engagementType||'—')+' · '+fmtDate(e.startDate)+' → '+fmtDate(e.targetCompletionDate)+
+    ' · '+team.length+' team member'+(team.length===1?'':'s')+'</div></div>'+
+    '<button class="fn-add-btn rp-btn-ghost rp-co-edit" onclick="plOpenEngModal(\''+e.id+'\')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Edit</button>';
+  document.getElementById('pl-eng-team-count').textContent=team.length+' assigned';
+  document.getElementById('pl-eng-team').innerHTML=team.length?team.map(function(n){
+    var emp=empLookup({name:n});
+    return '<div class="pl-team-row">'+plAv(n)+
+      '<div><div class="pl-team-name">'+escH(n)+'</div>'+
+      '<div class="pl-team-role">'+escH((emp&&emp.title)||'—')+((emp&&emp.dept)?' · '+escH(emp.dept):'')+'</div></div></div>';
+  }).join(''):'<div class="fn-empty">No team assigned yet.</div>';
+  var tl=[];
+  if(e.startDate)tl.push({d:e.startDate,t:'Engagement started'});
+  if(e.targetCompletionDate)tl.push({d:e.targetCompletionDate,t:'Target completion'+(e.targetCompletionDate<today()&&e.status!=='on_track'?' (passed)':'')});
+  document.getElementById('pl-eng-notes').innerHTML=
+    (e.notes?'<div class="pl-notes-txt">'+escH(e.notes)+'</div>':'')+
+    tl.map(function(x){return '<div class="pl-tl-row"><span class="pl-tl-dot"></span><span class="pl-tl-date">'+fmtDate(x.d)+'</span><span class="pl-tl-txt">'+escH(x.t)+'</span></div>';}).join('')+
+    '<div class="pl-tl-row"><span class="pl-tl-dot" style="background:'+(e.status==='on_track'?'#4ade80':e.status==='at_risk'?'#fbbf24':'#f87171')+'"></span><span class="pl-tl-date">Today</span><span class="pl-tl-txt">Status: '+PL_STATUS_LABEL[e.status]+
+    (e.status==='at_risk'&&e.riskReason?' — '+escH(PL_RISK_LABEL[e.riskReason]||e.riskReason)+(e.riskNote?' <span style="color:var(--pv-muted-2);font-weight:500;">('+escH(e.riskNote)+')</span>':''):'')+'</span></div>';
+  var rb=document.getElementById('pl-eng-renew');
+  if(rb){
+    var ic='<span class="pl-renew-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg></span>';
+    var rOpp=plOppForEng(e.id);
+    if(rOpp){
+      rb.innerHTML='<div class="pl-renew-banner is-done">'+ic+
+        '<div class="pl-renew-txt"><b>Renewal in pipeline</b> — '+escH(rOpp.companyName)+' '+plStageBadge(rOpp.stage)+'</div>'+
+        '<button class="fn-add-btn rp-btn-ghost" onclick="plGotoPage(\'Business Development\')">View in Business Development</button></div>';
+    }else if(plRenewalDue(e)){
+      var dd=daysBetween(today(),e.targetCompletionDate);
+      rb.innerHTML='<div class="pl-renew-banner">'+ic+
+        '<div class="pl-renew-txt"><b>Renewal opportunity?</b> This engagement '+
+        (dd<0?'passed its target completion on '+fmtDate(e.targetCompletionDate)
+             :'reaches target completion '+fmtDate(e.targetCompletionDate)+' ('+(dd===0?'today':'in '+dd+' day'+(dd===1?'':'s'))+')')+
+        '. Start a renewal conversation while the team is still deployed.</div>'+
+        '<button class="fn-add-btn" onclick="plRenewOpp(\''+e.id+'\')">Start Renewal Opportunity</button></div>';
+    }else rb.innerHTML='';
+  }
+}
+
+/* ── engagement modal ── */
+var _plEngTeam=[];
+var _plConvertFromId=null;
+/* Manual conversion of a WON opportunity into an engagement: pre-fills the
+   Add Engagement form for review — never creates the record automatically. */
+function plConvertOpp(oppId){
+  var o=plFindOpp(oppId); if(!o||o.stage!=='won')return;
+  plOpenEngModal(null,oppId);
+}
+/* Jump to an engagement's detail view on the Operations page (the panel
+   item is present because both pages share the Pipeline category). */
+function plGotoEng(id){
+  plState.engId=id;
+  var it=document.querySelector('.pv-panel-item[data-page="Operations"]');
+  if(it)it.click(); else renderPlOps();
+}
+function plOpenEngModal(editId,convertFromId){
+  plState.editEngId=editId||null;
+  _plConvertFromId=(!editId&&convertFromId)?convertFromId:null;
+  var e=editId?plFindEng(editId):null;
+  var co=_plConvertFromId?plFindOpp(_plConvertFromId):null;
+  _plEngTeam=e?(e.assignedEmployeeIds||[]).slice():[];
+  var names=empDirectory().map(function(x){return x.name;});
+  _plEngTeam.forEach(function(n){if(names.indexOf(n)<0)names.push(n);});
+  document.getElementById('ple-f-team').innerHTML=names.length?names.map(function(n){
+    return '<span class="pl-pick-chip'+(_plEngTeam.indexOf(n)>=0?' is-on':'')+'" onclick="plToggleTeam(this,\''+escH(n).replace(/'/g,"\\'")+'\')">'+escH(n)+'</span>';
+  }).join(''):'<span style="font-size:11.5px;color:var(--pv-muted-3);">Team Directory is empty — add employees there first.</span>';
+  document.getElementById('ple-f-client').value=e?e.clientName:(co?co.companyName:'');
+  document.getElementById('ple-f-type').value=e?(e.engagementType||''):'';
+  document.getElementById('ple-f-status').value=e?e.status:'on_track';
+  document.getElementById('ple-f-riskreason').value=e?(e.riskReason||''):'';
+  document.getElementById('ple-f-risknote').value=e?(e.riskNote||''):'';
+  plRiskFieldsSync();
+  document.getElementById('ple-f-start').value=e?(e.startDate||''):(co?today():'');
+  document.getElementById('ple-f-target').value=e?(e.targetCompletionDate||''):'';
+  document.getElementById('ple-f-notes').value=e?(e.notes||''):(co?('Converted from opportunity'+(co.notes?': '+co.notes:'.')):'');
+  document.getElementById('ple-del-btn').classList.toggle('is-hidden',!e);
+  openFnModal('pl-eng-modal',e?'Edit Engagement':(co?'Convert to Engagement':'Add Engagement'),'pl-eng-ttl');
+}
+function plToggleTeam(chip,name){
+  var i=_plEngTeam.indexOf(name);
+  if(i>=0)_plEngTeam.splice(i,1);else _plEngTeam.push(name);
+  chip.classList.toggle('is-on',i<0);
+}
+/* Risk-reason fields only apply while the picked status is At Risk. */
+function plRiskFieldsSync(){
+  var wrap=document.getElementById('ple-risk-wrap'); if(!wrap)return;
+  wrap.style.display=document.getElementById('ple-f-status').value==='at_risk'?'':'none';
+}
+function plSaveEng(){
+  var client=document.getElementById('ple-f-client').value.trim();
+  var type=document.getElementById('ple-f-type').value.trim();
+  var status=document.getElementById('ple-f-status').value;
+  var riskReason=document.getElementById('ple-f-riskreason').value;
+  if(!client){showToast('Client name is required.');return;}
+  if(!type){showToast('Engagement type is required.');return;}
+  if(status==='at_risk'&&!riskReason){showToast('Pick a risk reason — why is this engagement at risk?');return;}
+  var e=plState.editEngId?plFindEng(plState.editEngId):null;
+  var prevStatus=e?e.status:null;
+  var converted=false;
+  if(!e){
+    e={id:rpId('en')};
+    if(_plConvertFromId){e.originOpportunityId=_plConvertFromId;converted=true;}
+    engagements.push(e);
+  }
+  e.clientName=client;e.engagementType=type;
+  e.status=status;
+  if(status==='at_risk'){e.riskReason=riskReason;e.riskNote=document.getElementById('ple-f-risknote').value.trim()||null;}
+  else{e.riskReason=null;e.riskNote=null;}
+  e.startDate=document.getElementById('ple-f-start').value||null;
+  e.targetCompletionDate=document.getElementById('ple-f-target').value||null;
+  e.assignedEmployeeIds=_plEngTeam.slice();
+  e.notes=document.getElementById('ple-f-notes').value.trim();
+  _plConvertFromId=null;
+  savePlEngs();
+  closeFnModal('pl-eng-modal');
+  addAudit('Pipeline',converted?('Converted won opportunity into engagement '+client):((plState.editEngId?'Updated':'Added')+' engagement '+client),'#2563eb');
+  if(converted)plLogActivity('convert','Won deal converted to engagement — '+client,null,type);
+  else if(!prevStatus)plLogActivity('eng_new','New engagement — '+client,null,type);
+  else if(prevStatus!==e.status){
+    if(e.status==='at_risk')plLogActivity('eng_at_risk','Engagement marked at risk — '+client,null,type,e.riskReason);
+    else if(e.status==='delayed')plLogActivity('eng_delayed','Engagement marked delayed — '+client,null,type);
+    else plLogActivity('eng_on_track','Engagement back on track — '+client,null,type);
+  }
+  showToast(converted?'Engagement created from won opportunity.':'Engagement saved.');
+  renderPlOps();
+  renderPlBD();
+}
+function plDeleteEng(){
+  var e=plFindEng(plState.editEngId); if(!e)return;
+  if(!confirm('Delete engagement “'+e.clientName+'”? This can\'t be undone.'))return;
+  engagements=engagements.filter(function(x){return x.id!==e.id;});
+  savePlEngs();
+  closeFnModal('pl-eng-modal');
+  plState.engId=null;
+  addAudit('Pipeline','Deleted engagement '+e.clientName,'#dc2626');
+  plLogActivity('eng_del','Engagement removed — '+e.clientName);
+  showToast('Engagement deleted.');
+  renderPlOps();
+}
+
+/* ── Pipeline Overview page (combined landing view) ── */
+var PL_ACT_META={
+  opp_new:'#3b82f6',opp_stage:'#818cf8',opp_won:'#4ade80',opp_lost:'#f87171',opp_del:'#94a3b8',opp_renew:'#a78bfa',
+  convert:'#22d3ee',eng_new:'#60a5fa',eng_at_risk:'#fbbf24',eng_delayed:'#f87171',eng_on_track:'#4ade80',eng_del:'#94a3b8'
+};
+var PL_OV_STATUS_BARS={
+  on_track:'linear-gradient(90deg,#15803d,#4ade80)',
+  at_risk:'linear-gradient(90deg,#b45309,#fbbf24)',
+  delayed:'linear-gradient(90deg,#b91c1c,#f87171)'
+};
+function plAgo(d){
+  if(!d)return '—';
+  var days=Math.floor((Date.now()-new Date(d).getTime())/864e5);
+  if(days<=0)return 'Today';
+  if(days===1)return 'Yesterday';
+  if(days<30)return days+'d ago';
+  if(days<365)return Math.round(days/30.44)+'mo ago';
+  return fmtDate(String(d).slice(0,10));
+}
+function plGotoPage(label){
+  var it=document.querySelector('.pv-panel-item[data-page="'+label+'"]');
+  if(it)it.click();
+}
+function renderPlOverview(){
+  opportunities=fnLoad('petgo_pl_opps',opportunities);
+  engagements=fnLoad('petgo_pl_engs',engagements);
+  plActivity=fnLoad('petgo_pl_activity',plActivity)||[];
+  var open=opportunities.filter(function(o){return PL_STAGES.indexOf(o.stage)>=0;});
+  var total=0;
+  open.forEach(function(o){total+=(+o.estimatedValue||0);});
+  var cutoff=new Date(Date.now()-365*864e5).toISOString().slice(0,10);
+  var won12=opportunities.filter(function(o){return o.stage==='won'&&o.closedDate&&o.closedDate>=cutoff;}).length;
+  var lost12=opportunities.filter(function(o){return o.stage==='lost'&&o.closedDate&&o.closedDate>=cutoff;}).length;
+  var wr=(won12+lost12)?Math.round(won12/(won12+lost12)*100)+'%':'—';
+  var onTrack=engagements.filter(function(e){return e.status==='on_track';}).length;
+  var atRisk=engagements.filter(function(e){return e.status==='at_risk';}).length;
+  var delayed=engagements.filter(function(e){return e.status==='delayed';}).length;
+  var kEl=document.getElementById('pl-ov-kpis');
+  if(kEl)kEl.innerHTML=
+    fnKpi('Total Pipeline Value',fmtMoney(total),open.length+' open opportunit'+(open.length===1?'y':'ies'),'','','circle-dollar')+
+    fnKpi('Active Engagements',engagements.length,onTrack+' on track','','','layers')+
+    fnKpi('Win Rate',wr,'trailing 12 months · '+won12+' won / '+lost12+' lost','','','trending-up')+
+    fnKpi('At Risk Engagements',atRisk,delayed+' delayed','','','alert-triangle');
+  _plOvLinks(open,total);
+  _plOvFeed();
+  _plOvConvs();
+}
+function _plOvLinkCard(page,iconD,sub,segs){
+  var totalN=0;
+  segs.forEach(function(s){totalN+=s.n;});
+  var bar=totalN?segs.filter(function(s){return s.n>0;}).map(function(s){
+    return '<span style="flex:'+s.n+';background:'+s.c+'"></span>';
+  }).join(''):'';
+  var legend=segs.map(function(s){
+    return '<span class="pl-ov-leg"><i style="background:'+s.c+'"></i><b>'+s.n+'</b> '+s.lbl+'</span>';
+  }).join('');
+  return '<div class="pl-ov-link" onclick="plGotoPage(\''+page+'\')">'+
+    '<div class="pl-ov-link-top">'+
+      '<span class="pl-ov-link-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="'+iconD+'"/></svg></span>'+
+      '<div><div class="pl-ov-link-title">'+page+'</div><div class="pl-ov-link-sub">'+sub+'</div></div>'+
+      '<span class="pl-ov-link-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>'+
+    '</div>'+
+    '<div class="pl-ov-seg">'+bar+'</div>'+
+    '<div class="pl-ov-legend">'+legend+'</div></div>';
+}
+function _plOvLinks(open,total){
+  var el=document.getElementById('pl-ov-links'); if(!el)return;
+  var bdSegs=PL_STAGES.map(function(s){
+    return {lbl:PL_STAGE_LABEL[s],n:open.filter(function(o){return o.stage===s;}).length,c:PL_FUNNEL_BARS[s]};
+  });
+  var opSegs=['on_track','at_risk','delayed'].map(function(s){
+    return {lbl:PL_STATUS_LABEL[s],n:engagements.filter(function(e){return e.status===s;}).length,c:PL_OV_STATUS_BARS[s]};
+  });
+  var team={};
+  engagements.forEach(function(e){(e.assignedEmployeeIds||[]).forEach(function(n){team[n]=1;});});
+  el.innerHTML=
+    _plOvLinkCard('Business Development','M3.5 4.5h17l-6.6 7.5v5.3l-3.8 2.2v-7.5z',
+      open.length+' open opportunit'+(open.length===1?'y':'ies')+' · '+fmtMoney(total)+' pipeline value',bdSegs)+
+    _plOvLinkCard('Operations','M3.5 12h4.1l2.5-7 3.8 14 2.5-7h4.1',
+      engagements.length+' active engagement'+(engagements.length===1?'':'s')+' · '+Object.keys(team).length+' team members deployed',opSegs);
+}
+function _plOvFeed(){
+  var el=document.getElementById('pl-ov-feed'); if(!el)return;
+  var list=plActivity.slice(0,8);
+  if(!list.length){el.innerHTML='<div class="fn-empty">No pipeline activity yet — add an opportunity or engagement to get started.</div>';return;}
+  el.innerHTML=list.map(function(a){
+    var meta=[];
+    if(a.amt)meta.push(fmtMoney(+a.amt));
+    if(a.sub)meta.push(escH(a.sub));
+    return '<div class="pl-ov-act"><span class="pl-ov-act-dot" style="background:'+(PL_ACT_META[a.type]||'#3b82f6')+'"></span>'+
+      '<div style="min-width:0;"><div class="pl-ov-act-txt">'+escH(a.text)+
+      (a.risk?'<span class="pl-risk-tag">'+escH(PL_RISK_LABEL[a.risk]||a.risk)+'</span>':'')+'</div>'+
+      (meta.length?'<div class="pl-ov-act-sub">'+meta.join(' · ')+'</div>':'')+
+      '</div><span class="pl-ov-act-date">'+plAgo(a.date)+'</span></div>';
+  }).join('');
+}
+function _plOvConvs(){
+  var el=document.getElementById('pl-ov-convs'); if(!el)return;
+  var convs=[];
+  engagements.forEach(function(e){
+    if(!e.originOpportunityId)return;
+    var o=plFindOpp(e.originOpportunityId); if(!o)return;
+    convs.push({e:e,o:o,d:e.startDate||o.closedDate||''});
+  });
+  convs.sort(function(a,b){return a.d<b.d?1:-1;});
+  var badge=document.getElementById('pl-ov-conv-badge');
+  if(badge)badge.textContent=convs.length+' converted';
+  if(!convs.length){el.innerHTML='<div class="fn-empty">No won deals converted yet — convert one from the Won / Lost Log on Business Development.</div>';return;}
+  var recentCut=new Date(Date.now()-60*864e5).toISOString().slice(0,10);
+  var arrow='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  el.innerHTML=convs.slice(0,5).map(function(x){
+    var recent=x.d&&x.d.slice(0,10)>=recentCut;
+    return '<div class="pl-ov-conv" onclick="plGotoEng(\''+x.e.id+'\')">'+
+      '<div class="pl-ov-conv-logo" style="background:'+rpBlueGrad(x.e.clientName)+'">'+escH(rpInitials(x.e.clientName))+'</div>'+
+      '<div style="min-width:0;flex:1;">'+
+        '<div class="pl-ov-conv-co"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escH(x.e.clientName)+'</span>'+(recent?'<span class="pl-ov-chip-new">Recent</span>':'')+'</div>'+
+        '<div class="pl-ov-conv-path">Won '+fmtMoney(+x.o.estimatedValue||0)+' · '+fmtDate(x.o.closedDate)+arrow+escH(x.e.engagementType||'Engagement')+'</div>'+
+      '</div>'+plStatusBadge(x.e.status)+plRiskTag(x.e)+'</div>';
+  }).join('');
+}
+
 var PV_PAGE_RENDER={
   'Settings':function(){renderSettings();},
+  'Overview':function(){renderPlOverview();},
+  'Business Development':function(){renderPlBD();},
+  'Operations':function(){renderPlOps();},
   'Analytics':function(){renderAnalytics();},
   'Documents':function(){renderDocuments();},
   'Reports':function(){renderReports();},
@@ -6552,20 +7856,45 @@ window.pvPageShown=function(label,animate){
   if(window.pvUpdateBell)pvUpdateBell();
   if(animate&&window.gsap&&!_pvReduced){
     var sec=document.querySelector('.pv-page[data-page="'+label+'"]');
-    if(sec)gsap.from(sec.querySelectorAll('.fn-kpi, .pv-card, .fn-card, .rp-co-card, .rp-co-head'),
+    if(sec)gsap.from(sec.querySelectorAll('.fn-kpi, .pv-card, .fn-card, .rp-co-card, .rp-co-head, .pl-ov-link, .pl-renew-banner'),
       {y:16,opacity:0,duration:.4,ease:'power2.out',stagger:.05,clearProps:'opacity,transform'});
   }
 };
 
-/* ── Live header date + notification-bell dot ──────────────────── */
-/* Date always reflects the real current day; the interval lets it roll
-   over past midnight even if the tab is left open. Format: "Friday, 10 Jul". */
+/* ── Live header date + quarter chip + notification-bell dot ───── */
+/* Everything here reflects the real current day; the interval lets it
+   roll over past midnight even if the tab is left open. PETGO runs on
+   standard calendar-year quarters (Q1 Jan–Mar … Q4 Oct–Dec). */
+function pvQuarterInfo(d){
+  var qi=Math.floor(d.getMonth()/3);
+  var end=new Date(d.getFullYear(),qi*3+3,0); // day 0 of next month = quarter's last day
+  var days=Math.round((end-new Date(d.getFullYear(),d.getMonth(),d.getDate()))/864e5);
+  return {qi:qi,year:d.getFullYear(),label:'Q'+(qi+1),days:days};
+}
 function pvUpdateDate(){
-  var el=document.getElementById('pv-live-date'); if(!el)return;
   var d=new Date();
-  var wd=d.toLocaleDateString('en-US',{weekday:'long'});
-  var mon=d.toLocaleDateString('en-US',{month:'short'});
-  el.textContent=wd+', '+d.getDate()+' '+mon; // e.g. "Friday, 10 Jul"
+  var el=document.getElementById('pv-live-date');
+  if(el){
+    var wd=d.toLocaleDateString('en-US',{weekday:'long'});
+    var mon=d.toLocaleDateString('en-US',{month:'short'});
+    el.textContent=wd+', '+d.getDate()+' '+mon; // e.g. "Friday, 10 Jul"
+  }
+  var q=pvQuarterInfo(d);
+  var chip=document.getElementById('pv-quarter-chip');
+  if(chip)chip.textContent=q.label+(q.days===0?' closes today':' close in '+q.days+' day'+(q.days===1?'':'s'));
+  /* Analytics ratios card compares the prior quarter to the current one */
+  var pq=q.qi-1,py=q.year; if(pq<0){pq=3;py--;}
+  var tEl=document.getElementById('an-ratio-title');
+  if(tEl)tEl.textContent='Key Financial Ratios — '+(py===q.year?('Q'+(pq+1)+' & '+q.label+' '+q.year):('Q'+(pq+1)+' '+py+' & '+q.label+' '+q.year));
+  var thP=document.getElementById('an-ratio-th-prev'),thC=document.getElementById('an-ratio-th-cur');
+  if(thP)thP.textContent='Q'+(pq+1)+' '+py;
+  if(thC)thC.textContent=q.label+' '+q.year;
+  /* Period placeholders suggest the real current quarter / month */
+  var qs=q.label+' '+q.year, ms=d.toLocaleDateString('en-US',{month:'long'})+' '+q.year;
+  [['bud-f-period','e.g. '+qs],['rev-f-period','e.g. '+qs],['rp-gen-period','e.g. '+qs],
+   ['rp-up-period','e.g. '+qs+' / '+ms],['pay-f-month','e.g. '+ms]].forEach(function(p){
+    var f=document.getElementById(p[0]); if(f)f.setAttribute('placeholder',p[1]);
+  });
 }
 pvUpdateDate();
 setInterval(pvUpdateDate,60000);

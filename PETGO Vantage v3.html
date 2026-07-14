@@ -203,6 +203,7 @@
 .pv-badge { font-size:10px; color:#aab6cf; background:rgba(255,255,255,.07);
   border-radius:8px; padding:2px 8px; font-weight:700; }
 .pv-badge-neutral { color:var(--pv-muted); background:rgba(255,255,255,.06); }
+.pv-pf { cursor:pointer; }
 
 /* ---- cash feature card ---- */
 .pv-cash { position:relative; border-radius:20px; padding:20px; overflow:hidden;
@@ -1992,6 +1993,25 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
               <div class="pv-legend-item"><div class="pv-legend-pct"><span style="color:#1e40af">●</span> 12%</div><div class="pv-legend-name">G&amp;A</div></div>
             </div>
           </div>
+        </div>
+
+        <!-- pipeline forecast: forward-looking weighted BD revenue; the whole card clicks through to Pipeline → Business Development -->
+        <div class="pv-card pv-pf" onclick="pvGotoPipelineBD()" title="Open Pipeline → Business Development">
+          <div class="pv-card-head">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="pv-card-title">Pipeline forecast</span>
+              <span class="pv-badge" id="pv-pf-badge">—</span>
+            </div>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#66738c" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </div>
+          <div class="pv-spend-hero">
+            <div>
+              <div class="pv-spend-hero-label">Total weighted pipeline</div>
+              <div class="pv-spend-hero-value"><span class="pv-money" id="pv-pf-total" data-base="0" data-dec="2" data-unit="M">—</span> <small id="pv-pf-sub">across 0 active opportunities</small></div>
+            </div>
+            <button class="pv-spend-hero-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></button>
+          </div>
+          <div style="position:relative;height:190px;"><canvas id="pv-pf-chart"></canvas></div>
         </div>
 
         <!-- approvals: pending only + recent activity -->
@@ -7860,6 +7880,102 @@ window.pvPageShown=function(label,animate){
       {y:16,opacity:0,duration:.4,ease:'power2.out',stagger:.05,clearProps:'opacity,transform'});
   }
 };
+
+/* ── Pipeline Forecast card (Home → Dashboard) ──────────────────
+   Forward-looking weighted revenue from the BD pipeline: each open
+   opportunity (not won/lost) contributes estimatedValue × probability/100,
+   bucketed by expected-close quarter for the current + next 3 calendar
+   quarters. Overdue-but-open opportunities fold into the current quarter —
+   the soonest they can still land; ones closing beyond the horizon count
+   toward the headline total but not the bars. Values are USD-base like all
+   Pipeline money, but the card lives on the Dashboard whose topbar currency
+   toggle works on LYD-base .pv-money spans — hence the USD→base conversion.
+   No Budget Tracker overlay by design: budgets there are department SPEND
+   budgets, not revenue targets, so the comparison would be misleading. */
+var pvPfChart=null;
+var PF_RATES={LYD:1,USD:0.1634,EUR:0.191},PF_SYM={LYD:'LD ',USD:'$',EUR:'€'}; /* mirror of the topbar toggle's table */
+function _pfCur(){var b=document.querySelector('#pv-currency button.is-active');return (b&&b.dataset.cur)||'LYD';}
+function renderPvForecast(){
+  var elTotal=document.getElementById('pv-pf-total');
+  if(!elTotal)return;
+  opportunities=fnLoad('petgo_pl_opps',opportunities);
+  var open=opportunities.filter(function(o){return PL_STAGES.indexOf(o.stage)>=0;});
+  var d0=new Date(),q0=Math.floor(d0.getMonth()/3),y0=d0.getFullYear();
+  var buckets=[],idx={};
+  for(var i=0;i<4;i++){
+    var q=(q0+i)%4,y=y0+Math.floor((q0+i)/4);
+    idx[y+'-'+q]=i;
+    buckets.push({label:'Q'+(q+1)+' ’'+String(y).slice(2),usd:0});
+  }
+  var totalUSD=0;
+  open.forEach(function(o){
+    var w=(+o.estimatedValue||0)*((+o.probability||0)/100);
+    totalUSD+=w;
+    var s=String(o.expectedCloseDate||''),y=+s.slice(0,4),m=+s.slice(5,7);
+    if(!y||!m)return;
+    var k=y+'-'+Math.floor((m-1)/3);
+    if(idx[k]!==undefined)buckets[idx[k]].usd+=w;
+    else if(s.slice(0,10)<today())buckets[0].usd+=w;
+  });
+  var cur=_pfCur();
+  /* summary stat — a LYD-base .pv-money span, so the topbar toggle and the
+     intro count-up treat it like every other dashboard figure */
+  elTotal.setAttribute('data-base',(totalUSD/PF_RATES.USD/1e6).toFixed(2));
+  elTotal.textContent=PF_SYM[cur]+(totalUSD/PF_RATES.USD*PF_RATES[cur]/1e6).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+'M';
+  var sub=document.getElementById('pv-pf-sub');
+  if(sub)sub.textContent='across '+open.length+' active opportunit'+(open.length===1?'y':'ies');
+  var badge=document.getElementById('pv-pf-badge');
+  if(badge)badge.textContent=buckets[0].label+' – '+buckets[buckets.length-1].label;
+  var canvas=document.getElementById('pv-pf-chart');
+  if(!canvas||typeof Chart==='undefined')return;
+  pvChartDefaults();
+  if(pvPfChart){pvPfChart.destroy();pvPfChart=null;}
+  var rate=PF_RATES[cur]/PF_RATES.USD,sym=PF_SYM[cur];
+  pvPfChart=new Chart(canvas,{type:'bar',
+    data:{labels:buckets.map(function(b){return b.label;}),
+      datasets:[{label:'Weighted pipeline',data:buckets.map(function(b){return Math.round(b.usd*rate);}),
+        backgroundColor:['rgba(147,197,253,0.9)','rgba(59,130,246,0.85)','rgba(37,99,235,0.85)','rgba(30,64,175,0.85)'],
+        borderRadius:5,categoryPercentage:0.6,barPercentage:0.8}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:function(c){return ' '+sym+c.parsed.y.toLocaleString('en-US')+' weighted';}}}},
+      scales:{y:{beginAtZero:true,ticks:{callback:function(v){return v>=1e6?sym+(v/1e6).toLocaleString('en-US',{maximumFractionDigits:1})+'M':v>=1e3?sym+Math.round(v/1e3)+'K':sym+v;}}}}}});
+}
+function pvGotoPipelineBD(){
+  var rb=document.querySelector('.pv-rail-btn[data-cat="Pipeline"]');
+  if(rb&&!rb.classList.contains('is-active'))rb.click();
+  plGotoPage('Business Development');
+}
+/* Refresh hooks — wrapped instead of registering 'Dashboard' in
+   PV_PAGE_RENDER, so revisiting the Dashboard doesn't start re-running the
+   page-shown stagger over cards that never animated on revisit before. */
+(function(){
+  var prevShown=window.pvPageShown;
+  window.pvPageShown=function(label,animate){
+    if(label==='Dashboard')renderPvForecast();
+    if(prevShown)prevShown(label,animate);
+  };
+  var prevTheme=window.pvOnThemeChange;
+  window.pvOnThemeChange=function(t){
+    if(prevTheme)prevTheme(t);
+    var a=document.querySelector('.pv-page.is-active');
+    if(a&&a.dataset.page==='Dashboard')renderPvForecast();
+  };
+  var prevApp=window.pvOnAppShown;
+  window.pvOnAppShown=function(){
+    /* re-render BEFORE the intro so runIntro reads the real data-base for
+       the count-up and the chart is created at measurable size */
+    renderPvForecast();
+    if(prevApp)prevApp();
+  };
+  var curEl=document.getElementById('pv-currency');
+  if(curEl)curEl.addEventListener('click',function(e){
+    /* chart bars/ticks need a redraw; the topbar's own handler already
+       retargets the .pv-money span */
+    if(e.target.closest('button[data-cur]'))renderPvForecast();
+  });
+})();
+renderPvForecast();
 
 /* ── Live header date + quarter chip + notification-bell dot ───── */
 /* Everything here reflects the real current day; the interval lets it

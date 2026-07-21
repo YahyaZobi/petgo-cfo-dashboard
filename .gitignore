@@ -34,8 +34,12 @@ context/
 
 # Data exports (contain employee data — do not publish)
 employees_export.json
+employees_export_cleaned.json
 PETGO_Backup_*.json
 *.xlsx
+
+# Employee photos (PII — do not publish)
+employee_photos/
 
 # Personal notes / working docs
 My Finance Prefs.md

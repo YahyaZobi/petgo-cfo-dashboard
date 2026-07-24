@@ -3419,10 +3419,10 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
     Quarter: { cash:148.6, cashDelta:12.4, cashNote:'vs last quarter', rev:84.2,  revDelta:'+6.2%', ebitda:31.7,  ebitdaDelta:'+2.8%', nwc:52.9, nwcDelta:'−1.4%', nwcNeg:true  },
     Year:    { cash:148.6, cashDelta:31.8, cashNote:'vs FY25',         rev:318.4, revDelta:'+9.4%', ebitda:121.3, ebitdaDelta:'+7.1%', nwc:52.9, nwcDelta:'+2.2%', nwcNeg:false }
   };
-  var RATES = { LYD:1, USD:0.1634, EUR:0.191 };
-  var SYM   = { LYD:'LD ', USD:'$', EUR:'€' };
+  var RATES = FX.rates;   /* live reference to the single source of truth */
+  var SYM   = FX.sym;
   function fmtMoney(base, dec, unit, cur){
-    return SYM[cur] + (base*RATES[cur]).toLocaleString('en-US',{minimumFractionDigits:dec, maximumFractionDigits:dec}) + unit;
+    return formatCurrency(base, {base:'LYD', dec:dec, unit:unit});
   }
   function animMoney(el, base, dec, unit, dur){
     if(!el) return;
@@ -3466,21 +3466,21 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
   var curSlider = initSlider(curEl);
   curEl.addEventListener('click', function (e) {
     var btn = e.target.closest('button[data-cur]');
-    if (!btn || btn.dataset.cur === state.currency) return;
-    var from = state.currency;
-    state.currency = btn.dataset.cur;
+    if (!btn || btn.dataset.cur === FX.cur) return;
     moveSlider(curSlider, btn);
     curEl.querySelectorAll('button').forEach(function (b) { b.classList.toggle('is-active', b === btn); });
+    FX.set(btn.dataset.cur);   /* single source; all subscribers re-render */
+  });
+  /* re-render dashboard money spans whenever the currency changes */
+  FX.onChange(function(){
     document.querySelectorAll('.pv-money').forEach(function(el){
       var base=parseFloat(el.getAttribute('data-base')), dec=+el.getAttribute('data-dec'), unit=el.getAttribute('data-unit')||'';
       if(isNaN(base)) return;
-      if(!window.gsap || reduced){ el.textContent = fmtMoney(base,dec,unit,state.currency); return; }
-      var o={r:RATES[from]};
-      gsap.to(o,{r:RATES[state.currency], duration:.5, ease:'power2.out', onUpdate:function(){
-        el.textContent = SYM[state.currency] + (base*o.r).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec}) + unit;
-      }});
+      el.textContent = formatCurrency(base, {base:'LYD', dec:dec, unit:unit});
     });
   });
+  /* reflect the persisted currency on the toggle at load */
+  (function(){ var b=curEl.querySelector('button[data-cur="'+FX.cur+'"]'); if(b){ curEl.querySelectorAll('button').forEach(function(x){x.classList.toggle('is-active',x===b);}); if(curSlider)moveSlider(curSlider,b); } })();
 
   /* ================= approvals (pending only) + activity ================= */
   /* amtUSD drives the approval threshold (≥ $10k needs CFO + CEO; below needs
@@ -4159,27 +4159,12 @@ window.pvCloseUserMenu=pvCloseUserMenu;
 
 <script>
 /* ════ PHASE 2 — FINANCE MODULES (logic ported verbatim from production; same localStorage keys) ════ */
-// ── CURRENCIES ─────────────────────────────────────
-var currentCurrency={symbol:'$',rate:1,code:'USD'};
-var CURRENCIES={
-  'USD ($)':{symbol:'$',rate:1,code:'USD'},
-  'EUR (€)':{symbol:'€',rate:0.92,code:'EUR'},
-  'LYD (LD)':{symbol:'LD ',rate:6.12,code:'LYD'}
-};
-function applyCurrency(key){
-  currentCurrency=CURRENCIES[key]||{symbol:'$',rate:1,code:'USD'};
-  showToast('Currency set to '+currentCurrency.code+'. Regenerate reports to apply.');
-}
-function fmtMoney(v){
-  var val=v*currentCurrency.rate, s=currentCurrency.symbol;
-  if(Math.abs(val)>=1e6)return s+(val/1e6).toFixed(2)+'M';
-  if(Math.abs(val)>=1e3)return s+(val/1e3).toFixed(1)+'K';
-  return s+val.toFixed(2);
-}
-/* Payroll & payslips are denominated in LYD natively (values are stored as LYD,
-   not USD-base), so they bypass the dashboard currency toggle and show full,
-   thousands-separated figures. Single source of truth for both. */
-function fmtLYD(v){return 'LD '+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+// ── CURRENCY WRAPPERS (single source of truth = FX core) ─────────────
+/* Currency lives in the FX core (see FX-CORE). fmtMoney/fmtLYD stay as thin
+   wrappers so the existing call sites keep working but now follow the header
+   toggle. Finance modules store USD-base amounts; payroll/payslips store LYD. */
+function fmtMoney(v){ return formatCurrency(v, {base:'USD', compact:true}); }
+function fmtLYD(v){ return formatCurrency(v, {base:'LYD'}); }
 
 // ── Shared helpers ───────────────────────────────────
 var _fnNextId=500;
@@ -7963,8 +7948,8 @@ window.pvPageShown=function(label,animate){
    No Budget Tracker overlay by design: budgets there are department SPEND
    budgets, not revenue targets, so the comparison would be misleading. */
 var pvPfChart=null;
-var PF_RATES={LYD:1,USD:0.1634,EUR:0.191},PF_SYM={LYD:'LD ',USD:'$',EUR:'€'}; /* mirror of the topbar toggle's table */
-function _pfCur(){var b=document.querySelector('#pv-currency button.is-active');return (b&&b.dataset.cur)||'LYD';}
+var PF_RATES=FX.rates,PF_SYM=FX.sym; /* single source of truth = FX core */
+function _pfCur(){return FX.cur;}
 function renderPvForecast(){
   var elTotal=document.getElementById('pv-pf-total');
   if(!elTotal)return;
@@ -8038,11 +8023,9 @@ function pvGotoPipelineBD(){
     renderPvForecast();
     if(prevApp)prevApp();
   };
-  var curEl=document.getElementById('pv-currency');
-  if(curEl)curEl.addEventListener('click',function(e){
-    /* chart bars/ticks need a redraw; the topbar's own handler already
-       retargets the .pv-money span */
-    if(e.target.closest('button[data-cur]'))renderPvForecast();
+  FX.onChange(function(){
+    var a=document.querySelector('.pv-page.is-active');
+    if(a && a.dataset.page==='Dashboard') renderPvForecast();
   });
 })();
 renderPvForecast();
@@ -8113,19 +8096,11 @@ function pvUpdateBell(){
 window.pvUpdateBell=pvUpdateBell;
 pvUpdateBell();
 
-/* topbar currency switcher drives the finance modules too (stored amounts unchanged) */
-(function(){
-  var CUR_MAP={USD:'USD ($)',EUR:'EUR (€)',LYD:'LYD (LD)'};
-  var curEl=document.getElementById('pv-currency');
-  var act=curEl.querySelector('button.is-active');
-  if(act&&CUR_MAP[act.dataset.cur])currentCurrency=CURRENCIES[CUR_MAP[act.dataset.cur]];
-  curEl.addEventListener('click',function(e){
-    var btn=e.target.closest('button[data-cur]'); if(!btn)return;
-    currentCurrency=CURRENCIES[CUR_MAP[btn.dataset.cur]]||currentCurrency;
-    var active=document.querySelector('.pv-page.is-active');
-    if(active&&PV_PAGE_RENDER[active.dataset.page])PV_PAGE_RENDER[active.dataset.page]();
-  });
-})();
+/* finance modules + the active page re-render on currency change (single source: FX) */
+FX.onChange(function(){
+  var active=document.querySelector('.pv-page.is-active');
+  if(active && typeof PV_PAGE_RENDER!=='undefined' && PV_PAGE_RENDER[active.dataset.page]) PV_PAGE_RENDER[active.dataset.page]();
+});
 </script>
 
 <!-- Restore confirmation modal -->

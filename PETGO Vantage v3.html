@@ -3130,6 +3130,70 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
 </div>
 
 <script>
+/* FX-CORE-START — single source of truth for currency across the whole app.
+   Rates are "1 LYD = X". Stored amounts keep their native base (LYD for
+   dashboard/payroll, USD for finance/pipeline, and LYD for uploaded "(LD)"
+   spreadsheet columns) and convert on display. Everything that shows money
+   must go through formatCurrency()/FX so the header toggle drives it. */
+(function(){
+  var DEFAULTS = { LYD:1, USD:0.1634, EUR:0.191 };
+  var SYM      = { LYD:'LD ', USD:'$', EUR:'€' };
+  var subs = [];
+  function num(v){ return (typeof v==='number'&&isFinite(v))?v:(parseFloat(v)||0); }
+  function loadRates(){
+    try{ var r=JSON.parse(localStorage.getItem('petgo_fx_rates')||'null');
+      if(r && num(r.USD)>0 && num(r.EUR)>0) return {LYD:1, USD:num(r.USD), EUR:num(r.EUR)}; }catch(e){}
+    return {LYD:1, USD:DEFAULTS.USD, EUR:DEFAULTS.EUR};
+  }
+  function loadCur(){
+    var c=null; try{ c=localStorage.getItem('petgo_fx_cur'); }catch(e){}
+    return (c==='USD'||c==='EUR'||c==='LYD') ? c : 'LYD';
+  }
+  function notify(){ subs.slice().forEach(function(fn){ try{ fn(FX.cur, FX.rates); }catch(e){} }); }
+  var FX = {
+    rates: loadRates(),
+    cur:   loadCur(),
+    sym:   SYM,
+    defaults: DEFAULTS,
+    symbol: function(){ return SYM[FX.cur]; },
+    conv: function(amount, base){ return num(amount) / (FX.rates[base||'LYD']||1) * (FX.rates[FX.cur]||1); },
+    setRates: function(obj){
+      if(!(obj && num(obj.USD)>0 && num(obj.EUR)>0)) return false;
+      FX.rates = { LYD:1, USD:num(obj.USD), EUR:num(obj.EUR) };
+      try{ localStorage.setItem('petgo_fx_rates', JSON.stringify({USD:FX.rates.USD, EUR:FX.rates.EUR})); }catch(e){}
+      notify(); return true;
+    },
+    set: function(code){
+      if(code!==FX.cur && (code==='USD'||code==='EUR'||code==='LYD')){
+        FX.cur = code; try{ localStorage.setItem('petgo_fx_cur', code); }catch(e){}
+        notify();
+      }
+    },
+    onChange: function(fn){ subs.push(fn); return function(){ var i=subs.indexOf(fn); if(i>=0) subs.splice(i,1); }; }
+  };
+  function fmtNum(n, dec, compact){
+    if(compact){
+      var a=Math.abs(n);
+      if(a>=1e9) return (n/1e9).toFixed(2)+'B';
+      if(a>=1e6) return (n/1e6).toFixed(2)+'M';
+      if(a>=1e3) return (n/1e3).toFixed(1)+'K';
+      return n.toFixed(2);
+    }
+    return n.toLocaleString('en-US',{minimumFractionDigits:dec, maximumFractionDigits:dec});
+  }
+  function formatCurrency(amount, opts){
+    opts = opts || {};
+    var dec = (opts.dec==null) ? 2 : opts.dec;
+    var n = FX.conv(amount, opts.base||'LYD');
+    return SYM[FX.cur] + fmtNum(n, dec, !!opts.compact) + (opts.unit||'');
+  }
+  window.FX = FX;
+  window.formatCurrency = formatCurrency;
+})();
+/* FX-CORE-END */
+</script>
+
+<script>
 (function () {
   'use strict';
 

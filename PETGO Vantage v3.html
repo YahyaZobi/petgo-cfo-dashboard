@@ -6811,6 +6811,12 @@ function pvChartDefaults(){
   Chart.defaults.color=light?'#47597a':'#8a97b3';
   Chart.defaults.borderColor=light?'rgba(20,30,55,.1)':'rgba(255,255,255,.07)';
   Chart.defaults.font.family="'Manrope',system-ui,sans-serif";
+  // Kill the hover "movement" animation (bars/arcs shifting on hover) while
+  // keeping the initial load animation. In Chart.js v4 the hover reflow is the
+  // "active" transition — zero its duration so hover is instant, not animated.
+  if(Chart.defaults.transitions&&Chart.defaults.transitions.active&&Chart.defaults.transitions.active.animation){
+    Chart.defaults.transitions.active.animation.duration=0;
+  }
 }
 pvChartDefaults();
 var budVsActChart=null;

@@ -5803,8 +5803,16 @@ function docShowPrev(name,rows){
   var sec=document.getElementById('doc-prev-sec'),ttl=document.getElementById('doc-prev-title'),tbl=document.getElementById('doc-prev-tbl');
   if(ttl)ttl.textContent='Data Preview — '+name;
   var head=rows[0]||[];
+  var ld=_docLDCols(rows);
   var h='<thead><tr>'+head.map(function(c){return '<th>'+escH(c==null?'':c)+'</th>';}).join('')+'</tr></thead>';
-  var body='<tbody>'+rows.slice(1).map(function(r){return '<tr>'+head.map(function(_,i){return '<td>'+escH(r[i]==null?'':(r[i] instanceof Date?r[i].toLocaleDateString('en-GB'):r[i]))+'</td>';}).join('')+'</tr>';}).join('')+'</tbody>';
+  var body='<tbody>'+rows.slice(1).map(function(r){return '<tr>'+head.map(function(_,i){
+    var v=r[i], disp;
+    if(v==null||v===''){disp='';}
+    else if(v instanceof Date){disp=v.toLocaleDateString('en-GB');}
+    else if(ld[i]&&_docIsNum(v)){disp=formatCurrency(_docNum(v),{base:'LYD',dec:0});}
+    else{disp=v;}
+    return '<td>'+escH(disp)+'</td>';
+  }).join('')+'</tr>';}).join('')+'</tbody>';
   tbl.innerHTML=h+body; sec.style.display='';
 }
 function docRenderList(){
@@ -5822,6 +5830,15 @@ function docRenderList(){
 }
 function docDelete(i){docFiles.splice(i,1);_docSave();docRenderList();}
 function renderDocuments(){docRenderList();}
+/* Retroactive currency: switching LYD/USD/EUR re-renders the Data Preview and an
+   already-generated report in place — no re-upload or re-generate needed. */
+if(window.FX)FX.onChange(function(){
+  if(typeof docLastData==='undefined'||!docLastData)return;
+  var prev=document.getElementById('doc-prev-sec');
+  if(prev&&prev.style.display!=='none')docShowPrev(docLastData.name,docLastData.rows.slice(0,6));
+  var rep=document.getElementById('doc-report-sec');
+  if(rep&&rep.style.display!=='none'&&docReportChart)docRenderReport();
+});
 
 /* ── Pivot-detection report engine (auto column typing + chart suggestion) ── */
 var docLastData=null, docReportChart=null;
@@ -5832,6 +5849,17 @@ function _docIsDate(v){if(v instanceof Date)return !isNaN(v.getTime());var s=Str
 function _docColType(rows,ci){var d=0,n=0,t=0;for(var r=1;r<rows.length&&r<200;r++){var v=rows[r][ci];if(v==null||v==='')continue;t++;if(_docIsNum(v))n++;else if(_docIsDate(v))d++;}if(!t)return 'empty';if(d/t>=0.6)return 'date';if(n/t>=0.7)return 'number';return 'category';}
 function _docUnique(rows,ci){var s={},n=0;for(var r=1;r<rows.length;r++){var k=rows[r][ci];if(k==null||k==='')continue;k=String(k);if(!(k in s)){s[k]=1;n++;}}return n;}
 function _docDetectCols(rows){var head=rows[0]||[];return head.map(function(h,i){return {idx:i,name:(h==null||h==='')?('Column '+(i+1)):String(h),type:_docColType(rows,i)};});}
+/* Uploaded sheets carry no currency metadata: treat any column whose header (or
+   any cell in the header region) contains "(LD)", "(LYD)", "LYD" or "Libyan
+   Dinar" as LYD-denominated, so its numeric values convert with the app rates.
+   Returns a map { colIndex: true }. */
+function _docLDCols(rows){
+  var out={}, R=Math.min(rows.length,8), maxc=0, r, c;
+  for(r=0;r<R;r++){ if(rows[r]&&rows[r].length>maxc)maxc=rows[r].length; }
+  for(c=0;c<maxc;c++){ for(r=0;r<R;r++){ var v=rows[r]&&rows[r][c]; if(v==null||v==='')continue;
+    if(/\(\s*l(?:y)?d\s*\)|\blyd\b|libyan\s*dinar/i.test(String(v))){ out[c]=true; break; } } }
+  return out;
+}
 function _docSuggest(cols,rows){
   var dates=cols.filter(function(c){return c.type==='date';}),nums=cols.filter(function(c){return c.type==='number';}),cats=cols.filter(function(c){return c.type==='category';});
   if(dates.length&&nums.length)return {type:'line',dim:dates[0].idx,meas:nums[0].idx};
@@ -5870,27 +5898,30 @@ function docBuildReport(){
 function docSetType(t){docReport.type=t;document.querySelectorAll('#doc-chart-types button').forEach(function(b){b.classList.toggle('is-active',b.dataset.t===t);});docRenderReport();}
 /* Shared Chart.js config builder — used by Documents' Visual Report and the
    Reports module's generate/view flows so both render identically. */
-function _docChartCfg(agg,type,measName){
+function _docChartCfg(agg,type,measName,moneySym){
   pvChartDefaults();
+  var MS=moneySym||''; /* currency symbol prefix when the measure is money; '' otherwise */
   var BLUES=['#1e3a8a','#1d4ed8','#2563eb','#3b82f6','#60a5fa','#93c5fd','#bfdbfe','#1e40af','#3060c0','#7fa8f0','#a9c8f8','#2b4c9e'];
   var GRID='rgba(148,163,184,0.13)';
   if(type==='donut'){
-    return {type:'doughnut',data:{labels:agg.labels,datasets:[{data:agg.data,backgroundColor:agg.labels.map(function(_,i){return BLUES[i%BLUES.length];}),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:10,padding:8,usePointStyle:true,pointStyle:'circle'}},tooltip:{callbacks:{label:function(c){return c.label+': '+_docFmt(c.raw);}}}}}};
+    return {type:'doughnut',data:{labels:agg.labels,datasets:[{data:agg.data,backgroundColor:agg.labels.map(function(_,i){return BLUES[i%BLUES.length];}),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:10,padding:8,usePointStyle:true,pointStyle:'circle'}},tooltip:{callbacks:{label:function(c){return c.label+': '+MS+_docFmt(c.raw);}}}}}};
   }
   if(type==='line'){
-    return {type:'line',data:{labels:agg.labels,datasets:[{label:measName,data:agg.data,borderColor:'#2563eb',backgroundColor:function(c){var a=c.chart.chartArea;if(!a)return 'rgba(37,99,235,0.12)';var g=c.chart.ctx.createLinearGradient(0,a.top,0,a.bottom);g.addColorStop(0,'rgba(37,99,235,0.30)');g.addColorStop(1,'rgba(37,99,235,0.02)');return g;},fill:true,tension:0.4,borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#3b82f6',pointBorderColor:'#fff',pointBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return measName+': '+_docFmt(c.raw);}}}},scales:{x:{grid:{display:false}},y:{border:{display:false},grid:{color:GRID},ticks:{callback:function(v){return _docFmt(v);}}}}}};
+    return {type:'line',data:{labels:agg.labels,datasets:[{label:measName,data:agg.data,borderColor:'#2563eb',backgroundColor:function(c){var a=c.chart.chartArea;if(!a)return 'rgba(37,99,235,0.12)';var g=c.chart.ctx.createLinearGradient(0,a.top,0,a.bottom);g.addColorStop(0,'rgba(37,99,235,0.30)');g.addColorStop(1,'rgba(37,99,235,0.02)');return g;},fill:true,tension:0.4,borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#3b82f6',pointBorderColor:'#fff',pointBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return measName+': '+MS+_docFmt(c.raw);}}}},scales:{x:{grid:{display:false}},y:{border:{display:false},grid:{color:GRID},ticks:{callback:function(v){return MS+_docFmt(v);}}}}}};
   }
-  return {type:'bar',data:{labels:agg.labels,datasets:[{label:measName,data:agg.data,backgroundColor:'#2563eb',borderRadius:6,maxBarThickness:46}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return measName+': '+_docFmt(c.raw);}}}},scales:{x:{grid:{display:false}},y:{border:{display:false},grid:{color:GRID},ticks:{callback:function(v){return _docFmt(v);}}}}}};
+  return {type:'bar',data:{labels:agg.labels,datasets:[{label:measName,data:agg.data,backgroundColor:'#2563eb',borderRadius:6,maxBarThickness:46}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return measName+': '+MS+_docFmt(c.raw);}}}},scales:{x:{grid:{display:false}},y:{border:{display:false},grid:{color:GRID},ticks:{callback:function(v){return MS+_docFmt(v);}}}}}};
 }
 function docRenderReport(){
   if(!docLastData)return;
   docReport.dim=parseInt(document.getElementById('doc-dim').value);
   docReport.meas=parseInt(document.getElementById('doc-meas').value);
   var agg=_docAgg(docLastData.rows,docReport.dim,docReport.meas,docReport.type);
+  var isMoney=!!_docLDCols(docLastData.rows)[docReport.meas];
+  if(isMoney){ agg={labels:agg.labels,data:agg.data.map(function(v){return FX.conv(v,'LYD');})}; }
   var cv=document.getElementById('doc-report-chart'); if(!cv||typeof Chart==='undefined')return;
   if(docReportChart)docReportChart.destroy();
   var measName=(docReport.cols.filter(function(c){return c.idx===docReport.meas;})[0]||{}).name||'Value';
-  docReportChart=new Chart(cv,_docChartCfg(agg,docReport.type,measName));
+  docReportChart=new Chart(cv,_docChartCfg(agg,docReport.type,measName,isMoney?FX.symbol():''));
 }
 function docExportReport(){
   if(!docReportChart||!docLastData){showToast('Generate a report first.');return;}

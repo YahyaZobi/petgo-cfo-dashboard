@@ -5041,10 +5041,15 @@ function _psNumToWords(n){
    precision and thousands separators. It must NOT follow the dashboard's display
    currency toggle (which would double-convert or mislabel these LYD figures). */
 function _psMoney(v){return fmtLYD(v);}
+/* Payslip figures follow the display currency; salaries are still disbursed in
+   LYD (kept as a note). These name the active currency for the labels. */
+function _psCurName(){return ({LYD:'Libyan Dinar (LYD)',USD:'US Dollar (USD)',EUR:'Euro (EUR)'})[FX.cur]||'Libyan Dinar (LYD)';}
+function _psCurCode(){return FX.cur;}
+function _psCurWords(){return ({LYD:'Libyan Dinars',USD:'US Dollars',EUR:'Euros'})[FX.cur]||'Libyan Dinars';}
 function _psIssueDate(){return new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});}
 function buildPayslipHTML(p,empTitle,empId,slipNo,issueDate){
   var gross=p.base,totalDed=p.ded,net=gross-totalDed;
-  var netWords=_psNumToWords(net)+' Libyan Dinars Only';
+  var netWords=_psNumToWords(net)+' '+_psCurWords()+' Only';
   var earningRows='<tr><td>Basic Salary</td><td style="color:#94a3b8;font-size:11px;">Monthly base compensation</td><td>'+_psMoney(gross)+'</td></tr>';
   var dedRows=totalDed>0?'<tr><td>Deductions</td><td style="color:#94a3b8;font-size:11px;">Tax, social security &amp; other</td><td>'+_psMoney(totalDed)+'</td></tr>':'<tr><td colspan="3" style="color:#94a3b8;font-style:italic;text-align:center;font-size:11px;padding:14px;">No deductions this period</td></tr>';
   /* Reuse the sidebar logo asset (light-on-dark tile treatment). Pulled from the
@@ -5074,12 +5079,12 @@ function buildPayslipHTML(p,empTitle,empId,slipNo,issueDate){
     '</div>',
     '<div class="ps-body">',
       '<div class="ps-sec-hdr">Earnings</div>',
-      '<table class="ps-tbl"><thead><tr><th>Description</th><th>Details</th><th>Amount (LYD)</th></tr></thead>',
+      '<table class="ps-tbl"><thead><tr><th>Description</th><th>Details</th><th>Amount ('+_psCurCode()+')</th></tr></thead>',
         '<tbody>'+earningRows+'</tbody>',
         '<tfoot><tr><td colspan="2">Total Gross Earnings</td><td>'+_psMoney(gross)+'</td></tr></tfoot>',
       '</table>',
       '<div class="ps-sec-hdr">Deductions</div>',
-      '<table class="ps-tbl ded-tbl"><thead><tr><th>Description</th><th>Details</th><th>Amount (LYD)</th></tr></thead>',
+      '<table class="ps-tbl ded-tbl"><thead><tr><th>Description</th><th>Details</th><th>Amount ('+_psCurCode()+')</th></tr></thead>',
         '<tbody>'+dedRows+'</tbody>',
         '<tfoot><tr><td colspan="2">Total Deductions</td><td>'+_psMoney(totalDed)+'</td></tr></tfoot>',
       '</table>',
@@ -5087,12 +5092,12 @@ function buildPayslipHTML(p,empTitle,empId,slipNo,issueDate){
     '<div class="ps-net-wrap">',
       '<div class="ps-net">',
         '<div><div class="ps-net-lbl">Net Pay</div><div class="ps-net-period">'+escH(p.month)+'</div></div>',
-        '<div class="ps-net-right"><div class="ps-net-currency">Libyan Dinar (LYD)</div><div class="ps-net-amount">'+_psMoney(net)+'</div><div class="ps-net-words">'+netWords+'</div></div>',
+        '<div class="ps-net-right"><div class="ps-net-currency">'+_psCurName()+'</div><div class="ps-net-amount">'+_psMoney(net)+'</div><div class="ps-net-words">'+netWords+'</div></div>',
       '</div>',
     '</div>',
     '<div class="ps-footer">',
       '<div class="ps-footer-left">',
-        '<div class="ps-footer-note">This payslip is computer-generated. All figures are stated in Libyan Dinar (LYD). For queries, contact the HR &amp; Finance department.</div>',
+        '<div class="ps-footer-note">This payslip is computer-generated. Salaries are disbursed in Libyan Dinar (LYD); amounts above are shown in your selected display currency ('+_psCurCode()+'). For queries, contact the HR &amp; Finance department.</div>',
         '<div class="ps-footer-addr">PETGO — Petro Engineering &amp; Technical Group · Registered Office: Tower 3, Dhat El-Emad, Tripoli, Libya</div>',
       '</div>',
       '<div class="ps-authorize">',
@@ -5544,8 +5549,11 @@ function delRev(idx){if(!confirm('Delete this review?'))return;reviews.splice(id
    ════════════════════════════════════════════════════════════ */
 
 /* ── Local formatters + chart helper (theme-aware) ── */
-function _anFmtM(v){var a=Math.abs(v);if(a>=1e6)return '$'+(v/1e6).toFixed(2)+'M';if(a>=1e3)return '$'+(v/1e3).toFixed(0)+'K';return '$'+v;}
-function _anFmtK(v){return '$'+(v/1e3).toFixed(0)+'K';}
+/* Analytics values are USD-base like the rest of the finance modules; convert
+   for display via the FX core so axis ticks/tooltips follow the header toggle.
+   (Linear relabel — the raw data stays put, only the tick labels convert.) */
+function _anFmtM(v){var n=FX.conv(v,'USD'),a=Math.abs(n),s=FX.symbol();if(a>=1e6)return s+(n/1e6).toFixed(2)+'M';if(a>=1e3)return s+(n/1e3).toFixed(0)+'K';return s+Math.round(n);}
+function _anFmtK(v){var n=FX.conv(v,'USD');return FX.symbol()+(n/1e3).toFixed(0)+'K';}
 var _anCharts={};
 function _anMk(id,cfg){var cv=document.getElementById(id);if(!cv||typeof Chart==='undefined')return;if(_anCharts[id]){_anCharts[id].destroy();}pvChartDefaults();_anCharts[id]=new Chart(cv,cfg);}
 
@@ -6917,7 +6925,7 @@ function renderBudVsActChart(){
   var _bcLight=_pvChartRoot&&_pvChartRoot.getAttribute('data-theme')==='light';
   if(budVsActChart)budVsActChart.destroy();
   if(!labels.length){canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);return;}
-  budVsActChart=new Chart(canvas,{type:'bar',data:{labels:labels,datasets:[{label:'Budget',data:budData,backgroundColor:_bcLight?'rgba(100,116,139,0.55)':'rgba(255,255,255,0.16)',borderRadius:5,categoryPercentage:0.6,barPercentage:0.8},{label:'Actual Spent',data:spentData,backgroundColor:'rgba(59,130,246,0.85)',borderRadius:5,categoryPercentage:0.6,barPercentage:0.8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:true,ticks:{callback:function(v){return '$'+v.toLocaleString();}}}}}});
+  budVsActChart=new Chart(canvas,{type:'bar',data:{labels:labels,datasets:[{label:'Budget',data:budData,backgroundColor:_bcLight?'rgba(100,116,139,0.55)':'rgba(255,255,255,0.16)',borderRadius:5,categoryPercentage:0.6,barPercentage:0.8},{label:'Actual Spent',data:spentData,backgroundColor:'rgba(59,130,246,0.85)',borderRadius:5,categoryPercentage:0.6,barPercentage:0.8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:true,ticks:{callback:function(v){return FX.symbol()+Math.round(FX.conv(v,'USD')).toLocaleString();}}}}}});
 }
 function renderInvAgingChart(){
   var canvas=document.getElementById('inv-aging-chart');if(!canvas)return;
@@ -6934,7 +6942,7 @@ function renderInvAgingChart(){
   });
   pvChartDefaults();
   if(invAgingChart)invAgingChart.destroy();
-  invAgingChart=new Chart(canvas,{type:'bar',data:{labels:['Current','1-30 Days','31-60 Days','61-90 Days','90+ Days'],datasets:[{data:[aging.current,aging.d30,aging.d60,aging.d90,aging.d90plus],backgroundColor:['rgba(110,231,160,0.65)','rgba(59,130,246,0.75)','rgba(251,191,36,0.7)','rgba(249,115,22,0.7)','rgba(248,113,113,0.8)'],borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:function(v){return '$'+v.toLocaleString();}}}}}});
+  invAgingChart=new Chart(canvas,{type:'bar',data:{labels:['Current','1-30 Days','31-60 Days','61-90 Days','90+ Days'],datasets:[{data:[aging.current,aging.d30,aging.d60,aging.d90,aging.d90plus],backgroundColor:['rgba(110,231,160,0.65)','rgba(59,130,246,0.75)','rgba(251,191,36,0.7)','rgba(249,115,22,0.7)','rgba(248,113,113,0.8)'],borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:function(v){return FX.symbol()+Math.round(FX.conv(v,'USD')).toLocaleString();}}}}}});
 }
 
 /* ── page-shown hook: render module + dashboard-consistent stagger entrance ── */

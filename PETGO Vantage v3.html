@@ -1534,6 +1534,33 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
 [data-theme="light"] .org-tip{background:rgba(255,255,255,.99);border-color:rgba(20,30,55,.1);box-shadow:0 24px 60px rgba(30,50,90,.22);}
 [data-theme="light"] .org-tip-v.proj{color:#1d4ed8;}
 
+/* ── Org chart: recursive reporting tree (reports_to) ── */
+.org-tree{width:100%;box-sizing:border-box;padding:8px 8px 34px;overflow-x:auto;}
+.org-tree ul{display:flex;justify-content:center;list-style:none;margin:0;padding:34px 0 0;position:relative;}
+.org-tree li{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:34px 12px 0;}
+.org-tree li::before,.org-tree li::after{content:'';position:absolute;top:0;right:50%;width:50%;height:34px;border-top:2px solid var(--pv-line);}
+.org-tree li::after{right:auto;left:50%;border-left:2px solid var(--pv-line);}
+.org-tree li:only-child::before,.org-tree li:only-child::after{display:none;}
+.org-tree li:only-child{padding-top:0;}
+.org-tree li:first-child::before,.org-tree li:last-child::after{border:0;}
+.org-tree li:last-child::before{border-right:2px solid var(--pv-line);border-radius:0 7px 0 0;}
+.org-tree li:first-child::after{border-radius:7px 0 0 0;}
+.org-tree ul ul::before{content:'';position:absolute;top:0;left:50%;width:0;height:34px;border-left:2px solid var(--pv-line);}
+.org-tree>ul{padding-top:0;}
+.org-tree>ul>li{padding-top:0;}
+.org-tree>ul>li::before,.org-tree>ul>li::after{display:none;}
+.org-node{background:var(--pv-card);border:none;border-radius:15px;padding:13px 15px 12px;width:160px;box-shadow:var(--pv-shadow-tile);cursor:pointer;transition:transform .18s,box-shadow .18s;position:relative;display:flex;flex-direction:column;align-items:center;}
+.org-node:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(37,99,235,.3);}
+.org-node.is-root{box-shadow:0 12px 30px rgba(37,99,235,.24),inset 0 0 0 1px rgba(37,99,235,.28);}
+.org-node-name{font-size:11.5px;font-weight:800;color:var(--pv-text);margin:8px 0 2px;line-height:1.3;display:flex;align-items:center;gap:5px;justify-content:center;flex-wrap:wrap;}
+.org-node-title{font-size:9.5px;color:var(--pv-muted-2);line-height:1.3;}
+.org-node-id{font-family:ui-monospace,'SF Mono',monospace;font-size:9px;font-weight:700;color:var(--pv-primary);margin-top:4px;}
+.org-node-badge{font-size:7.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;padding:2px 6px;border-radius:20px;}
+.org-node-badge.exec{color:#2563eb;background:rgba(37,99,235,.12);}
+.org-node-badge.fin{color:#0e9f6e;background:rgba(16,185,129,.14);}
+.org-node-badge.admin{color:#8b5cf6;background:rgba(139,92,246,.14);}
+[data-theme="light"] .org-node.is-root{box-shadow:0 12px 30px rgba(37,99,235,.16),inset 0 0 0 1px rgba(37,99,235,.22);}
+
 /* Contract attachment zone */
 .con-attach-zone{border:2px dashed var(--pv-line);border-radius:10px;padding:12px 14px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:10px;position:relative;}
 .con-attach-zone:hover{border-color:var(--pv-primary);background:rgba(37,99,235,.04);}
@@ -5356,32 +5383,49 @@ function renderOrgChart(){
   var wrap=document.getElementById('org-wrap'); if(!wrap)return;
   employees=fnLoad('petgo_employees',employees);
   if(!employees.length){wrap.innerHTML='<div style="padding:48px;text-align:center;color:var(--pv-muted-2);font-size:13px;">No employees found. Add people in the Team Directory to build the org chart.</div>';return;}
-  var ceo=employees.find(function(e){return e.title&&(e.title.toLowerCase().indexOf('ceo')>=0||e.title.toLowerCase().indexOf('chief executive')>=0);})||employees[0];
-  var depts={};
-  employees.forEach(function(e){if(e===ceo)return;var d=e.dept||'General';if(!depts[d])depts[d]=[];depts[d].push(e);});
-  /* blue-dominant palette — one accent, varied by tint/shade per department */
-  var pal=['#2563eb','#1e40af','#3b82f6','#1d4ed8','#60a5fa','#3060c0','#4c7ef0','#1e3a8a','#2b6cb0','#5b8def'];
-  function dc(dept){return pal[Math.abs(dept.split('').reduce(function(a,c){return a+c.charCodeAt(0);},0))%pal.length];}
-  function av(e,cls){var bg=empColor(e.name);return '<div class="org-av '+cls+'" style="background:'+bg+'">'+empAvatarInner(e,e.name)+'</div>';}
-  var deptKeys=Object.keys(depts);
-  var html='<div class="org-chart"><svg class="org-connectors"></svg>';
-  html+='<div class="org-stats-bar"><strong>'+employees.length+'</strong> employees · <strong>'+deptKeys.length+'</strong> departments</div>';
-  if(ceo)html+='<div class="org-ceo-card">'+av(ceo,'org-av-ceo')+'<div><div class="org-ceo-badge">Chief Executive</div><div class="org-ceo-name">'+escH(ceo.name)+'</div><div class="org-ceo-title">'+escH(ceo.title||'CEO')+'</div>'+(ceo.empId?'<div class="org-ceo-id">'+escH(ceo.empId)+'</div>':'')+'</div></div>';
-  if(deptKeys.length){
-    html+='<div class="org-depts-row">';
-    deptKeys.forEach(function(dept){
-      var color=dc(dept);
-      html+='<div class="org-dept-col">'+
-        '<div class="org-dept-pill" style="background:'+color+'1e;color:'+color+';border-color:'+color+'40;">'+escH(dept)+' <span style="opacity:.6;font-weight:600;">('+depts[dept].length+')</span></div>'+
-        depts[dept].map(function(e){var gi=employees.indexOf(e);return '<div class="org-emp-card" onmouseenter="orgTip(event,'+gi+')" onmouseleave="orgTipHide()" onclick="openEmpModal('+gi+')" title="Click to edit">'+av(e,'org-av-sm')+'<div class="org-emp-name">'+escH(e.name)+'</div><div class="org-emp-title">'+escH(e.title||'—')+'</div>'+(e.empId?'<div class="org-emp-id">'+escH(e.empId)+'</div>':'')+'</div>';}).join('')+
-      '</div>';
-    });
-    html+='</div>';
+  /* Draw the REAL reporting tree from reports_to (mapped onto e.reportsTo = the
+     manager's e.id). Recursive + multi-level. Graceful fallbacks: an employee whose
+     manager id is missing/unknown/self is treated as a top-level root, so the chart
+     still renders before cloud data lands or if reporting lines aren't set; a `seen`
+     guard makes cyclic reports_to impossible to infinite-loop, and anyone not reached
+     from a root (orphan/cycle) is appended as an extra root so everyone shows once. */
+  var byId={}, i;
+  for(i=0;i<employees.length;i++){ if(employees[i].id!=null) byId[employees[i].id]=employees[i]; }
+  function mgrIdOf(e){ var m=e.reportsTo; return (m!=null && byId[m] && byId[m]!==e) ? m : null; }
+  var kids={}, roots=[];
+  for(i=0;i<employees.length;i++){ var e=employees[i], p=mgrIdOf(e); if(p==null) roots.push(e); else (kids[p]||(kids[p]=[])).push(e); }
+  roots.sort(function(a,b){ return (b.executiveApprover?1:0)-(a.executiveApprover?1:0) || String(a.name||'').localeCompare(String(b.name||'')); });
+  function av(e){ return '<div class="org-av org-av-sm" style="background:'+empColor(e.name)+'">'+empAvatarInner(e,e.name)+'</div>'; }
+  function badge(e){
+    if(e.executiveApprover) return '<span class="org-node-badge exec">CEO</span>';
+    if(e.financeApprover)   return '<span class="org-node-badge fin">CFO</span>';
+    if(e.role==='admin')    return '<span class="org-node-badge admin">Admin</span>';
+    return '';
   }
-  html+='</div>';
-  wrap.innerHTML=html;
+  function card(e,isRoot){
+    var gi=employees.indexOf(e);
+    return '<div class="org-node'+(isRoot?' is-root':'')+'" onmouseenter="orgTip(event,'+gi+')" onmouseleave="orgTipHide()" onclick="openEmpModal('+gi+')" title="Click to edit">'+
+      av(e)+
+      '<div class="org-node-name">'+escH(e.name)+badge(e)+'</div>'+
+      '<div class="org-node-title">'+escH(e.title||'—')+'</div>'+
+      (e.empId?'<div class="org-node-id">'+escH(e.empId)+'</div>':'')+
+    '</div>';
+  }
+  var seen={};
+  function node(e,isRoot){
+    var key=e.id!=null?('id'+e.id):('ix'+employees.indexOf(e));
+    if(seen[key]) return '';                       /* cycle / already-rendered guard */
+    seen[key]=1;
+    var out=card(e,isRoot);
+    var ch=(kids[e.id]||[]).slice().sort(function(a,b){return String(a.name||'').localeCompare(String(b.name||''));});
+    if(ch.length) out+='<ul>'+ch.map(function(c){return '<li>'+node(c,false)+'</li>';}).join('')+'</ul>';
+    return out;
+  }
+  var lis=roots.map(function(r){return '<li>'+node(r,true)+'</li>';});
+  for(i=0;i<employees.length;i++){ var e2=employees[i], k2=e2.id!=null?('id'+e2.id):('ix'+i); if(!seen[k2]) lis.push('<li>'+node(e2,true)+'</li>'); }
+  var stats='<div class="org-stats-bar"><strong>'+employees.length+'</strong> employees · <strong>'+roots.length+'</strong> at top level</div>';
+  wrap.innerHTML=stats+'<div class="org-tree"><ul>'+lis.join('')+'</ul></div>';
   _orgEnsureTip();
-  requestAnimationFrame(function(){requestAnimationFrame(_orgDrawConnectors);});
 }
 /* ── Org connectors (soft curved SVG) + hover tooltip ── */
 function _orgEnsureTip(){
@@ -5391,6 +5435,7 @@ function _orgEnsureTip(){
 }
 function orgTip(e,idx){
   var emp=employees[idx]; if(!emp)return;
+  var _mgr=(emp.reportsTo!=null)?(employees.find(function(x){return x.id===emp.reportsTo;})||null):null;
   var tip=document.getElementById('org-tooltip'); if(!tip)return;
   tip.innerHTML='<div class="org-tip-av" style="background:'+empColor(emp.name)+'">'+empAvatarInner(emp,emp.name)+'</div>'+
     '<div class="org-tip-name">'+escH(emp.name)+'</div>'+
@@ -5399,6 +5444,7 @@ function orgTip(e,idx){
       '<div class="org-tip-row"><span class="org-tip-k">Department</span><span class="org-tip-v">'+escH(emp.dept||'—')+'</span></div>'+
       '<div class="org-tip-row"><span class="org-tip-k">Employee ID</span><span class="org-tip-v mono">'+escH(emp.empId||'—')+'</span></div>'+
       '<div class="org-tip-row"><span class="org-tip-k">Current project</span><span class="org-tip-v proj">'+escH(emp.project||'Unassigned')+'</span></div>'+
+      '<div class="org-tip-row"><span class="org-tip-k">Reports to</span><span class="org-tip-v">'+escH(_mgr?_mgr.name:'—')+'</span></div>'+
     '</div>';
   tip.style.display='block';
   var r=e.currentTarget.getBoundingClientRect();
@@ -8273,7 +8319,9 @@ FX.onChange(function(){
       project: 'Unassigned',
       photo: r.photo_url||'',
       financeApprover: !!r.is_finance_approver,
-      executiveApprover: !!r.is_executive_approver
+      executiveApprover: !!r.is_executive_approver,
+      reportsTo: r.reports_to||null,   /* manager's employees.id — drives the Org Chart tree */
+      role: r.role||'view_only'
     };
   }
   window.SBEmp = {

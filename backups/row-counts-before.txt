@@ -1,0 +1,35 @@
+# Supabase row counts BEFORE full migration
+# Project: axpqhzjhkunrsasxoria (https://axpqhzjhkunrsasxoria.supabase.co)
+# Captured: 2026-07-27
+# Source: SELECT count(*) per table (public schema), live query via MCP.
+
+announcements          0
+audit_log              0
+budgets                5
+companies             29
+company_financials     3
+company_reports        0
+contracts              7
+documents              0
+employees             11
+engagements            5
+expense_breakdown      6
+expense_claims         5
+invoices               5
+leave_requests         5
+monthly_financials     6
+onboarding_tasks       2
+opportunities         11
+payroll               11
+performance_reviews    0
+petty_cash             6
+pipeline_activity      0
+project_milestones     0
+projects               5
+tasks                  0
+tenders                0
+
+# TOTAL: 122 rows across 25 tables
+# EMPTY (9): announcements, audit_log, company_reports, documents,
+#            performance_reviews, pipeline_activity, project_milestones,
+#            tasks, tenders

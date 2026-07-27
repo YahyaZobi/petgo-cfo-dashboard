@@ -4253,12 +4253,24 @@ function fnKpi(label,value,sub,bg,color,icon){
    changes are needed. Capped at 200 (mirrors the cloud to the same 200 window). */
 var auditLog = fnLoad('petgo_audit_log', []);
 function saveAuditStore(){ fnSave('petgo_audit_log', auditLog); }
-function addAudit(module,action,color){
+function addAudit(module,action,color,severity){
   color=color||'#3b82f6';
   auditLog = fnLoad('petgo_audit_log', auditLog||[]);   /* re-hydrate (preserves _sbid cloud links) */
   var now=new Date();
   var timeStr=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' · '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-  auditLog.unshift({id:fnId(),module:module,action:action,time:timeStr,color:color});
+  /* performed_by = signed-in user; severity = explicit or inferred from the action
+     verb (deletes/rejections are warnings). Both flow to the audit_log flat columns
+     via the mapper (for SQL/BI) and ride in app_data. */
+  var _by=(typeof currentUser!=='undefined'&&currentUser)?currentUser:null;
+  /* audit_log.performed_by is a uuid FK -> employees.id, so resolve the signed-in
+     user's employee id by email; the email itself stays in app_data.by for display. */
+  var _byId=null;
+  if(_by && typeof employees!=='undefined' && employees && employees.length){
+    var _bu=employees.find(function(e){return (e.email||'').toLowerCase()===(''+_by).toLowerCase();});
+    _byId=(_bu&&_bu.id)||null;
+  }
+  var _sev=severity||(/(delet|remov|reject|declin|fail|clear|wipe)/i.test(action)?'warning':'info');
+  auditLog.unshift({id:fnId(),module:module,action:action,time:timeStr,color:color,by:_by,byId:_byId,severity:_sev});
   if(auditLog.length>200)auditLog=auditLog.slice(0,200);
   saveAuditStore();
   if(typeof renderAuditLog==='function')renderAuditLog();
@@ -4323,9 +4335,9 @@ function saveBud(){
   if(!dept||!cat||!period){showToast('Department, Category and Period are required.');return;}
   var b={id:budEditIdx>=0?budgets[budEditIdx].id:fnId(),dept:dept,cat:cat,period:period,budgeted:budgeted,spent:parseFloat(document.getElementById('bud-f-spent').value)||0};
   if(budEditIdx>=0){budgets[budEditIdx]=b;showToast('Budget updated.');}else{budgets.push(b);showToast('Budget added.');}
-  saveBudStore();closeFnModal('bud-modal');renderBudget();
+  saveBudStore();closeFnModal('bud-modal');renderBudget();addAudit('Budget Tracker','Budget entry saved');
 }
-function delBud(idx){if(!confirm('Delete this budget entry?'))return;budgets.splice(idx,1);saveBudStore();renderBudget();}
+function delBud(idx){if(!confirm('Delete this budget entry?'))return;budgets.splice(idx,1);saveBudStore();renderBudget();addAudit('Budget Tracker','Budget entry deleted','#ef4444');}
 
 // ── INVOICES ─────────────────────────────────────────
 var invoices=fnLoad('petgo_invoices',[
@@ -4381,9 +4393,9 @@ function saveInv(){
   if(!vendor){showToast('Vendor name is required.');return;}
   var i={id:invEditIdx>=0?invoices[invEditIdx].id:fnId(),vendor:vendor,desc:document.getElementById('inv-f-desc').value.trim(),amount:amount,issue:document.getElementById('inv-f-issue').value,due:document.getElementById('inv-f-due').value,status:document.getElementById('inv-f-status').value};
   if(invEditIdx>=0){invoices[invEditIdx]=i;showToast('Invoice updated.');}else{invoices.push(i);showToast('Invoice added.');}
-  saveInvStore();closeFnModal('inv-modal');renderInvoices();
+  saveInvStore();closeFnModal('inv-modal');renderInvoices();addAudit('Invoices','Invoice saved');
 }
-function delInv(idx){if(!confirm('Delete this invoice?'))return;invoices.splice(idx,1);saveInvStore();renderInvoices();}
+function delInv(idx){if(!confirm('Delete this invoice?'))return;invoices.splice(idx,1);saveInvStore();renderInvoices();addAudit('Invoices','Invoice deleted','#ef4444');}
 
 // ── PETTY CASH ───────────────────────────────────────
 var pettyCash=fnLoad('petgo_petty',[
@@ -4441,9 +4453,9 @@ function savePetty(){
   if(!amount||!date){showToast('Amount and date are required.');return;}
   var p={id:pettyEditIdx>=0?pettyCash[pettyEditIdx].id:fnId(),type:document.getElementById('petty-f-type').value,cat:document.getElementById('petty-f-cat').value.trim(),desc:document.getElementById('petty-f-desc').value.trim(),amount:amount,date:date};
   if(pettyEditIdx>=0){pettyCash[pettyEditIdx]=p;showToast('Entry updated.');}else{pettyCash.push(p);showToast('Entry added.');}
-  savePettyStore();closeFnModal('petty-modal');renderPetty();
+  savePettyStore();closeFnModal('petty-modal');renderPetty();addAudit('Petty Cash','Petty cash entry saved');
 }
-function delPetty(idx){if(!confirm('Delete this entry?'))return;pettyCash.splice(idx,1);savePettyStore();renderPetty();}
+function delPetty(idx){if(!confirm('Delete this entry?'))return;pettyCash.splice(idx,1);savePettyStore();renderPetty();addAudit('Petty Cash','Petty cash entry deleted','#ef4444');}
 
 // ── PROJECTS — Upstream / Downstream portfolio ───────
 var PJ_SUBS={'Upstream':['Exploration','Drilling','Production'],'Downstream':['Refining','Distribution','Sales & Marketing']};
@@ -4713,10 +4725,10 @@ function saveProj(){
   }
   var savedIdx=prev?projEditIdx:projects.length;
   if(prev){projects[projEditIdx]=p;showToast('Project updated.');}else{projects.push(p);showToast('Project added.');}
-  saveProjStore();closeFnModal('proj-modal');renderProjects();
+  saveProjStore();closeFnModal('proj-modal');renderProjects();addAudit('Projects','Project saved');
   if(_pjReturnToDetail){_pjReturnToDetail=false;openProjDetail(savedIdx);}
 }
-function delProj(idx){if(!confirm('Delete this project?'))return;projects.splice(idx,1);saveProjStore();renderProjects();showToast('Project deleted.');}
+function delProj(idx){if(!confirm('Delete this project?'))return;projects.splice(idx,1);saveProjStore();renderProjects();showToast('Project deleted.');addAudit('Projects','Project deleted','#ef4444');}
 
 // ── EXPENSE CLAIMS ───────────────────────────────────
 var expenses=fnLoad('petgo_expenses',[
@@ -4970,7 +4982,7 @@ function filterLeave(f,el){
       '<td><div class="fn-row-actions">'+actions+'<button class="fn-btn-del" onclick="delLeave('+idx+')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></td></tr>';
   }).join('');
 }
-function setLeaveStatus(idx,status){leaves[idx].status=status;saveLeaveStore();renderLeave();showToast('Leave request '+status.toLowerCase()+'.');}
+function setLeaveStatus(idx,status){leaves[idx].status=status;saveLeaveStore();renderLeave();showToast('Leave request '+status.toLowerCase()+'.');addAudit('Leave Tracker','Leave request '+status.toLowerCase(),status==='Approved'?'#10b981':'#f59e0b');}
 function openLeaveModal(idx){
   leaveEditIdx=(idx===undefined)?-1:idx;
   var l=leaveEditIdx>=0?leaves[leaveEditIdx]:{emp:'',type:'Annual',start:today(),end:'',status:'Pending',reason:''};
@@ -4989,9 +5001,9 @@ function saveLeave(){
   if(!emp||!start||!end){showToast('Employee, start and end date are required.');return;}
   var l={id:leaveEditIdx>=0?leaves[leaveEditIdx].id:fnId(),emp:emp,type:document.getElementById('leave-f-type').value,start:start,end:end,reason:document.getElementById('leave-f-reason').value.trim(),status:document.getElementById('leave-f-status').value};
   if(leaveEditIdx>=0){leaves[leaveEditIdx]=l;}else{leaves.push(l);}
-  saveLeaveStore();closeFnModal('leave-modal');renderLeave();showToast('Leave request saved.');
+  saveLeaveStore();closeFnModal('leave-modal');renderLeave();showToast('Leave request saved.');addAudit('Leave Tracker','Leave request saved');
 }
-function delLeave(idx){if(!confirm('Delete this leave request?'))return;leaves.splice(idx,1);saveLeaveStore();renderLeave();}
+function delLeave(idx){if(!confirm('Delete this leave request?'))return;leaves.splice(idx,1);saveLeaveStore();renderLeave();addAudit('Leave Tracker','Leave request deleted','#ef4444');}
 
 /* ── PAYROLL ── */
 var payroll=fnLoad('petgo_payroll',[
@@ -5050,9 +5062,9 @@ function savePay(){
   if(!name||!month){showToast('Name and month are required.');return;}
   var p={id:payEditIdx>=0?payroll[payEditIdx].id:fnId(),empId:document.getElementById('pay-f-empid').value.trim(),name:name,dept:document.getElementById('pay-f-dept').value.trim(),base:base,ded:parseFloat(document.getElementById('pay-f-ded').value)||0,month:month};
   if(payEditIdx>=0){payroll[payEditIdx]=p;}else{payroll.push(p);}
-  savePayStore();closeFnModal('pay-modal');renderPayroll();showToast('Payroll entry saved.');
+  savePayStore();closeFnModal('pay-modal');renderPayroll();showToast('Payroll entry saved.');addAudit('Payroll','Payroll entry saved');
 }
-function delPay(idx){if(!confirm('Delete this payroll entry?'))return;payroll.splice(idx,1);savePayStore();renderPayroll();}
+function delPay(idx){if(!confirm('Delete this payroll entry?'))return;payroll.splice(idx,1);savePayStore();renderPayroll();addAudit('Payroll','Payroll entry deleted','#ef4444');}
 
 /* ── PAYSLIP GENERATOR ── */
 function _psNumToWords(n){
@@ -5363,9 +5375,9 @@ function saveCon(){
   var c={id:cid,name:name,dept:document.getElementById('con-f-dept').value.trim(),title:document.getElementById('con-f-title').value.trim(),jobDesc:document.getElementById('con-f-jd').value.trim(),type:document.getElementById('con-f-type').value,end:end};
   if(conEditIdx>=0){contracts[conEditIdx]=c;}else{contracts.push(c);}
   if(_conPendingPDF)localStorage.setItem('petgo_con_pdf_'+cid,_conPendingPDF.dataURL);
-  saveConStore();closeFnModal('con-modal');renderContracts();showToast('Contract saved.');
+  saveConStore();closeFnModal('con-modal');renderContracts();showToast('Contract saved.');addAudit('Contracts','Contract saved');
 }
-function delCon(idx){if(!confirm('Delete this contract and all attachments?'))return;var c=contracts[idx];if(c)localStorage.removeItem('petgo_con_pdf_'+c.id);contracts.splice(idx,1);saveConStore();renderContracts();}
+function delCon(idx){if(!confirm('Delete this contract and all attachments?'))return;var c=contracts[idx];if(c)localStorage.removeItem('petgo_con_pdf_'+c.id);contracts.splice(idx,1);saveConStore();renderContracts();addAudit('Contracts','Contract deleted','#ef4444');}
 function viewConPDF(id){var data=localStorage.getItem('petgo_con_pdf_'+id);if(!data){showToast('No PDF attached to this contract.');return;}var win=window.open('');win.document.write('<html><head><title>Contract</title></head><body style="margin:0"><iframe src="'+data+'" style="width:100%;height:100vh;border:none;"></iframe></body></html>');win.document.close();}
 function viewConJD(idx){var c=contracts[idx];if(!c||!c.jobDesc)return;document.getElementById('jd-modal-title').textContent=(c.title||c.name||'Employee')+' — Job Description';document.getElementById('jd-modal-body').textContent=c.jobDesc;document.getElementById('jd-modal').classList.add('open');}
 function closeJDModal(){document.getElementById('jd-modal').classList.remove('open');}
@@ -5520,9 +5532,9 @@ function saveOb(){
   var name=document.getElementById('ob-f-name').value.trim();
   if(!name){showToast('Employee name is required.');return;}
   var o={id:fnId(),name:name,dept:document.getElementById('ob-f-dept').value.trim(),start:document.getElementById('ob-f-start').value||today(),items:DEFAULT_OB_ITEMS.map(function(l){return {l:l,d:false};})};
-  onboarding.push(o);saveObStore();closeFnModal('ob-modal');renderOnboarding();showToast(name+' onboarding checklist created.');
+  onboarding.push(o);saveObStore();closeFnModal('ob-modal');renderOnboarding();showToast(name+' onboarding checklist created.');addAudit('Onboarding',name+' onboarding checklist created');
 }
-function delOb(idx){if(!confirm('Remove this onboarding record?'))return;onboarding.splice(idx,1);saveObStore();renderOnboarding();}
+function delOb(idx){if(!confirm('Remove this onboarding record?'))return;onboarding.splice(idx,1);saveObStore();renderOnboarding();addAudit('Onboarding','Onboarding record removed','#ef4444');}
 
 /* ── PERFORMANCE REVIEWS ── */
 var reviews=fnLoad('petgo_reviews',[]);
@@ -5587,9 +5599,9 @@ function saveRev(){
   var editIdx=document.getElementById('rev-modal').dataset.editIdx;
   var r={id:fnId(),name:name,dept:document.getElementById('rev-f-dept').value.trim(),period:document.getElementById('rev-f-period').value.trim(),reviewer:document.getElementById('rev-f-reviewer').value.trim(),score:document.getElementById('rev-f-score').value,status:document.getElementById('rev-f-status').value,notes:document.getElementById('rev-f-notes').value.trim()};
   if(editIdx!=null&&editIdx!==''){reviews[parseInt(editIdx)]=r;}else{reviews.push(r);}
-  saveRevStore();closeFnModal('rev-modal');renderReviews();showToast('Review saved.');
+  saveRevStore();closeFnModal('rev-modal');renderReviews();showToast('Review saved.');addAudit('Performance Reviews','Review saved');
 }
-function delRev(idx){if(!confirm('Delete this review?'))return;reviews.splice(idx,1);saveRevStore();renderReviews();showToast('Review deleted.');}
+function delRev(idx){if(!confirm('Delete this review?'))return;reviews.splice(idx,1);saveRevStore();renderReviews();showToast('Review deleted.');addAudit('Performance Reviews','Review deleted','#ef4444');}
 
 /* ════════════════════════════════════════════════════════════
    PHASE 4 — HOME MODULES (Analytics / Documents / Team / Audit)
@@ -8511,7 +8523,7 @@ FX.onChange(function(){
     opportunities:      function(o){ return {company_name:o.companyName, estimated_value:_n(o.estimatedValue), stage:o.stage, probability:_n(o.probability), expected_close_date:_dt(o.expectedCloseDate), closed_date:_dt(o.closedDate), notes:o.notes}; },
     engagements:        function(o){ return {client_name:o.clientName, engagement_type:o.engagementType, status:o.status, risk_reason:o.riskReason||null, start_date:_dt(o.startDate), target_completion_date:_dt(o.targetCompletionDate), assigned_employee_ids:o.assignedEmployeeIds||[], notes:o.notes}; },
     documents:          function(o){ return {name:o.name, size:_n(o.size), ext:o.ext, doc_date:o.date, row_count:_n(o.rows)}; },
-    audit_log:          function(o){ return {module:o.module, action:o.action}; },
+    audit_log:          function(o){ return {module:o.module, action:o.action, performed_by:o.byId||null, severity:o.severity||'info'}; },
     pipeline_activity:  function(o){ return {activity_type:o.type, activity_date:o.date, activity_text:o.text, amount:_n(o.amt), sub:o.sub, risk:o.risk}; }
   };
   function _row(table,o){ var r=TOROW[table](o); r.app_data=o; return r; }

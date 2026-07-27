@@ -8573,10 +8573,21 @@ FX.onChange(function(){
     CLOUD_IDS[cfg.table]=live;
     if(touched) _persist(cfg,arr);          /* persist newly-minted _sbid links */
   }
-  var _syncTimers={};
+  var _syncTimers={}, _syncing={}, _syncDirty={};
+  /* Serialize syncArray per table (mirrors the syncEmployees guard): if a sync is
+     already in-flight when another is scheduled, mark the table dirty and re-run once
+     the current sync finishes. Without this, a fast create-then-delete could let the
+     delete's sync compute its known-set diff before the create's insert response lands,
+     orphaning the freshly-created cloud row. */
+  function _runSync(cfg){
+    if(_syncing[cfg.table]){ _syncDirty[cfg.table]=true; return; }
+    _syncing[cfg.table]=true;
+    Promise.resolve(syncArray(cfg)).catch(function(e){ console.warn('[SB] sync '+cfg.table,e&&e.message); })
+      .then(function(){ _syncing[cfg.table]=false; if(_syncDirty[cfg.table]){ _syncDirty[cfg.table]=false; _runSync(cfg); } });
+  }
   function scheduleSync(cfg){
     clearTimeout(_syncTimers[cfg.table]);
-    _syncTimers[cfg.table]=setTimeout(function(){ syncArray(cfg).catch(function(e){ console.warn('[SB] sync '+cfg.table,e&&e.message); }); },350);
+    _syncTimers[cfg.table]=setTimeout(function(){ _runSync(cfg); },350);
   }
   function hookSave(cfg){
     if(!cfg.save) return;

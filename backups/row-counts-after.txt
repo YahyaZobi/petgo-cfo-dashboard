@@ -1,0 +1,39 @@
+# Supabase row counts AFTER full migration
+# Project: axpqhzjhkunrsasxoria
+# Captured: 2026-07-28 (diff against row-counts-before.txt)
+
+announcements          0
+audit_log              0
+budgets                5
+companies             29
+company_financials     3
+company_reports        0
+contracts              7
+documents              0
+employees             11
+engagements            5
+expense_breakdown      6
+expense_claims         5
+invoices               5
+leave_requests         5
+monthly_financials     6
+onboarding_tasks       2
+opportunities         11
+payroll               11
+performance_reviews    0
+petty_cash             6
+pipeline_activity      6
+project_milestones     0
+projects               5
+tasks                  0
+tenders                0
+
+# TOTAL: 128 rows (was 122)
+#
+# DIFF vs before — exactly ONE net change:
+#   pipeline_activity  0 -> 6   (the pipeline activity feed seeded to cloud on the
+#                                first cloud-connected boot; a new STORES entry from
+#                                the write-path fixes. Legitimate, not test noise.)
+# Every other table is byte-for-byte identical to the baseline.
+# No data loss. Phase-7 UI create/delete test records all cleaned up (0 leaks).
+# audit_log returned to its baseline 0 (test-session entries removed; it accrues in real use).

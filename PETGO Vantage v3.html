@@ -3446,7 +3446,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
   });
 
   function renderKpis(animate) {
-    var k = KPI[state.period], dur = animate ? 0.9 : 0;
+    var k = (window.PV_FIN && window.PV_FIN[state.period]) || KPI[state.period], dur = animate ? 0.9 : 0;
     animMoney(document.getElementById('pv-kpi-cash'),   k.cash,   1, 'M', dur);
     animMoney(document.getElementById('pv-kpi-rev'),    k.rev,    1, 'M', dur);
     animMoney(document.getElementById('pv-kpi-ebitda'), k.ebitda, 1, 'M', dur);
@@ -3460,6 +3460,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
     document.getElementById('pv-kpi-nwc-arrow').textContent = k.nwcNeg ? '▼' : '▲';
     document.getElementById('pv-kpi-nwc-delta').textContent = k.nwcDelta;
   }
+  window.pvRenderKpis = renderKpis;   /* let the Supabase layer refresh KPI tiles once company_financials loads */
 
   /* ================= currency switcher ================= */
   var curEl = document.getElementById('pv-currency');
@@ -3627,12 +3628,14 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
 
   /* ================= cost centers ================= */
   var CIRC = 94.2;
+  /* spend is LYD-base millions (was a hardcoded '$..M' string); rendered via
+     formatCurrency so the header currency toggle converts it like the KPIs. */
   var COST_CENTERS = [
-    { mark:'DRL', name:'Drilling',      spend:'$41.2M YTD', pct:34, ring:'#93c5fd' },
-    { mark:'LOG', name:'Logistics',     spend:'$26.7M YTD', pct:22, ring:'#60a5fa' },
-    { mark:'FAC', name:'Facilities',    spend:'$18.2M YTD', pct:15, ring:'#3b82f6' },
-    { mark:'PAY', name:'Payroll',       spend:'$14.5M YTD', pct:12, ring:'#2563eb' },
-    { mark:'IT',  name:'IT & software', spend:'$10.9M YTD', pct:9,  ring:'#1e40af' }
+    { mark:'DRL', name:'Drilling',      spend:41.2, pct:34, ring:'#93c5fd' },
+    { mark:'LOG', name:'Logistics',     spend:26.7, pct:22, ring:'#60a5fa' },
+    { mark:'FAC', name:'Facilities',    spend:18.2, pct:15, ring:'#3b82f6' },
+    { mark:'PAY', name:'Payroll',       spend:14.5, pct:12, ring:'#2563eb' },
+    { mark:'IT',  name:'IT & software', spend:10.9, pct:9,  ring:'#1e40af' }
   ];
   document.getElementById('pv-cc-list').innerHTML = COST_CENTERS.map(function (cc) {
     var off = (CIRC * (1 - cc.pct / 100)).toFixed(1);
@@ -3641,7 +3644,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
         '<span class="pv-cc-mark">' + cc.mark + '</span>' +
         '<div class="pv-cc-body">' +
           '<div class="pv-list-name">' + cc.name + '</div>' +
-          '<div class="pv-list-sub">' + cc.spend + '</div>' +
+          '<div class="pv-list-sub pv-money" data-base="' + cc.spend + '" data-dec="1" data-unit="M YTD">' + formatCurrency(cc.spend,{base:'LYD',dec:1,unit:'M YTD'}) + '</div>' +
         '</div>' +
         '<div class="pv-ring">' +
           '<svg width="36" height="36" viewBox="0 0 36 36">' +
@@ -3729,7 +3732,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
     var ccRows = COST_CENTERS.map(function (cc) {
       return '<tr>' +
         '<td style="padding:7px 0;font:700 13px/1.2 Arial,sans-serif;color:#0f1830;">' + esc(cc.name) + '</td>' +
-        '<td align="right" style="padding:7px 0;font:600 12px/1.2 Arial,sans-serif;color:#475569;">' + esc(cc.spend) + '</td>' +
+        '<td align="right" style="padding:7px 0;font:600 12px/1.2 Arial,sans-serif;color:#475569;">' + esc(formatCurrency(cc.spend,{base:'LYD',dec:1,unit:'M YTD'})) + '</td>' +
         '<td align="right" width="46" style="padding:7px 0 7px 10px;font:800 12px/1.2 Arial,sans-serif;color:#2563eb;">' + esc(cc.pct) + '%</td>' +
       '</tr>';
     }).join('');
@@ -5559,11 +5562,13 @@ function _anMk(id,cfg){var cv=document.getElementById(id);if(!cv||typeof Chart==
 
 /* ── ANALYTICS ── */
 function renderAnalytics(){
-  var months=['Jan','Feb','Mar','Apr','May','Jun'];
-  var rev=[1180000,1250000,1420000,1280000,1420000,1250000];
-  var exp=[1050000,1106000,1271000,1142000,1261000,1100000];
-  var margins=[11.0,11.5,10.5,10.8,11.2,12.0];
-  var cash=[720000,740000,790000,810000,840000,850000];
+  /* Series come from monthly_financials (Supabase); fall back to samples offline. */
+  var M=window.PV_MONTHLY;
+  var months=(M&&M.months&&M.months.length)?M.months:['Jan','Feb','Mar','Apr','May','Jun'];
+  var rev=(M&&M.rev&&M.rev.length)?M.rev:[1180000,1250000,1420000,1280000,1420000,1250000];
+  var exp=(M&&M.exp&&M.exp.length)?M.exp:[1050000,1106000,1271000,1142000,1261000,1100000];
+  var margins=(M&&M.margins&&M.margins.length)?M.margins:[11.0,11.5,10.5,10.8,11.2,12.0];
+  var cash=(M&&M.cash&&M.cash.length)?M.cash:[720000,740000,790000,810000,840000,850000];
   /* Data series stay in the blue family; red/green is reserved for deltas.
      Reference lines are a neutral slate dash; gridlines are softened. */
   var REF='rgba(148,163,184,0.5)', GRID='rgba(148,163,184,0.13)';
@@ -5578,7 +5583,8 @@ function renderAnalytics(){
     {label:'Expenses',data:exp,backgroundColor:'#9dc0f5',borderRadius:6,maxBarThickness:34}
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:LEG},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+_anFmtM(c.raw);}}}},scales:{x:{grid:{display:false}},y:{border:{display:false},grid:{color:GRID},ticks:{callback:function(v){return _anFmtM(v);}}}}}});
 
-  _anMk('an-exp-chart',{type:'doughnut',data:{labels:['Engineering/COGS','Operations','Admin & G&A','Marketing & BD','Technology','Other'],datasets:[{data:[58,15,12,8,4,3],backgroundColor:['#1e3a8a','#1d4ed8','#2563eb','#3b82f6','#60a5fa','#93c5fd'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{font:{size:10},boxWidth:10,padding:8,usePointStyle:true,pointStyle:'circle'}},tooltip:{callbacks:{label:function(c){return c.label+': '+c.raw+'%';}}}}}});
+  var EX=window.PV_EXPMIX;
+  _anMk('an-exp-chart',{type:'doughnut',data:{labels:(EX&&EX.labels&&EX.labels.length?EX.labels:['Engineering/COGS','Operations','Admin & G&A','Marketing & BD','Technology','Other']),datasets:[{data:(EX&&EX.data&&EX.data.length?EX.data:[58,15,12,8,4,3]),backgroundColor:['#1e3a8a','#1d4ed8','#2563eb','#3b82f6','#60a5fa','#93c5fd'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{font:{size:10},boxWidth:10,padding:8,usePointStyle:true,pointStyle:'circle'}},tooltip:{callbacks:{label:function(c){return c.label+': '+c.raw+'%';}}}}}});
 
   _anMk('an-margin-chart',{type:'line',data:{labels:months,datasets:[
     {label:'Net Margin %',data:margins,borderColor:'#3b82f6',backgroundColor:areaFill('59,130,246'),fill:true,tension:0.4,borderWidth:2.5,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#3b82f6',pointBorderColor:'#fff',pointBorderWidth:2},
@@ -5748,27 +5754,37 @@ function openEmpModal(idx){
   openFnModal('emp-modal',empEditIdx>=0?'Edit Employee':'Add Employee','emp-modal-ttl');
   setTimeout(function(){document.getElementById('emp-f-name').focus();},80);
 }
-function saveEmp(){
+async function saveEmp(){
   var name=document.getElementById('emp-f-name').value.trim();
   if(!name){showToast('Full name is required.');document.getElementById('emp-f-name').focus();return;}
-  var existingPhoto=(empEditIdx>=0&&employees[empEditIdx].photo)||'';
+  var editing=empEditIdx>=0;
+  var existingPhoto=(editing&&employees[empEditIdx].photo)||'';
   var finalPhoto=empPendingPhoto==='__clear__'?'':(empPendingPhoto||existingPhoto);
-  var newId=empEditIdx>=0?employees[empEditIdx].id:empNextId++;
-  var empId=document.getElementById('emp-f-empid').value.trim()||('PTG-'+String(newId).padStart(3,'0'));
-  var emp={id:newId,empId:empId,name:name,title:document.getElementById('emp-f-title').value.trim(),dept:document.getElementById('emp-f-dept').value.trim(),email:document.getElementById('emp-f-email').value.trim(),phone:document.getElementById('emp-f-phone').value.trim(),project:((document.getElementById('emp-f-project')||{}).value)||'Unassigned',photo:finalPhoto};
-  if(empEditIdx>=0){employees[empEditIdx]=emp;showToast(name+' updated.');}
+  var empId=document.getElementById('emp-f-empid').value.trim()||('PTG-'+String((editing?empEditIdx+1:employees.length+1)).padStart(3,'0'));
+  var emp={id:(editing?employees[empEditIdx].id:undefined),empId:empId,name:name,title:document.getElementById('emp-f-title').value.trim(),dept:document.getElementById('emp-f-dept').value.trim(),email:document.getElementById('emp-f-email').value.trim(),phone:document.getElementById('emp-f-phone').value.trim(),project:((document.getElementById('emp-f-project')||{}).value)||'Unassigned',photo:finalPhoto};
+  _pvSyncApproverFlags([emp]);
+  /* Persist to Supabase (source of truth); localStorage stays as an offline mirror.
+     New rows get a server-generated UUID which we adopt as emp.id for later edit/delete. */
+  if(window.SBEmp){
+    try{
+      var saved=editing?await SBEmp.update(emp):await SBEmp.insert(emp);
+      if(saved&&saved.id)emp.id=saved.id;
+    }catch(err){ showToast('Saved locally — cloud sync failed. '+((err&&err.message)||'')); }
+  }
+  if(editing){employees[empEditIdx]=emp;showToast(name+' updated.');}
   else{employees.push(emp);showToast(name+' added to the directory.');}
   saveEmployeeStore();
-  addAudit('Team Directory',(empEditIdx>=0?'Updated ':'Added ')+name,'#2563eb');
+  addAudit('Team Directory',(editing?'Updated ':'Added ')+name,'#2563eb');
   closeFnModal('emp-modal');
   renderEmpGrid();
   if(window.refreshHeaderAvatar)refreshHeaderAvatar();
 }
-function deleteEmp(idx){
+async function deleteEmp(idx){
   var emp=employees[idx]; if(!emp)return;
   if(!confirm('Remove '+emp.name+' from the team directory?'))return;
-  var name=emp.name;
+  var name=emp.name, id=emp.id;
   employees.splice(idx,1); saveEmployeeStore();
+  if(window.SBEmp&&id){ try{ await SBEmp.remove(id); }catch(err){ showToast('Removed locally — cloud delete failed. '+((err&&err.message)||'')); } }
   addAudit('Team Directory','Removed '+name,'#ef4444');
   renderEmpGrid(); showToast(name+' removed.');
 }
@@ -8199,5 +8215,269 @@ FX.onChange(function(){
     <div class="pw-foot"><button class="pw-cancel" onclick="closePwModal()">Cancel</button><button class="pw-save" onclick="savePassword()">Update Password</button></div>
   </div>
 </div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SUPABASE MIGRATION LAYER
+     Source of truth = Supabase (project axpqhzjhkunrsasxoria). localStorage
+     is kept as an offline mirror so all existing synchronous render code
+     (which reads petgo_* via fnLoad) keeps working unchanged. Modules are
+     migrated one at a time; Employees is live below.
+     ════════════════════════════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+(function(){
+  if(!window.supabase||!window.supabase.createClient){ console.error('[SB] supabase-js failed to load — running localStorage-only'); return; }
+  var SB = window.supabase.createClient(
+    'https://axpqhzjhkunrsasxoria.supabase.co',
+    'sb_publishable_R0iw6hsnRD74k1Gjbvkbxw_Ir0lafFB'
+  );
+  window.SB = SB;
+
+  /* ── thin CRUD adapter — logs errors, returns null on read failure, throws on write ── */
+  window.SBDB = {
+    selectAll: async function(table){ var r=await SB.from(table).select('*'); if(r.error){console.warn('[SB] select '+table+':',r.error.message);return null;} return r.data||[]; },
+    insert:    async function(table,row){ var r=await SB.from(table).insert(row).select().single(); if(r.error){console.warn('[SB] insert '+table+':',r.error.message);throw r.error;} return r.data; },
+    update:    async function(table,id,row){ var r=await SB.from(table).update(row).eq('id',id).select().single(); if(r.error){console.warn('[SB] update '+table+':',r.error.message);throw r.error;} return r.data; },
+    remove:    async function(table,id){ var r=await SB.from(table).delete().eq('id',id); if(r.error){console.warn('[SB] delete '+table+':',r.error.message);throw r.error;} return true; }
+  };
+
+  /* ── EMPLOYEES: localStorage shape  <->  public.employees ──
+     JS { id, empId, name, title, dept, email, phone, project(name), photo(base64), financeApprover, executiveApprover }
+     DB { id(uuid), employee_code, full_name, job_title, department, email, phone, current_project_id(uuid), photo_url, is_finance_approver, is_executive_approver }
+     current_project_id stays null until the Projects module migrates; the project
+     NAME is preserved locally (mirrored back on bootstrap by email). */
+  function empToRow(e){
+    return {
+      employee_code: e.empId||null,
+      full_name: e.name||'',
+      email: e.email||null,
+      phone: e.phone||null,
+      job_title: e.title||null,
+      department: e.dept||null,
+      photo_url: e.photo||null,
+      is_finance_approver: !!e.financeApprover,
+      is_executive_approver: !!e.executiveApprover
+    };
+  }
+  function empFromRow(r){
+    return {
+      id: r.id,
+      empId: r.employee_code||'',
+      name: r.full_name||'',
+      title: r.job_title||'',
+      dept: r.department||'',
+      email: r.email||'',
+      phone: r.phone||'',
+      project: 'Unassigned',
+      photo: r.photo_url||'',
+      financeApprover: !!r.is_finance_approver,
+      executiveApprover: !!r.is_executive_approver
+    };
+  }
+  window.SBEmp = {
+    insert: function(e){ return SBDB.insert('employees', empToRow(e)); },
+    update: function(e){ return SBDB.update('employees', e.id, empToRow(e)); },
+    remove: function(id){ return SBDB.remove('employees', id); }
+  };
+
+  /* ── Bootstrap: pull employees into the in-memory array + localStorage mirror ── */
+  async function bootstrapEmployees(){
+    var rows = await SBDB.selectAll('employees');
+    if(rows===null) return;               /* fetch failed → keep offline mirror */
+    var mapped = rows.map(empFromRow);
+    /* preserve locally-assigned project names (until Projects migrates), keyed by email */
+    try{
+      var prev = (typeof fnLoad==='function') ? (fnLoad('petgo_employees',[])||[]) : [];
+      var byEmail={}; prev.forEach(function(o){ if(o&&o.email) byEmail[o.email.toLowerCase()]=o; });
+      mapped.forEach(function(e){ if(e.email){ var o=byEmail[e.email.toLowerCase()]; if(o&&o.project&&o.project!=='Unassigned') e.project=o.project; } });
+    }catch(_){}
+    if(typeof window.employees!=='undefined'){ window.employees.length=0; mapped.forEach(function(e){window.employees.push(e);}); }
+    if(typeof fnSave==='function') fnSave('petgo_employees', mapped);
+  }
+
+  /* ── DASHBOARD + ANALYTICS: figures from company_financials / monthly_financials / expense_breakdown
+       (these back the tiles + charts that used to be hardcoded in the HTML). ── */
+  async function bootstrapDashboard(){
+    var fin = await SBDB.selectAll('company_financials');
+    if(fin && fin.length){
+      var o={};
+      fin.forEach(function(r){ o[r.period]={cash:+r.cash,cashDelta:+r.cash_delta,cashNote:r.cash_note,rev:+r.rev,revDelta:r.rev_delta,ebitda:+r.ebitda,ebitdaDelta:r.ebitda_delta,nwc:+r.nwc,nwcDelta:r.nwc_delta,nwcNeg:!!r.nwc_neg}; });
+      window.PV_FIN=o;
+    }
+    var mon = await SBDB.selectAll('monthly_financials');
+    if(mon && mon.length){
+      mon.sort(function(a,b){return (a.month_order||0)-(b.month_order||0);});
+      window.PV_MONTHLY={months:mon.map(function(r){return r.month;}),rev:mon.map(function(r){return +r.revenue;}),exp:mon.map(function(r){return +r.expenses;}),margins:mon.map(function(r){return +r.margin_pct;}),cash:mon.map(function(r){return +r.cash_position;})};
+    }
+    var ex = await SBDB.selectAll('expense_breakdown');
+    if(ex && ex.length){
+      ex.sort(function(a,b){return (a.sort||0)-(b.sort||0);});
+      window.PV_EXPMIX={labels:ex.map(function(r){return r.category;}),data:ex.map(function(r){return +r.pct;})};
+    }
+  }
+  function refreshDashboardUI(){
+    try{ if(window.pvRenderKpis) window.pvRenderKpis(); }catch(_){}
+    try{ var a=document.querySelector('.pv-page.is-active'); if(a&&a.dataset.page==='Analytics'&&typeof renderAnalytics==='function') renderAnalytics(); }catch(_){}
+  }
+  function _rerenderActive(){
+    try{ var a=document.querySelector('.pv-page.is-active'); if(a&&window.PV_PAGE_RENDER&&PV_PAGE_RENDER[a.dataset.page]) PV_PAGE_RENDER[a.dataset.page](); }catch(_){}
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     GENERIC STORE ENGINE (blob-hybrid) — Finance / Projects / HR /
+     Reports / Pipeline.  Each store keeps its localStorage array as the
+     synchronous render source; on load we pull the cloud copy, or (first
+     run, when the table is empty) seed the cloud FROM the local demo data,
+     and every save*Store() then mirrors the whole array to Supabase in the
+     background.  The full app record rides along in the app_data jsonb
+     column so nothing is lost; the flat columns are populated best-effort
+     for querying/aggregation.  Employee links stay as NAME strings inside
+     app_data (employee_id FKs left null) until the 11 employees are entered
+     and a name→id backfill runs.  Each record carries a hidden _sbid = its
+     cloud uuid so updates/deletes target the right row while the app keeps
+     its own ids for internal cross-references. ─────────────────────────── */
+  var CLOUD_IDS = {};                       /* table -> Set of known cloud row ids */
+  function _n(v){ var n=parseFloat(v); return isNaN(n)?null:n; }
+  function _dt(v){ return (v&&/^\d{4}-\d{2}-\d{2}/.test(String(v)))?String(v).slice(0,10):null; }
+  function _lc(v){ v=String(v==null?'':v).toLowerCase(); return v||null; }
+  function _invStatus(v){ var s=_lc(v); return ['paid','pending','overdue','draft'].indexOf(s)>=0?s:'pending'; }
+  function _projStatus(v){ return ({active:'active',completed:'completed','on hold':'on_hold',planning:'planning'})[_lc(v)]||'planning'; }
+  function _cat(v){ return _lc(v)==='downstream'?'downstream':'upstream'; }
+  function _leaveDays(o){ var a=Date.parse(o.start),b=Date.parse(o.end); if(isNaN(a)||isNaN(b))return null; return Math.round((b-a)/864e5)+1; }
+  var _MONTHS={january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12};
+  function _payMonth(m){ var p=String(m||'').trim().split(/\s+/); var mo=_MONTHS[(p[0]||'').toLowerCase()],yr=parseInt(p[1],10); return (mo&&yr)?(yr+'-'+('0'+mo).slice(-2)+'-01'):null; }
+  function _obDone(o){ return (o.items||[]).length>0 && o.items.every(function(i){return !!i.d;}); }
+
+  /* toRow mappers — flat columns only; app_data:o is appended by _row() */
+  var TOROW = {
+    budgets:            function(o){ return {department:o.dept, category:o.cat, period:o.period, budgeted:_n(o.budgeted), spent:_n(o.spent)}; },
+    invoices:           function(o){ return {vendor:o.vendor, amount:_n(o.amount), due_date:_dt(o.due), status:_invStatus(o.status)}; },
+    expense_claims:     function(o){ return {category:o.cat, description:o.desc, amount:_n(o.amount), claim_date:_dt(o.date), status:_lc(o.status), approvals_received:o.approvals_received||[]}; },
+    petty_cash:         function(o){ return {direction:(o.type==='in'?'in':'out'), category:o.cat, amount:_n(o.amount), note:o.desc, tx_date:_dt(o.date)}; },
+    projects:           function(o){ return {name:o.name, category:_cat(o.category), status:_projStatus(o.status), budget:_n(o.budget), actual_spend:_n(o.spent), start_date:_dt(o.start), target_end_date:_dt(o.end)}; },
+    leave_requests:     function(o){ return {leave_type:o.type, start_date:_dt(o.start), end_date:_dt(o.end), days:_leaveDays(o), reason:o.reason, status:_lc(o.status)}; },
+    payroll:            function(o){ return {pay_month:_payMonth(o.month), base_salary:_n(o.base), deductions:_n(o.ded), net_pay:(_n(o.base)||0)-(_n(o.ded)||0), currency:'LYD'}; },
+    contracts:          function(o){ return {contract_type:o.type, end_date:_dt(o.end)}; },
+    onboarding_tasks:   function(o){ return {task_name:o.name, is_complete:_obDone(o)}; },
+    performance_reviews:function(o){ return {cycle:o.cycle, rating:_n(o.rating), notes:o.notes, status:_lc(o.status)}; },
+    companies:          function(o){ return {name:o.name, category:_cat(o.category), company_type:o.serviceType, website:o.website, logo_url:o.logoUrl, core_activity:o.coreActivity, status:(o.status||'prospective'), region:o.region, primary_contact:o.primaryContact}; },
+    company_reports:    function(o){ return {title:o.title, period:o.period, report_type:(o.type==='generated'?'generated':'uploaded'), chart_config:o.chartCfg||o.chartConfig||null}; },
+    tenders:            function(o){ return {title:o.title||o.name||null, reference_number:o.ref||o.reference||o.referenceNumber||null, company_name_raw:o.company||o.companyName||o.companyNameRaw||null, source_url:o.sourceUrl||o.source_url||null, tender_link_url:o.link||o.url||o.tenderLinkUrl||null, publish_date:_dt(o.publishDate||o.publish_date), source:o.source||null}; },
+    opportunities:      function(o){ return {company_name:o.companyName, estimated_value:_n(o.estimatedValue), stage:o.stage, probability:_n(o.probability), expected_close_date:_dt(o.expectedCloseDate), closed_date:_dt(o.closedDate), notes:o.notes}; },
+    engagements:        function(o){ return {client_name:o.clientName, engagement_type:o.engagementType, status:o.status, risk_reason:o.riskReason||null, start_date:_dt(o.startDate), target_completion_date:_dt(o.targetCompletionDate), assigned_employee_ids:o.assignedEmployeeIds||[], notes:o.notes}; }
+  };
+  function _row(table,o){ var r=TOROW[table](o); r.app_data=o; return r; }
+  function _persist(cfg,arr){ if(cfg.persist) cfg.persist(arr); else if(typeof fnSave==='function') fnSave(cfg.key,arr); }
+  function _setArr(name,mapped){
+    var a=window[name];
+    if(Array.isArray(a)){ a.length=0; for(var i=0;i<mapped.length;i++)a.push(mapped[i]); }
+    else window[name]=mapped;
+  }
+
+  /* pull cloud → local, or (first run, cloud empty) seed cloud ← local demo */
+  async function pullOrSeed(cfg){
+    var rows = await SBDB.selectAll(cfg.table);
+    if(rows===null) return;                 /* offline → keep local mirror */
+    var ids=new Set();
+    if(rows.length===0){
+      var arr=window[cfg.arr]||[];
+      for(var i=0;i<arr.length;i++){
+        try{ var r=await SBDB.insert(cfg.table,_row(cfg.table,arr[i])); arr[i]._sbid=r.id; ids.add(r.id); }
+        catch(e){ console.warn('[SB] seed '+cfg.table+':',e&&e.message); }
+      }
+      CLOUD_IDS[cfg.table]=ids;
+      if(arr.length) _persist(cfg,arr);
+      return;
+    }
+    var mapped=rows.map(function(r){ var o=(r.app_data&&typeof r.app_data==='object')?r.app_data:{id:r.id}; o._sbid=r.id; ids.add(r.id); return o; });
+    _setArr(cfg.arr,mapped);
+    CLOUD_IDS[cfg.table]=ids;
+    _persist(cfg,mapped);
+  }
+
+  /* mirror the whole array to the cloud: upsert present rows, delete removed */
+  async function syncArray(cfg){
+    var arr=window[cfg.arr]||[];
+    var known=CLOUD_IDS[cfg.table]||(CLOUD_IDS[cfg.table]=new Set());
+    var live=new Set(), touched=false;
+    for(var i=0;i<arr.length;i++){
+      var o=arr[i];
+      try{
+        if(o._sbid){ await SBDB.update(cfg.table,o._sbid,_row(cfg.table,o)); live.add(o._sbid); }
+        else { var r=await SBDB.insert(cfg.table,_row(cfg.table,o)); o._sbid=r.id; live.add(r.id); touched=true; }
+      }catch(e){ console.warn('[SB] sync '+cfg.table+':',e&&e.message); }
+    }
+    var del=[]; known.forEach(function(id){ if(!live.has(id))del.push(id); });
+    for(var j=0;j<del.length;j++){ try{ await SBDB.remove(cfg.table,del[j]); }catch(e){ console.warn('[SB] del '+cfg.table+':',e&&e.message); } }
+    CLOUD_IDS[cfg.table]=live;
+    if(touched) _persist(cfg,arr);          /* persist newly-minted _sbid links */
+  }
+  var _syncTimers={};
+  function scheduleSync(cfg){
+    clearTimeout(_syncTimers[cfg.table]);
+    _syncTimers[cfg.table]=setTimeout(function(){ syncArray(cfg).catch(function(e){ console.warn('[SB] sync '+cfg.table,e&&e.message); }); },350);
+  }
+  function hookSave(cfg){
+    if(!cfg.save) return;
+    var orig=window[cfg.save];
+    if(typeof orig!=='function'){ console.warn('[SB] missing save fn '+cfg.save); return; }
+    window[cfg.save]=function(){ var ret=orig.apply(this,arguments); try{ scheduleSync(cfg); }catch(_){} return ret; };
+  }
+
+  /* store registry (order irrelevant — blob keeps app-side ids for cross-refs) */
+  var STORES=[
+    {table:'budgets',            key:'petgo_budgets',      arr:'budgets',       save:'saveBudStore'},
+    {table:'invoices',           key:'petgo_invoices',     arr:'invoices',      save:'saveInvStore'},
+    {table:'expense_claims',     key:'petgo_expenses',     arr:'expenses',      save:'saveExpStore'},
+    {table:'petty_cash',         key:'petgo_petty',        arr:'pettyCash',     save:'savePettyStore'},
+    {table:'projects',           key:'petgo_projects',     arr:'projects',      save:'saveProjStore'},
+    {table:'leave_requests',     key:'petgo_leaves',       arr:'leaves',        save:'saveLeaveStore'},
+    {table:'payroll',            key:'petgo_payroll',      arr:'payroll',       save:'savePayStore'},
+    {table:'contracts',          key:'petgo_contracts',    arr:'contracts',     save:'saveConStore'},
+    {table:'onboarding_tasks',   key:'petgo_onboarding',   arr:'onboarding',    save:'saveObStore'},
+    {table:'performance_reviews',key:'petgo_reviews',      arr:'reviews',       save:'saveRevStore'},
+    {table:'companies',          key:'petgo_rp_companies', arr:'rpCompanies',   save:'saveRpCompanies'},
+    {table:'company_reports',    key:'petgo_rp_reports',   arr:'rpReports',     save:'saveRpReports'},
+    {table:'opportunities',      key:'petgo_pl_opps',      arr:'opportunities', save:'savePlOpps'},
+    {table:'engagements',        key:'petgo_pl_engs',      arr:'engagements',   save:'savePlEngs'},
+    /* tenders: read + first-run seed only; the daily noc.ly scraper still
+       writes the Netlify Blob, so live writes aren't hooked here. Cache shape
+       is {tenders,lastScan}, so persist rewraps the array. */
+    {table:'tenders', key:'petgo_rp_tenders_cache', arr:'rpTenders', save:null,
+     persist:function(a){ if(typeof fnSave==='function') fnSave('petgo_rp_tenders_cache',{tenders:a,lastScan:(window.rpTnLastScan||null)}); }}
+  ];
+  async function bootstrapModules(){
+    for(var i=0;i<STORES.length;i++){
+      try{ await pullOrSeed(STORES[i]); }catch(e){ console.warn('[SB] bootstrap '+STORES[i].table,e&&e.message); }
+    }
+    STORES.forEach(function(cfg){ hookSave(cfg); });   /* hook AFTER pulls so _sbid links exist */
+  }
+
+  /* sbReady resolves once initial cloud data is loaded (or has failed gracefully) */
+  window.sbReady = (async function(){
+    try{ await bootstrapEmployees(); }catch(e){ console.warn('[SB] employees bootstrap failed:', e&&e.message); }
+    try{ await bootstrapDashboard(); }catch(e){ console.warn('[SB] dashboard bootstrap failed:', e&&e.message); }
+    try{ await bootstrapModules(); }catch(e){ console.warn('[SB] modules bootstrap failed:', e&&e.message); }
+    try{ if(typeof renderEmpGrid==='function' && document.getElementById('emp-grid')) renderEmpGrid(); }catch(_){}
+    try{ if(window.refreshHeaderAvatar) window.refreshHeaderAvatar(); }catch(_){}
+    _rerenderActive();
+    refreshDashboardUI();
+    return true;
+  })();
+
+  /* Re-render header + active page once cloud data lands after login */
+  if(typeof window.bootApp==='function'){
+    var _origBootApp = window.bootApp;
+    window.bootApp = function(){
+      _origBootApp.apply(this, arguments);
+      if(window.sbReady) window.sbReady.then(function(){
+        try{ if(window.refreshHeaderAvatar) window.refreshHeaderAvatar(); }catch(_){}
+        try{ var a=document.querySelector('.pv-page.is-active'); if(a&&window.PV_PAGE_RENDER&&PV_PAGE_RENDER[a.dataset.page]) PV_PAGE_RENDER[a.dataset.page](); }catch(_){}
+        refreshDashboardUI();
+      });
+    };
+  }
+})();
+</script>
 </body>
 </html>

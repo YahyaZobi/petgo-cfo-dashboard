@@ -4228,16 +4228,22 @@ function fnKpi(label,value,sub,bg,color,icon){
   '</div>';
 }
 
+/* Audit log store — kept as a global array so the cloud-sync STORES engine can
+   mirror it (arr:'auditLog', save:'saveAuditStore'). Readers still call
+   fnLoad('petgo_audit_log'), which saveAuditStore keeps current, so no reader
+   changes are needed. Capped at 200 (mirrors the cloud to the same 200 window). */
+var auditLog = fnLoad('petgo_audit_log', []);
+function saveAuditStore(){ fnSave('petgo_audit_log', auditLog); }
 function addAudit(module,action,color){
   color=color||'#3b82f6';
-  var log=fnLoad('petgo_audit_log',[]);
+  auditLog = fnLoad('petgo_audit_log', auditLog||[]);   /* re-hydrate (preserves _sbid cloud links) */
   var now=new Date();
   var timeStr=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' · '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-  log.unshift({id:fnId(),module:module,action:action,time:timeStr,color:color});
-  if(log.length>200)log=log.slice(0,200);
-  fnSave('petgo_audit_log',log);
+  auditLog.unshift({id:fnId(),module:module,action:action,time:timeStr,color:color});
+  if(auditLog.length>200)auditLog=auditLog.slice(0,200);
+  saveAuditStore();
   if(typeof renderAuditLog==='function')renderAuditLog();
-  if(typeof renderHistoryTimeline==='function')renderHistoryTimeline();  // Audit Log migrates in a later phase; petgo_audit_log data still accumulates
+  if(typeof renderHistoryTimeline==='function')renderHistoryTimeline();  // cloud sync via STORES engine (auditLog)
 }
 
 // ── BUDGET TRACKER ──────────────────────────────────
@@ -5608,7 +5614,7 @@ function renderAuditLog(){
       '<div class="audit-time">'+escH(e.time)+'</div></div>';
   }).join('');
 }
-function clearAuditLog(){if(!confirm('Clear all audit log entries?'))return;fnSave('petgo_audit_log',[]);renderAuditLog();renderHistoryTimeline();showToast('Audit log cleared.');}
+function clearAuditLog(){if(!confirm('Clear all audit log entries?'))return;auditLog.length=0;saveAuditStore();renderAuditLog();renderHistoryTimeline();showToast('Audit log cleared.');}
 function exportAuditLog(){
   var log=fnLoad('petgo_audit_log',[]);
   try{
@@ -5763,14 +5769,9 @@ async function saveEmp(){
   var empId=document.getElementById('emp-f-empid').value.trim()||('PTG-'+String((editing?empEditIdx+1:employees.length+1)).padStart(3,'0'));
   var emp={id:(editing?employees[empEditIdx].id:undefined),empId:empId,name:name,title:document.getElementById('emp-f-title').value.trim(),dept:document.getElementById('emp-f-dept').value.trim(),email:document.getElementById('emp-f-email').value.trim(),phone:document.getElementById('emp-f-phone').value.trim(),project:((document.getElementById('emp-f-project')||{}).value)||'Unassigned',photo:finalPhoto};
   _pvSyncApproverFlags([emp]);
-  /* Persist to Supabase (source of truth); localStorage stays as an offline mirror.
-     New rows get a server-generated UUID which we adopt as emp.id for later edit/delete. */
-  if(window.SBEmp){
-    try{
-      var saved=editing?await SBEmp.update(emp):await SBEmp.insert(emp);
-      if(saved&&saved.id)emp.id=saved.id;
-    }catch(err){ showToast('Saved locally — cloud sync failed. '+((err&&err.message)||'')); }
-  }
+  /* Persist locally, then let the hooked saveEmployeeStore() upsert to Supabase
+     — same upsert-on-save pattern as the other STORES (see syncEmployees). The
+     hook adopts the server UUID back onto the record for later edit/delete. */
   if(editing){employees[empEditIdx]=emp;showToast(name+' updated.');}
   else{employees.push(emp);showToast(name+' added to the directory.');}
   saveEmployeeStore();
@@ -7291,6 +7292,7 @@ function savePlEngs(){fnSave('petgo_pl_engs',engagements);}
    plain string sort keeps them chronological. `amt` is USD-base and
    formatted with fmtMoney at render time like all Pipeline money. */
 var plActivity=fnLoad('petgo_pl_activity',null);
+function savePlActivity(){ fnSave('petgo_pl_activity', plActivity); }  /* cloud sync via STORES engine (arr:'plActivity') */
 if(!plActivity){
   plActivity=[];
   opportunities.forEach(function(o){
@@ -7316,12 +7318,12 @@ if(!plActivity){
   });
   plActivity.sort(function(a,b){return a.date<b.date?1:-1;});
   plActivity=plActivity.slice(0,50);
-  fnSave('petgo_pl_activity',plActivity);
+  savePlActivity();
 }
 function plLogActivity(type,text,amt,sub,risk){
   plActivity.unshift({id:rpId('pa'),type:type,date:new Date().toISOString(),text:text,amt:amt||null,sub:sub||'',risk:risk||null});
   if(plActivity.length>50)plActivity=plActivity.slice(0,50);
-  fnSave('petgo_pl_activity',plActivity);
+  savePlActivity();
 }
 /* The engagement created from a won opportunity, if any (conversion link). */
 function plEngForOpp(oppId){
@@ -8280,10 +8282,68 @@ FX.onChange(function(){
     remove: function(id){ return SBDB.remove('employees', id); }
   };
 
+  /* ── Employee cloud sync — same upsert-on-save pattern as the generic STORES
+     engine (saveBudStore etc.), but uses the dedicated empToRow mapper because
+     the employees table has flat columns (no app_data blob). Every add/edit that
+     calls saveEmployeeStore() is mirrored to Supabase: existing rows (with an id)
+     are updated, new rows are inserted and their server UUID adopted back onto the
+     record. An in-flight guard + debounce coalesce rapid saves so a quick
+     add-then-edit can't double-insert. ── */
+  var _empSyncTimer=null, _empSyncing=false, _empDirty=false;
+  window.syncEmployees = async function syncEmployees(){
+    if(!window.SBDB) return;
+    if(_empSyncing){ _empDirty=true; return; }
+    _empSyncing=true;
+    try{
+      var arr=window.employees||[], changed=false;
+      for(var i=0;i<arr.length;i++){
+        var e=arr[i];
+        try{
+          if(e.id){ await SBDB.update('employees', e.id, empToRow(e)); }
+          else { var r=await SBDB.insert('employees', empToRow(e)); if(r&&r.id){ e.id=r.id; changed=true; } }
+        }catch(err){ console.warn('[SB] sync employees ('+((e&&e.name)||'?')+'):', err&&err.message); }
+      }
+      if(changed && typeof fnSave==='function') fnSave('petgo_employees', arr);  /* persist adopted ids */
+    } finally {
+      _empSyncing=false;
+      if(_empDirty){ _empDirty=false; window.syncEmployees(); }
+    }
+  };
+  window.scheduleEmpSync = function scheduleEmpSync(){
+    if(!window.SBDB) return;
+    clearTimeout(_empSyncTimer);
+    _empSyncTimer=setTimeout(function(){ window.syncEmployees().catch(function(e){ console.warn('[SB] emp sync:', e&&e.message); }); }, 350);
+  };
+  /* Wrap saveEmployeeStore → cloud upsert (mirror of hookSave for the generic STORES).
+     Installed here (not during the bootstrap pull) — the pull uses fnSave directly,
+     so it never triggers this hook. */
+  (function(){
+    var orig = window.saveEmployeeStore;
+    if(typeof orig==='function'){
+      window.saveEmployeeStore = function(){ var ret=orig.apply(this, arguments); try{ window.scheduleEmpSync(); }catch(_){} return ret; };
+    } else { console.warn('[SB] saveEmployeeStore not found — employee cloud sync not hooked'); }
+  })();
+
   /* ── Bootstrap: pull employees into the in-memory array + localStorage mirror ── */
   async function bootstrapEmployees(){
-    var rows = await SBDB.selectAll('employees');
-    if(rows===null) return;               /* fetch failed → keep offline mirror */
+    var rows;
+    try{ rows = await SBDB.selectAll('employees'); }
+    catch(e){ rows = null; console.warn('[SB] bootstrapEmployees fetch threw:', e&&e.message); }
+    /* A failed/errored fetch must NEVER be mistaken for "cloud is empty". The adapter
+       returns null on error (and a thrown network error lands here as null too). In
+       either case keep the local mirror intact, log, and retry once — do NOT wipe. */
+    if(rows===null || !Array.isArray(rows)){
+      console.warn('[SB] bootstrapEmployees: fetch failed — keeping local mirror'+
+        (bootstrapEmployees._retried ? ' (already retried, giving up)' : ', retrying once in 4s'));
+      if(!bootstrapEmployees._retried){
+        bootstrapEmployees._retried=true;
+        setTimeout(function(){ bootstrapEmployees().catch(function(err){ console.warn('[SB] bootstrapEmployees retry failed:', err&&err.message); }); }, 4000);
+      }
+      return;
+    }
+    /* Confirmed SUCCESSFUL fetch (a real array). Only now may we replace the local
+       mirror — an empty array here genuinely means the cloud has zero employees. */
+    bootstrapEmployees._retried=false;
     var mapped = rows.map(empFromRow);
     /* preserve locally-assigned project names (until Projects migrates), keyed by email */
     try{
@@ -8294,6 +8354,7 @@ FX.onChange(function(){
     if(typeof window.employees!=='undefined'){ window.employees.length=0; mapped.forEach(function(e){window.employees.push(e);}); }
     if(typeof fnSave==='function') fnSave('petgo_employees', mapped);
   }
+  window.bootstrapEmployees = bootstrapEmployees;   /* exposed for diagnostics / manual re-pull */
 
   /* ── DASHBOARD + ANALYTICS: figures from company_financials / monthly_financials / expense_breakdown
        (these back the tiles + charts that used to be hardcoded in the HTML). ── */
@@ -8359,12 +8420,15 @@ FX.onChange(function(){
     payroll:            function(o){ return {pay_month:_payMonth(o.month), base_salary:_n(o.base), deductions:_n(o.ded), net_pay:(_n(o.base)||0)-(_n(o.ded)||0), currency:'LYD'}; },
     contracts:          function(o){ return {contract_type:o.type, end_date:_dt(o.end)}; },
     onboarding_tasks:   function(o){ return {task_name:o.name, is_complete:_obDone(o)}; },
-    performance_reviews:function(o){ return {cycle:o.cycle, rating:_n(o.rating), notes:o.notes, status:_lc(o.status)}; },
+    performance_reviews:function(o){ return {cycle:(o.period||o.cycle||null), rating:_n(o.score!=null?o.score:o.rating), notes:o.notes, status:_lc(o.status)}; },
     companies:          function(o){ return {name:o.name, category:_cat(o.category), company_type:o.serviceType, website:o.website, logo_url:o.logoUrl, core_activity:o.coreActivity, status:(o.status||'prospective'), region:o.region, primary_contact:o.primaryContact}; },
     company_reports:    function(o){ return {title:o.title, period:o.period, report_type:(o.type==='generated'?'generated':'uploaded'), chart_config:o.chartCfg||o.chartConfig||null}; },
     tenders:            function(o){ return {title:o.title||o.name||null, reference_number:o.ref||o.reference||o.referenceNumber||null, company_name_raw:o.company||o.companyName||o.companyNameRaw||null, source_url:o.sourceUrl||o.source_url||null, tender_link_url:o.link||o.url||o.tenderLinkUrl||null, publish_date:_dt(o.publishDate||o.publish_date), source:o.source||null}; },
     opportunities:      function(o){ return {company_name:o.companyName, estimated_value:_n(o.estimatedValue), stage:o.stage, probability:_n(o.probability), expected_close_date:_dt(o.expectedCloseDate), closed_date:_dt(o.closedDate), notes:o.notes}; },
-    engagements:        function(o){ return {client_name:o.clientName, engagement_type:o.engagementType, status:o.status, risk_reason:o.riskReason||null, start_date:_dt(o.startDate), target_completion_date:_dt(o.targetCompletionDate), assigned_employee_ids:o.assignedEmployeeIds||[], notes:o.notes}; }
+    engagements:        function(o){ return {client_name:o.clientName, engagement_type:o.engagementType, status:o.status, risk_reason:o.riskReason||null, start_date:_dt(o.startDate), target_completion_date:_dt(o.targetCompletionDate), assigned_employee_ids:o.assignedEmployeeIds||[], notes:o.notes}; },
+    documents:          function(o){ return {name:o.name, size:_n(o.size), ext:o.ext, doc_date:o.date, row_count:_n(o.rows)}; },
+    audit_log:          function(o){ return {module:o.module, action:o.action}; },
+    pipeline_activity:  function(o){ return {activity_type:o.type, activity_date:o.date, activity_text:o.text, amount:_n(o.amt), sub:o.sub, risk:o.risk}; }
   };
   function _row(table,o){ var r=TOROW[table](o); r.app_data=o; return r; }
   function _persist(cfg,arr){ if(cfg.persist) cfg.persist(arr); else if(typeof fnSave==='function') fnSave(cfg.key,arr); }
@@ -8377,7 +8441,7 @@ FX.onChange(function(){
   /* pull cloud → local, or (first run, cloud empty) seed cloud ← local demo */
   async function pullOrSeed(cfg){
     var rows = await SBDB.selectAll(cfg.table);
-    if(rows===null) return;                 /* offline → keep local mirror */
+    if(rows===null) return false;           /* fetch failed → keep local mirror; bootstrapModules retries */
     var ids=new Set();
     if(rows.length===0){
       var arr=window[cfg.arr]||[];
@@ -8387,12 +8451,13 @@ FX.onChange(function(){
       }
       CLOUD_IDS[cfg.table]=ids;
       if(arr.length) _persist(cfg,arr);
-      return;
+      return true;                          /* seeding a confirmed-empty table is a success */
     }
     var mapped=rows.map(function(r){ var o=(r.app_data&&typeof r.app_data==='object')?r.app_data:{id:r.id}; o._sbid=r.id; ids.add(r.id); return o; });
     _setArr(cfg.arr,mapped);
     CLOUD_IDS[cfg.table]=ids;
     _persist(cfg,mapped);
+    return true;
   }
 
   /* mirror the whole array to the cloud: upsert present rows, delete removed */
@@ -8440,6 +8505,9 @@ FX.onChange(function(){
     {table:'company_reports',    key:'petgo_rp_reports',   arr:'rpReports',     save:'saveRpReports'},
     {table:'opportunities',      key:'petgo_pl_opps',      arr:'opportunities', save:'savePlOpps'},
     {table:'engagements',        key:'petgo_pl_engs',      arr:'engagements',   save:'savePlEngs'},
+    {table:'documents',          key:'petgo_doc_files',    arr:'docFiles',      save:'_docSave'},
+    {table:'audit_log',          key:'petgo_audit_log',    arr:'auditLog',      save:'saveAuditStore'},
+    {table:'pipeline_activity',  key:'petgo_pl_activity',  arr:'plActivity',    save:'savePlActivity'},
     /* tenders: read + first-run seed only; the daily noc.ly scraper still
        writes the Netlify Blob, so live writes aren't hooked here. Cache shape
        is {tenders,lastScan}, so persist rewraps the array. */
@@ -8447,10 +8515,24 @@ FX.onChange(function(){
      persist:function(a){ if(typeof fnSave==='function') fnSave('petgo_rp_tenders_cache',{tenders:a,lastScan:(window.rpTnLastScan||null)}); }}
   ];
   async function bootstrapModules(){
+    var failed=[];
     for(var i=0;i<STORES.length;i++){
-      try{ await pullOrSeed(STORES[i]); }catch(e){ console.warn('[SB] bootstrap '+STORES[i].table,e&&e.message); }
+      try{ if(await pullOrSeed(STORES[i])===false) failed.push(STORES[i]); }
+      catch(e){ console.warn('[SB] bootstrap '+STORES[i].table,e&&e.message); failed.push(STORES[i]); }
     }
     STORES.forEach(function(cfg){ hookSave(cfg); });   /* hook AFTER pulls so _sbid links exist */
+    /* A failed/timed-out fetch is never mistaken for "cloud is empty" — pullOrSeed keeps
+       the local mirror on error (returns false). Here we also RETRY those tables once, so a
+       transient blip during boot doesn't leave a store un-synced for the whole session. */
+    if(failed.length && !bootstrapModules._retried){
+      bootstrapModules._retried=true;
+      console.warn('[SB] bootstrapModules: '+failed.length+' table(s) failed initial pull — retrying once in 4s');
+      setTimeout(function(){
+        Promise.all(failed.map(function(cfg){
+          return pullOrSeed(cfg).catch(function(e){ console.warn('[SB] retry '+cfg.table+':', e&&e.message); });
+        })).then(function(){ try{ _rerenderActive(); refreshDashboardUI(); }catch(_){} });
+      }, 4000);
+    }
   }
 
   /* sbReady resolves once initial cloud data is loaded (or has failed gracefully) */

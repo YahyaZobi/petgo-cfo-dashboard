@@ -37,6 +37,14 @@
   --pv-pos:#6ee7a0;
   --pv-neg:#f87171;
   --pv-warn:#fbbf24;
+  /* Shared category palette (Reports company groups; also reused by the Org Chart
+     department spine). Indigo=brand primary, amber=warn — reused, not redefined;
+     teal/violet/slate are the only additions, centralized here as tokens. */
+  --pv-cat-noc:var(--pv-primary);
+  --pv-cat-jv:#14b8a6;
+  --pv-cat-ioc:#8b5cf6;
+  --pv-cat-svc:#64748b;
+  --pv-cat-down:var(--pv-warn);
   /* Layered card shadows — a tight close shadow (separates adjacent cards)
      over a soft diffuse one (elevation). Themed: dark uses black, light uses
      a cool blue-grey. Each card owns its own shadow via these tokens. */
@@ -1158,11 +1166,19 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
 
 /* Employee photo area (in modal) */
 .emp-photo-area{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:18px;}
-.emp-photo-ring{width:80px;height:80px;border-radius:50%;position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;overflow:hidden;border:2px solid rgba(255,255,255,.14);box-shadow:0 6px 18px rgba(0,0,0,.28);transition:transform .15s,box-shadow .15s,border-color .15s;}
-.emp-photo-ring:hover{transform:translateY(-1px);border-color:rgba(96,165,250,.55);box-shadow:0 10px 24px rgba(37,99,235,.4);}
+/* OUTER wrapper: the click/focus target. overflow:visible so the camera badge is
+   never clipped by the circular photo mask. The INNER .emp-photo-ring keeps the
+   overflow:hidden + border-radius:50% mask for the image/initials only. */
+.emp-photo-wrap{position:relative;width:80px;height:80px;flex:none;cursor:pointer;border-radius:50%;transition:transform .14s;}
+.emp-photo-wrap:focus-visible{outline:none;box-shadow:0 0 0 3px var(--pv-bg),0 0 0 5px var(--pv-primary-lt);}
+.emp-photo-ring{width:100%;height:100%;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;overflow:hidden;border:2px solid rgba(255,255,255,.14);box-shadow:0 6px 18px rgba(0,0,0,.28);transition:box-shadow .15s,border-color .15s;}
+.emp-photo-wrap:hover .emp-photo-ring{border-color:rgba(96,165,250,.55);box-shadow:0 10px 24px rgba(37,99,235,.4);}
 .emp-photo-ring img{width:100%;height:100%;object-fit:cover;display:none;position:absolute;inset:0;}
-/* Small "editable photo" camera badge (replaces the old dark hover scrim). */
-.emp-photo-cam{position:absolute;right:-2px;bottom:-2px;width:26px;height:26px;border-radius:50%;background:var(--pv-primary);color:#fff;border:2.5px solid #131a2e;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.35);pointer-events:none;}
+/* Camera badge: sits on the circle's lower-right arc (positive offsets, inside the
+   wrapper's box), a 34px --pv-primary disc with a 3px --pv-av-ring cut-out ring.
+   pointer-events:none — the whole avatar is the click target, this is the affordance. */
+.emp-photo-cam{position:absolute;right:4px;bottom:4px;width:34px;height:34px;border-radius:50%;background:var(--pv-primary);color:#fff;border:3px solid var(--pv-av-ring);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.35);pointer-events:none;z-index:3;transition:transform .14s,box-shadow .14s;}
+.emp-photo-wrap:hover .emp-photo-cam{transform:scale(1.06);box-shadow:0 5px 14px rgba(37,99,235,.5);}
 .emp-photo-actions{display:flex;gap:8px;align-items:center;}
 .emp-photo-btn{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;padding:8px 15px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--pv-text-2);cursor:pointer;transition:.14s;font-family:'Manrope',system-ui,sans-serif;}
 .emp-photo-btn:hover{background:rgba(59,130,246,.16);border-color:rgba(96,165,250,.42);color:#fff;}
@@ -1170,7 +1186,6 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
 .emp-photo-remove:hover{color:var(--pv-neg);background:rgba(248,113,113,.1);}
 .emp-photo-remove.is-hidden{display:none;}
 [data-theme="light"] .emp-photo-ring{border-color:rgba(20,30,55,.12);}
-[data-theme="light"] .emp-photo-cam{border-color:#ffffff;}
 [data-theme="light"] .emp-photo-btn{background:rgba(20,30,55,.05);border-color:rgba(20,30,55,.14);color:#33415e;}
 [data-theme="light"] .emp-photo-btn:hover{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.32);color:#1d4ed8;}
 
@@ -1261,6 +1276,137 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
 .rp-co-logo.is-3i{font-size:12.5px;letter-spacing:-.01em;}
 .rp-co-tip .rp-co-logo.is-3i{font-size:14px;}
 .rp-co-empty{grid-column:1/-1;text-align:center;color:var(--pv-muted-2);font-size:12.5px;font-weight:600;padding:26px 0 10px;}
+/* ══════════ Reports company directory v2 — FIX A/B/C ══════════ */
+#rp-kpis .fn-kpi-v{font-variant-numeric:tabular-nums;}
+/* FIX B — Grid|Table view toggle (right-aligned in the toolbar) */
+.rp-view-toggle{display:inline-flex;gap:2px;margin-left:auto;background:var(--pv-card);border:1px solid var(--pv-line);border-radius:10px;padding:3px;flex:none;}
+.rp-view-toggle button{display:inline-flex;align-items:center;justify-content:center;width:32px;height:30px;border:none;background:transparent;color:var(--pv-muted-2);border-radius:7px;cursor:pointer;transition:background .14s,color .14s;}
+.rp-view-toggle button.is-active{background:rgba(37,99,235,.16);color:var(--pv-text);}
+.rp-view-toggle button:hover:not(.is-active){color:var(--pv-text);background:rgba(255,255,255,.05);}
+[data-theme="light"] .rp-view-toggle button:hover:not(.is-active){background:rgba(20,30,55,.05);}
+/* FIX C — sticky section header + count chip (uniform grid follows) */
+.rp-sec2{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:9px;padding:9px 2px 10px;margin-top:22px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--pv-muted-2);background:linear-gradient(var(--pv-bg) 68%,transparent);}
+.rp-sec2:first-child{margin-top:0;}
+.rp-sec2-bar{width:3px;height:13px;border-radius:2px;flex:none;}
+.rp-sec2-chip{font-size:10px;font-weight:800;letter-spacing:.04em;font-variant-numeric:tabular-nums;color:var(--pv-muted-2);background:var(--pv-card);border:1px solid var(--pv-line);border-radius:20px;padding:2px 9px;}
+/* FIX C — IDENTICAL column count in every section (explicit tracks, hard max 4) */
+.rp-grid2{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:6px;}
+@media(max-width:1280px){.rp-grid2{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media(max-width:980px){.rp-grid2{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:640px){.rp-grid2{grid-template-columns:minmax(0,1fr);}}
+/* FIX C — info-dense, FIXED-HEIGHT card (no ragged rows) with category left bar */
+.rp-cocard{position:relative;display:flex;flex-direction:column;height:186px;box-sizing:border-box;background:var(--pv-card);border-radius:15px;box-shadow:var(--pv-shadow-tile);padding:15px 16px 0 18px;cursor:pointer;overflow:hidden;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .18s cubic-bezier(.4,0,.2,1),box-shadow .18s cubic-bezier(.4,0,.2,1);}
+.rp-cocard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--rp-bar,var(--pv-primary));}
+.rp-cocard:hover{transform:translateY(-3px);box-shadow:var(--pv-shadow-hover);}
+.rp-cc-top{display:flex;align-items:flex-start;gap:10px;}
+.rp-cc-logo{width:44px;height:44px;border-radius:10px;flex:none;background:#fff;padding:8px;border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.22);transition:box-shadow .18s;}
+.rp-cc-logo img{width:100%;height:100%;object-fit:contain;display:block;}
+.rp-cc-logo.ini{padding:0;border:none;color:#fff;font-weight:800;font-size:14px;}
+.rp-cc-logo.ini.is-3i{font-size:12px;}
+.rp-cocard:hover .rp-cc-logo{box-shadow:0 0 0 2px rgba(96,165,250,.55);}
+[data-theme="light"] .rp-cc-logo{border-color:rgba(20,30,55,.1);}
+.rp-cc-tn{margin-left:auto;font-size:11px;font-weight:800;font-variant-numeric:tabular-nums;padding:3px 9px;border-radius:20px;background:rgba(148,163,184,.14);color:var(--pv-muted-2);white-space:nowrap;}
+.rp-cc-tn.has{background:rgba(37,99,235,.16);color:var(--pv-primary-lt);}
+.rp-cc-name{font-size:15px;font-weight:600;color:var(--pv-text);line-height:1.25;margin-top:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rp-cc-short{font-size:12px;color:var(--pv-muted-2);margin-top:2px;height:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rp-cc-desc{font-size:13px;color:var(--pv-muted);line-height:1.42;margin-top:9px;height:37px;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.rp-cc-foot{margin-top:auto;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--pv-muted-2);border-top:1px solid var(--pv-line);padding:10px 0;min-width:0;}
+.rp-cc-foot svg{flex:none;opacity:.85;}
+.rp-cc-foot span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rp-cocard.rp-cc-add{align-items:center;justify-content:center;flex-direction:row;gap:9px;height:186px;border:2px dashed var(--pv-line);box-shadow:none;background:transparent;color:var(--pv-muted-2);font-size:12.5px;font-weight:700;}
+.rp-cocard.rp-cc-add::before{display:none;}
+.rp-cocard.rp-cc-add:hover{border-color:var(--pv-primary);color:#93c5fd;background:rgba(37,99,235,.06);transform:none;box-shadow:none;}
+[data-theme="light"] .rp-cocard.rp-cc-add:hover{color:#1d4ed8;}
+/* FIX C — per-section empty state (never a bare 0) + table-view placeholder */
+.rp-empty2{grid-column:1/-1;text-align:center;color:var(--pv-muted-2);padding:52px 0;}
+.rp-empty2 svg{opacity:.5;margin-bottom:10px;}
+.rp-empty2 .rp-empty2-l{font-size:13px;font-weight:600;color:var(--pv-text);}
+.rp-empty2 .rp-empty2-s{font-size:12px;margin-top:4px;}
+@media(prefers-reduced-motion:reduce){.rp-cocard{transition:none;}}
+/* ══════════ FIX D — table view ══════════ */
+.rp-table-wrap{border:1px solid var(--pv-line);border-radius:14px;background:var(--pv-card);overflow:hidden;}
+.rp-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.rp-table thead th{position:sticky;top:0;z-index:5;background:var(--pv-card);text-align:left;font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--pv-muted-2);padding:12px 14px;white-space:nowrap;user-select:none;}
+.rp-table thead th.srt{cursor:pointer;}
+.rp-table thead th.srt:hover{color:var(--pv-text);}
+.rp-th-ar{display:inline-block;margin-left:5px;opacity:0;font-size:8px;vertical-align:middle;}
+.rp-table thead th.is-srt{color:var(--pv-text);}
+.rp-table thead th.is-srt .rp-th-ar{opacity:.9;}
+.rp-table tbody tr{height:44px;border-top:1px solid rgba(148,163,184,.06);cursor:pointer;transition:background .12s;}
+.rp-table tbody tr:hover{background:rgba(255,255,255,.045);}
+[data-theme="light"] .rp-table tbody tr:hover{background:rgba(20,30,55,.035);}
+.rp-table td{padding:6px 14px;color:var(--pv-text);vertical-align:middle;white-space:nowrap;}
+.rp-table td.rp-td-name{font-weight:700;max-width:230px;overflow:hidden;text-overflow:ellipsis;}
+.rp-table td.rp-td-act{color:var(--pv-muted-2);max-width:250px;overflow:hidden;text-overflow:ellipsis;font-weight:500;}
+.rp-tb-logo{width:28px;height:28px;border-radius:7px;background:#fff;padding:4px;border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none;}
+.rp-tb-logo img{width:100%;height:100%;object-fit:contain;}
+.rp-tb-logo.ini{padding:0;border:none;color:#fff;font-weight:800;font-size:10px;}
+[data-theme="light"] .rp-tb-logo{border-color:rgba(20,30,55,.1);}
+.rp-tb-cat{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;white-space:nowrap;}
+.rp-tb-cat .dot{width:8px;height:8px;border-radius:3px;flex:none;}
+.rp-tb-tn{display:inline-block;min-width:22px;text-align:center;font-size:11px;font-weight:800;font-variant-numeric:tabular-nums;padding:2px 9px;border-radius:20px;background:rgba(148,163,184,.14);color:var(--pv-muted-2);}
+.rp-tb-tn.has{background:rgba(37,99,235,.16);color:var(--pv-primary-lt);cursor:pointer;}
+.rp-tb-chev{opacity:0;color:var(--pv-muted-2);transition:opacity .12s;}
+.rp-table tbody tr:hover .rp-tb-chev{opacity:.7;}
+/* ══════════ FIX E — detail drawer ══════════ */
+.rp-drawer-back{position:fixed;inset:0;z-index:1200;background:rgba(4,7,14,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;display:none;}
+.rp-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:92vw;z-index:1201;background:var(--pv-card);border-left:1px solid var(--pv-line);box-shadow:-24px 0 64px rgba(0,0,0,.5);backdrop-filter:blur(28px) saturate(1.4);-webkit-backdrop-filter:blur(28px) saturate(1.4);display:none;flex-direction:column;transform:translateX(100%);}
+[data-theme="light"] .rp-drawer{background:rgba(255,255,255,.98);}
+.rp-dw-head{display:flex;align-items:flex-start;gap:13px;padding:20px 20px 16px;border-bottom:1px solid var(--pv-line);}
+.rp-dw-logo{width:52px;height:52px;border-radius:13px;background:#fff;padding:8px;border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none;}
+.rp-dw-logo img{width:100%;height:100%;object-fit:contain;}
+.rp-dw-logo.ini{padding:0;border:none;color:#fff;font-weight:800;font-size:16px;}
+[data-theme="light"] .rp-dw-logo{border-color:rgba(20,30,55,.1);}
+.rp-dw-name{font-size:16px;font-weight:700;color:var(--pv-text);line-height:1.25;}
+.rp-dw-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.rp-dw-cat{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:rgba(148,163,184,.12);color:var(--pv-muted-2);}
+.rp-dw-cat .dot{width:8px;height:8px;border-radius:3px;}
+.rp-dw-x{margin-left:auto;flex:none;width:30px;height:30px;border:none;border-radius:9px;background:rgba(255,255,255,.06);color:var(--pv-muted);cursor:pointer;font-size:13px;transition:.12s;}
+.rp-dw-x:hover{background:rgba(255,255,255,.12);color:var(--pv-text);}
+[data-theme="light"] .rp-dw-x{background:rgba(20,30,55,.05);}
+.rp-dw-body{flex:1;overflow-y:auto;padding:18px 20px 10px;}
+.rp-dw-sec{margin-bottom:20px;}
+.rp-dw-sec-h{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--pv-muted-2);margin-bottom:9px;display:flex;align-items:center;gap:7px;}
+.rp-dw-sec-h .c{font-weight:800;color:var(--pv-muted-3);}
+.rp-dw-desc{font-size:13px;color:var(--pv-muted);line-height:1.55;}
+.rp-dw-kv{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;padding:7px 0;border-bottom:1px solid var(--pv-line);}
+.rp-dw-kv:last-child{border-bottom:none;}
+.rp-dw-k{color:var(--pv-muted-2);font-weight:600;flex:none;}
+.rp-dw-v{color:var(--pv-text);font-weight:600;text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis;}
+.rp-dw-v a{color:var(--pv-primary-lt);text-decoration:none;}
+.rp-dw-v a:hover{text-decoration:underline;}
+.rp-dw-item{display:flex;align-items:center;gap:9px;font-size:12.5px;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,.03);margin-bottom:6px;}
+[data-theme="light"] .rp-dw-item{background:rgba(20,30,55,.03);}
+.rp-dw-item .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--pv-text);font-weight:600;}
+.rp-dw-item .d{color:var(--pv-muted-2);font-size:11px;flex:none;}
+.rp-dw-empty{font-size:12px;color:var(--pv-muted-3);font-style:italic;padding:2px 0;}
+.rp-dw-foot{padding:14px 20px;border-top:1px solid var(--pv-line);display:flex;gap:10px;align-items:center;}
+.rp-dw-hint{font-size:10.5px;color:var(--pv-muted-3);margin-left:auto;display:flex;align-items:center;gap:5px;}
+.rp-dw-kbd{font-family:ui-monospace,monospace;font-size:10px;background:rgba(255,255,255,.08);border-radius:4px;padding:1px 5px;}
+/* ══════════ FIX F — filter bar (multi-selects + active chips) ══════════ */
+.rp-ms{position:relative;flex:none;}
+.rp-ms-btn{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 12px;border-radius:12px;border:1px solid var(--pv-line);background:var(--pv-card);color:var(--pv-text);font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:border-color .15s;}
+.rp-ms-btn:hover:not(:disabled){border-color:rgba(96,165,250,.45);}
+.rp-ms-btn:disabled{opacity:.5;cursor:not-allowed;}
+.rp-ms-btn .cnt{font-size:10px;font-weight:800;font-variant-numeric:tabular-nums;background:rgba(37,99,235,.18);color:var(--pv-primary-lt);border-radius:20px;padding:1px 7px;}
+.rp-ms-btn .car{opacity:.55;transition:transform .15s;}
+.rp-ms.open .rp-ms-btn .car{transform:rotate(180deg);}
+.rp-ms-pop{position:absolute;top:calc(100% + 6px);left:0;z-index:40;min-width:210px;max-height:290px;overflow-y:auto;background:var(--pv-card);border:1px solid var(--pv-line);border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.5);padding:6px;display:none;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+.rp-ms.open .rp-ms-pop{display:block;}
+.rp-ms-opt{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;font-size:12.5px;color:var(--pv-text);cursor:pointer;}
+.rp-ms-opt:hover{background:rgba(255,255,255,.05);}
+[data-theme="light"] .rp-ms-opt:hover{background:rgba(20,30,55,.04);}
+.rp-ms-opt input{accent-color:var(--pv-primary);width:14px;height:14px;flex:none;}
+.rp-ms-opt .lbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rp-ms-opt .n{font-size:10px;color:var(--pv-muted-3);font-variant-numeric:tabular-nums;}
+.rp-chips{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:14px;}
+.rp-chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:5px 6px 5px 11px;border-radius:20px;background:rgba(37,99,235,.12);color:var(--pv-primary-lt);border:1px solid rgba(37,99,235,.22);}
+.rp-chip .k{color:var(--pv-muted-2);font-weight:700;text-transform:uppercase;font-size:9px;letter-spacing:.05em;}
+.rp-chip button{border:none;background:transparent;color:inherit;cursor:pointer;display:inline-flex;align-items:center;font-size:14px;line-height:1;opacity:.7;padding:0 1px;}
+.rp-chip button:hover{opacity:1;}
+.rp-chip-clear{background:transparent;border:none;color:var(--pv-muted-2);font-size:11.5px;font-weight:700;cursor:pointer;padding:5px 6px;font-family:inherit;}
+.rp-chip-clear:hover{color:var(--pv-text);}
+@media(max-width:900px){.rp-table thead th.opt-hide,.rp-table td.opt-hide{display:none;}}
 /* Company hover tooltip — same elevation/glass treatment as .org-tip.
    Interactive (pointer-events:auto) so the website link is clickable;
    JS delays hide and keeps it open while hovered. */
@@ -1536,30 +1682,39 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
 
 /* ── Org chart: recursive reporting tree (reports_to) ── */
 .org-tree{width:100%;box-sizing:border-box;padding:8px 8px 34px;overflow-x:auto;}
-.org-tree ul{display:flex;justify-content:center;list-style:none;margin:0;padding:34px 0 0;position:relative;}
-.org-tree li{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:34px 12px 0;}
-.org-tree li::before,.org-tree li::after{content:'';position:absolute;top:0;right:50%;width:50%;height:34px;border-top:2px solid var(--pv-line);}
+.org-tree ul{display:flex;justify-content:center;list-style:none;margin:0;padding:28px 0 0;position:relative;}
+.org-tree li{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 12px 0;}
+.org-tree li::before,.org-tree li::after{content:'';position:absolute;top:0;right:50%;width:50%;height:28px;border-top:2px solid var(--pv-line);}
 .org-tree li::after{right:auto;left:50%;border-left:2px solid var(--pv-line);}
 .org-tree li:only-child::before,.org-tree li:only-child::after{display:none;}
 .org-tree li:only-child{padding-top:0;}
 .org-tree li:first-child::before,.org-tree li:last-child::after{border:0;}
 .org-tree li:last-child::before{border-right:2px solid var(--pv-line);border-radius:0 7px 0 0;}
 .org-tree li:first-child::after{border-radius:7px 0 0 0;}
-.org-tree ul ul::before{content:'';position:absolute;top:0;left:50%;width:0;height:34px;border-left:2px solid var(--pv-line);}
+.org-tree ul ul::before{content:'';position:absolute;top:0;left:50%;width:0;height:28px;border-left:2px solid var(--pv-line);}
 .org-tree>ul{padding-top:0;}
 .org-tree>ul>li{padding-top:0;}
 .org-tree>ul>li::before,.org-tree>ul>li::after{display:none;}
-.org-node{background:var(--pv-card);border:none;border-radius:15px;padding:13px 15px 12px;width:160px;box-shadow:var(--pv-shadow-tile);cursor:pointer;transition:transform .18s,box-shadow .18s;position:relative;display:flex;flex-direction:column;align-items:center;}
+/* Compact horizontal card (FIX 3): avatar left, text right, 190×108 fixed. */
+.org-node{background:var(--pv-card);border:none;border-radius:14px;padding:14px;padding-left:16px;width:190px;height:108px;box-sizing:border-box;box-shadow:var(--pv-shadow-tile);cursor:pointer;transition:transform .18s,box-shadow .18s;position:relative;display:flex;flex-direction:row;align-items:center;gap:11px;text-align:left;overflow:hidden;}
 .org-node:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(37,99,235,.3);}
 .org-node.is-root{box-shadow:0 12px 30px rgba(37,99,235,.24),inset 0 0 0 1px rgba(37,99,235,.28);}
-.org-node-name{font-size:11.5px;font-weight:800;color:var(--pv-text);margin:8px 0 2px;line-height:1.3;display:flex;align-items:center;gap:5px;justify-content:center;flex-wrap:wrap;}
-.org-node-title{font-size:9.5px;color:var(--pv-muted-2);line-height:1.3;}
-.org-node-id{font-family:ui-monospace,'SF Mono',monospace;font-size:9px;font-weight:700;color:var(--pv-primary);margin-top:4px;}
-.org-node-badge{font-size:7.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;padding:2px 6px;border-radius:20px;}
+.org-node-body{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+.org-node-name{font-size:13px;font-weight:600;color:var(--pv-text);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+.org-node-title{font-size:11px;color:var(--pv-muted-2);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin-top:2px;}
+.org-node-id{align-self:flex-start;font-family:ui-monospace,'SF Mono',monospace;font-size:10px;font-weight:700;color:var(--pv-primary);margin-top:7px;background:rgba(37,99,235,.1);padding:1px 6px;border-radius:5px;letter-spacing:.3px;}
+.org-node-tags{position:absolute;top:8px;right:8px;display:flex;gap:3px;z-index:2;}
+.org-node-badge{font-size:9px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:2px 5px;border-radius:6px;line-height:1.15;}
 .org-node-badge.exec{color:#2563eb;background:rgba(37,99,235,.12);}
 .org-node-badge.fin{color:#0e9f6e;background:rgba(16,185,129,.14);}
 .org-node-badge.admin{color:#8b5cf6;background:rgba(139,92,246,.14);}
 [data-theme="light"] .org-node.is-root{box-shadow:0 12px 30px rgba(37,99,235,.16),inset 0 0 0 1px rgba(37,99,235,.22);}
+/* ── Org Chart v2 — zoomable/pannable viewport + transform canvas (FIX 1) ── */
+.org-viewport{position:absolute;inset:0;overflow:hidden;border-radius:14px;}
+.org-canvas{position:absolute;top:0;left:0;width:max-content;transform-origin:0 0;will-change:transform;}
+.org-canvas .org-tree{width:auto;overflow:visible;padding:10px 22px 22px;}
+.org-fit-stats{position:absolute;top:12px;left:14px;z-index:4;display:flex;gap:14px;align-items:center;font-size:11.5px;color:var(--pv-muted-2);background:var(--pv-card);border:1px solid var(--pv-line);border-radius:10px;padding:6px 12px;box-shadow:var(--pv-shadow-tile);}
+.org-fit-stats strong{color:var(--pv-text);font-weight:700;}
 
 /* Contract attachment zone */
 .con-attach-zone{border:2px dashed var(--pv-line);border-radius:10px;padding:12px 14px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:10px;position:relative;}
@@ -2322,6 +2477,11 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
       <div class="emp-topbar">
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
           <input type="text" id="emp-search" class="emp-search" placeholder="Search name, title, department…" oninput="renderEmpGrid()">
+          <select id="emp-sort" class="emp-search" style="width:auto;cursor:pointer;font-weight:600;" title="Sort employees by" onchange="setEmpSort(this.value)">
+            <option value="seniority">Sort: Seniority</option>
+            <option value="name">Sort: Name A–Z</option>
+            <option value="dept">Sort: Department</option>
+          </select>
           <span class="emp-count-lbl" id="emp-count-lbl"></span>
         </div>
         <button class="fn-add-btn" onclick="openEmpModal()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Employee</button>
@@ -2379,12 +2539,19 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.3" y2="16.3"/></svg>
             <input id="rp-search-input" type="search" placeholder="Search companies…" oninput="rpSetSearch(this.value)">
           </div>
+          <div class="rp-ms" id="rp-ms-cat"><button type="button" class="rp-ms-btn" onclick="rpToggleMs('rp-ms-cat',event)">Category<span class="cnt" id="rp-ms-cat-cnt" style="display:none;">0</span><svg class="car" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button><div class="rp-ms-pop" id="rp-ms-cat-pop"></div></div>
+          <div class="rp-ms" id="rp-ms-region"><button type="button" class="rp-ms-btn" onclick="rpToggleMs('rp-ms-region',event)">Region<span class="cnt" id="rp-ms-region-cnt" style="display:none;">0</span><svg class="car" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button><div class="rp-ms-pop" id="rp-ms-region-pop"></div></div>
           <select id="rp-sort" class="rp-sort" onchange="rpSetSort(this.value)" title="Sort companies">
             <option value="name">Name A–Z</option>
             <option value="reports">Most Reports</option>
             <option value="recent">Recently Active</option>
           </select>
+          <div class="rp-view-toggle" id="rp-view-toggle">
+            <button type="button" data-view="grid" class="is-active" onclick="rpSetView('grid')" title="Grid view" aria-label="Grid view"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button>
+            <button type="button" data-view="table" onclick="rpSetView('table')" title="Table view" aria-label="Table view"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+          </div>
         </div>
+        <div id="rp-chips" class="rp-chips" style="display:none;"></div>
         <div id="rp-grid"></div>
 
         <!-- Tenders & Bids: live noc.ly tenders scanned daily by a Netlify
@@ -2691,8 +2858,8 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
       <div class="pv-header">
         <div><div class="pv-h1">Org Chart</div><div class="pv-h1-sub">People · PETGO Vantage</div></div>
       </div>
-      <div class="fn-card" style="flex:1;overflow:auto;">
-        <div id="org-wrap"></div>
+      <div class="fn-card" style="flex:1;overflow:hidden;display:flex;padding:0;min-height:0;">
+        <div id="org-wrap" style="position:relative;flex:1;min-height:0;min-width:0;"></div>
       </div>
     </section>
 
@@ -5039,8 +5206,15 @@ function renderPayroll(){
   if(!list.length){tb.innerHTML='<tr><td colspan="8" class="fn-empty">No payroll data for this period.</td></tr>';return;}
   tb.innerHTML=list.map(function(p){
     var idx=payroll.indexOf(p);
-    var eid=p.empId?'<span style="font-family:ui-monospace,\'SF Mono\',monospace;font-size:11px;font-weight:700;color:var(--pv-primary);">'+escH(p.empId)+'</span>':'<span style="color:var(--pv-muted-2);font-size:11px;">—</span>';
-    return '<tr><td>'+eid+'</td><td><strong>'+escH(p.name)+'</strong></td><td>'+escH(p.dept||'—')+'</td><td>'+fmtLYD(p.base)+'</td><td class="tr">-'+fmtLYD(p.ded)+'</td><td class="tg tw">'+fmtLYD(p.base-p.ded)+'</td><td>'+escH(p.month)+'</td>'+
+    /* Identity is resolved from the single employee source (Team Directory /
+       employees), matched by name — so the ID and department shown here are
+       always identical to the directory. Stored p.empId/p.dept are offline
+       fallbacks only, used before the cloud directory has hydrated. */
+    var er=empLookup({name:p.name})||{};
+    var empIdC=er.empId||p.empId||'';
+    var deptC=er.dept||p.dept||'';
+    var eid=empIdC?'<span style="font-family:ui-monospace,\'SF Mono\',monospace;font-size:11px;font-weight:700;color:var(--pv-primary);">'+escH(empIdC)+'</span>':'<span style="color:var(--pv-muted-2);font-size:11px;">—</span>';
+    return '<tr><td>'+eid+'</td><td><strong>'+escH(p.name)+'</strong></td><td>'+escH(deptC||'—')+'</td><td>'+fmtLYD(p.base)+'</td><td class="tr">-'+fmtLYD(p.ded)+'</td><td class="tg tw">'+fmtLYD(p.base-p.ded)+'</td><td>'+escH(p.month)+'</td>'+
       '<td><div class="fn-row-actions"><button class="ps-btn" onclick="generatePayslip('+idx+')">Payslip</button><button class="fn-btn-edit" onclick="openPayModal('+idx+')">Edit</button><button class="fn-btn-del" onclick="delPay('+idx+')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></td></tr>';
   }).join('');
 }
@@ -5152,10 +5326,13 @@ function buildPayslipHTML(p,empTitle,empId,slipNo,issueDate){
 }
 function generatePayslip(idx){
   var p=payroll[idx]; if(!p)return;
-  var emp=employees.find(function(e){return e.name===p.name;})||{};
-  var empId=p.empId||emp.empId||'PTG-'+String(p.id||idx+1).padStart(3,'0');
+  /* Resolve identity from the single employee source so the payslip's ID, title
+     and department match the directory (not payroll's own stored copy). */
+  var emp=empLookup({name:p.name})||{};
+  var empId=emp.empId||p.empId||'';
+  var pp=Object.assign({},p,{dept:(emp.dept||p.dept||''),empId:empId});
   var slipNo='PS-'+new Date().getFullYear()+'-'+String(p.id||idx+1).padStart(4,'0');
-  document.getElementById('ps-doc').innerHTML=buildPayslipHTML(p,emp.title||'',empId,slipNo,_psIssueDate());
+  document.getElementById('ps-doc').innerHTML=buildPayslipHTML(pp,emp.title||'',empId,slipNo,_psIssueDate());
   document.getElementById('ps-overlay').classList.add('open');
 }
 function closePayslipModal(evt,force){
@@ -5274,9 +5451,10 @@ function exportAllPayslips(){
   var styles=Array.from(document.styleSheets).map(function(ss){try{return Array.from(ss.cssRules).map(function(r){return r.cssText;}).join('\n');}catch(e){return '';}}).join('\n');
   var allHTML=list.map(function(p,i){
     var idx=payroll.indexOf(p);
-    var emp=employees.find(function(e){return e.name===p.name;})||{};
-    var empId=p.empId||emp.empId||'PTG-'+String(p.id||idx+1).padStart(3,'0');
-    return '<div class="ps-doc" style="page-break-after:'+(i<list.length-1?'always':'avoid')+'">'+buildPayslipHTML(p,emp.title||'',empId,'PS-'+new Date().getFullYear()+'-'+String(p.id||idx+1).padStart(4,'0'),issueDate)+'</div>';
+    var emp=empLookup({name:p.name})||{};                 /* single employee source */
+    var empId=emp.empId||p.empId||'';
+    var pp=Object.assign({},p,{dept:(emp.dept||p.dept||''),empId:empId});
+    return '<div class="ps-doc" style="page-break-after:'+(i<list.length-1?'always':'avoid')+'">'+buildPayslipHTML(pp,emp.title||'',empId,'PS-'+new Date().getFullYear()+'-'+String(p.id||idx+1).padStart(4,'0'),issueDate)+'</div>';
   }).join('');
   var win=window.open('','_blank','width=760,height=1050');
   win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PETGO Payslips</title><style>body{margin:0;padding:24px;background:#f1f5f9;display:flex;flex-direction:column;align-items:center;gap:24px;}'+styles+'@media print{body{background:#fff!important;padding:0!important;gap:0!important;}.ps-doc{box-shadow:none!important;}@page{margin:10mm;size:A4;}}</style></head><body>'+allHTML+'</body></html>');
@@ -5318,6 +5496,7 @@ function filterCon(f,el){
   if(!list.length){tb.innerHTML='<tr><td colspan="7" class="fn-empty">No contracts found.</td></tr>';return;}
   tb.innerHTML=list.map(function(c){
     var idx=contracts.indexOf(c);
+    var cr=empLookup({name:c.name})||{};   /* department from the single employee source */
     var days=daysBetween(today(),c.end);
     var urgCls=days<0?'fn-overdue':days<=30?'fn-urgent-r':days<=60?'fn-urgent-y':'fn-urgent-g';
     var typCls=c.type==='Permanent'?'fn-permanent':c.type==='Probation'?'fn-probation':'fn-pending';
@@ -5325,7 +5504,7 @@ function filterCon(f,el){
     var hasJD=!!(c.jobDesc&&c.jobDesc.trim());
     var docBtns=(hasPDF?'<button class="con-pdf-btn" onclick="viewConPDF(\''+c.id+'\')">PDF</button> ':'')+
                (hasJD?'<span class="con-jd-pill" onclick="viewConJD('+idx+')">JD</span> ':'');
-    return '<tr><td><strong>'+escH(c.name)+'</strong></td><td>'+escH(c.dept||'—')+'</td>'+
+    return '<tr><td><strong>'+escH(c.name)+'</strong></td><td>'+escH(cr.dept||c.dept||'—')+'</td>'+
       '<td><span class="fn-badge '+typCls+'">'+escH(c.type)+'</span></td>'+
       '<td>'+fmtDate(c.end)+'</td>'+
       '<td><span class="fn-badge '+urgCls+'">'+(days<0?'Expired':days+'d')+'</span></td>'+
@@ -5383,36 +5562,79 @@ function viewConJD(idx){var c=contracts[idx];if(!c||!c.jobDesc)return;document.g
 function closeJDModal(){document.getElementById('jd-modal').classList.remove('open');}
 
 /* ── ORG CHART ── */
+/* ══ ORG CHART v2 — transform-canvas state (FIX 1; zoom/pan in FIX 2 build on this) ══ */
+var _orgScale=1,_orgTx=0,_orgTy=0,_orgDataChecked=false;
+/* Parse the REAL reporting tree from reports_to (mapped to e.reportsTo = manager's
+   e.id). Multi-level + graceful fallbacks: an employee whose manager is
+   missing/unknown/self becomes a top-level root, so the chart still renders before
+   cloud data lands; a manager id that resolves to self is ignored. */
+function _orgBuildTree(){
+  employees=fnLoad('petgo_employees',employees);
+  var byId={},i;
+  for(i=0;i<employees.length;i++){ if(employees[i].id!=null) byId[employees[i].id]=employees[i]; }
+  function mgrIdOf(e){ var m=e.reportsTo; return (m!=null && byId[m] && byId[m]!==e) ? m : null; }
+  var kids={},roots=[];
+  for(i=0;i<employees.length;i++){ var e=employees[i],p=mgrIdOf(e); if(p==null) roots.push(e); else (kids[p]||(kids[p]=[])).push(e); }
+  roots.sort(function(a,b){ return (b.executiveApprover?1:0)-(a.executiveApprover?1:0) || String(a.name||'').localeCompare(String(b.name||'')); });
+  return {byId:byId,kids:kids,roots:roots,mgrIdOf:mgrIdOf};
+}
+/* FIX 8 — DATA CHECK. Prints the parsed reporting structure as a console table and
+   flags any node whose manager is unset (excluding the legitimate CEO root) or whose
+   depth exceeds 4. Diagnostic ONLY — never mutates reporting lines. Once per session. */
+function _orgDataCheck(t){
+  if(_orgDataChecked) return; _orgDataChecked=true;
+  function depthOf(e){ var d=0,cur=e,g=0; while(true){ var pid=t.mgrIdOf(cur); if(pid==null)break; cur=t.byId[pid]; d++; if(++g>50)return -1; } return d; }
+  var rows=employees.map(function(e){
+    var pid=t.mgrIdOf(e), mgr=pid!=null?t.byId[pid]:null, depth=depthOf(e), flags=[];
+    if(!mgr) flags.push(e.executiveApprover?'root · CEO (expected)':'⚠ MANAGER UNSET');
+    if(depth<0) flags.push('⚠ CYCLE');
+    else if(depth>4) flags.push('⚠ DEPTH>4');
+    return {id:e.empId||'—',name:e.name,title:e.title||'—',department:e.dept||'—',manager:mgr?mgr.name:'(none)',depth:depth,flag:flags.join(', ')||'ok'};
+  }).sort(function(a,b){ return a.depth-b.depth || String(a.id).localeCompare(String(b.id)); });
+  try{ console.log('%c[Org Chart] Parsed reporting structure — FIX 8 data check','font-weight:bold;color:#2563eb'); console.table(rows); }
+  catch(_){ console.log(JSON.stringify(rows,null,2)); }
+  var flagged=rows.filter(function(r){ return /⚠/.test(r.flag); });
+  console.warn('[Org Chart] '+flagged.length+' node(s) flagged (manager unset / depth>4 / cycle). Reporting lines left UNCHANGED — report only.'
+    +(flagged.length?' → '+flagged.map(function(r){return r.id+' '+r.name+' ['+r.flag+']';}).join('; '):''));
+}
+/* Auto-fit (FIX 1): measure the tree's natural box, scale to fit the viewport with a
+   32px margin each side, clamp to 0.45 min / 1.0 max, and center via translate. */
+function _orgFit(){
+  var wrap=document.getElementById('org-wrap'); if(!wrap)return;
+  var vp=wrap.querySelector('.org-viewport'), cv=wrap.querySelector('.org-canvas'); if(!vp||!cv)return;
+  var tw=cv.offsetWidth, th=cv.offsetHeight, vw=vp.clientWidth, vh=vp.clientHeight;
+  if(!tw||!th||!vw||!vh) return;
+  var s=Math.min(1,(vw-64)/tw,(vh-64)/th); s=Math.max(0.45,s);
+  var tx=(vw-tw*s)/2, ty=(vh-th*s)/2; if(tx<8)tx=8; if(ty<8)ty=8;
+  _orgScale=s; _orgTx=tx; _orgTy=ty;
+  cv.style.transform='translate('+tx+'px,'+ty+'px) scale('+s+')';
+}
+window._orgFit=_orgFit;
+window.addEventListener('resize',function(){ var a=document.querySelector('.pv-page.is-active'); if(a&&a.getAttribute('data-page')==='Org chart') _orgFit(); });
 function renderOrgChart(){
   var wrap=document.getElementById('org-wrap'); if(!wrap)return;
   employees=fnLoad('petgo_employees',employees);
-  if(!employees.length){wrap.innerHTML='<div style="padding:48px;text-align:center;color:var(--pv-muted-2);font-size:13px;">No employees found. Add people in the Team Directory to build the org chart.</div>';return;}
-  /* Draw the REAL reporting tree from reports_to (mapped onto e.reportsTo = the
-     manager's e.id). Recursive + multi-level. Graceful fallbacks: an employee whose
-     manager id is missing/unknown/self is treated as a top-level root, so the chart
-     still renders before cloud data lands or if reporting lines aren't set; a `seen`
-     guard makes cyclic reports_to impossible to infinite-loop, and anyone not reached
-     from a root (orphan/cycle) is appended as an extra root so everyone shows once. */
-  var byId={}, i;
-  for(i=0;i<employees.length;i++){ if(employees[i].id!=null) byId[employees[i].id]=employees[i]; }
-  function mgrIdOf(e){ var m=e.reportsTo; return (m!=null && byId[m] && byId[m]!==e) ? m : null; }
-  var kids={}, roots=[];
-  for(i=0;i<employees.length;i++){ var e=employees[i], p=mgrIdOf(e); if(p==null) roots.push(e); else (kids[p]||(kids[p]=[])).push(e); }
-  roots.sort(function(a,b){ return (b.executiveApprover?1:0)-(a.executiveApprover?1:0) || String(a.name||'').localeCompare(String(b.name||'')); });
+  if(!employees.length){ wrap.innerHTML='<div class="org-viewport"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:48px;color:var(--pv-muted-2);font-size:13px;">No employees found. Add people in the Team Directory to build the org chart.</div></div>'; return; }
+  var t=_orgBuildTree();
+  _orgDataCheck(t);
   function av(e){ return '<div class="org-av org-av-sm" style="background:'+empColor(e.name)+'">'+empAvatarInner(e,e.name)+'</div>'; }
-  function badge(e){
-    if(e.executiveApprover) return '<span class="org-node-badge exec">CEO</span>';
-    if(e.financeApprover)   return '<span class="org-node-badge fin">CFO</span>';
-    if(e.role==='admin')    return '<span class="org-node-badge admin">Admin</span>';
-    return '';
+  function tags(e){
+    var out='';
+    if(e.executiveApprover) out+='<span class="org-node-badge exec">CEO</span>';
+    else if(e.financeApprover) out+='<span class="org-node-badge fin">CFO</span>';
+    if(e.role==='admin') out+='<span class="org-node-badge admin">Admin</span>';
+    return out?'<div class="org-node-tags">'+out+'</div>':'';
   }
+  /* Compact horizontal card (FIX 3): avatar left · name/title/id column right · tags top-right. */
   function card(e,isRoot){
     var gi=employees.indexOf(e);
-    return '<div class="org-node'+(isRoot?' is-root':'')+'" onmouseenter="orgTip(event,'+gi+')" onmouseleave="orgTipHide()" onclick="openEmpModal('+gi+')" title="Click to edit">'+
+    return '<div class="org-node'+(isRoot?' is-root':'')+'" onmouseenter="orgTip(event,'+gi+')" onmouseleave="orgTipHide()" onclick="openEmpModal('+gi+')" title="Click to view">'+
       av(e)+
-      '<div class="org-node-name">'+escH(e.name)+badge(e)+'</div>'+
-      '<div class="org-node-title">'+escH(e.title||'—')+'</div>'+
-      (e.empId?'<div class="org-node-id">'+escH(e.empId)+'</div>':'')+
+      '<div class="org-node-body">'+
+        '<div class="org-node-name">'+escH(e.name)+'</div>'+
+        '<div class="org-node-title">'+escH(e.title||'—')+'</div>'+
+        (e.empId?'<div class="org-node-id">'+escH(e.empId)+'</div>':'')+
+      '</div>'+tags(e)+
     '</div>';
   }
   var seen={};
@@ -5421,15 +5643,16 @@ function renderOrgChart(){
     if(seen[key]) return '';                       /* cycle / already-rendered guard */
     seen[key]=1;
     var out=card(e,isRoot);
-    var ch=(kids[e.id]||[]).slice().sort(function(a,b){return String(a.name||'').localeCompare(String(b.name||''));});
+    var ch=(t.kids[e.id]||[]).slice().sort(function(a,b){return String(a.name||'').localeCompare(String(b.name||''));});
     if(ch.length) out+='<ul>'+ch.map(function(c){return '<li>'+node(c,false)+'</li>';}).join('')+'</ul>';
     return out;
   }
-  var lis=roots.map(function(r){return '<li>'+node(r,true)+'</li>';});
-  for(i=0;i<employees.length;i++){ var e2=employees[i], k2=e2.id!=null?('id'+e2.id):('ix'+i); if(!seen[k2]) lis.push('<li>'+node(e2,true)+'</li>'); }
-  var stats='<div class="org-stats-bar"><strong>'+employees.length+'</strong> employees · <strong>'+roots.length+'</strong> at top level</div>';
-  wrap.innerHTML=stats+'<div class="org-tree"><ul>'+lis.join('')+'</ul></div>';
+  var lis=t.roots.map(function(r){return '<li>'+node(r,true)+'</li>';});
+  for(var i=0;i<employees.length;i++){ var e2=employees[i], k2=e2.id!=null?('id'+e2.id):('ix'+i); if(!seen[k2]) lis.push('<li>'+node(e2,true)+'</li>'); }
+  var stats='<div class="org-fit-stats"><span><strong>'+employees.length+'</strong> employees</span><span><strong>'+t.roots.length+'</strong> at top level</span></div>';
+  wrap.innerHTML='<div class="org-viewport">'+stats+'<div class="org-canvas"><div class="org-tree"><ul>'+lis.join('')+'</ul></div></div></div>';
   _orgEnsureTip();
+  requestAnimationFrame(_orgFit);
 }
 /* ── Org connectors (soft curved SVG) + hover tooltip ── */
 function _orgEnsureTip(){
@@ -5505,7 +5728,7 @@ function renderOnboarding(){
         '<div class="ob-av" style="width:34px;height:34px;border-radius:50%;overflow:hidden;background:'+empColor(o.name)+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">'+empAvatarInner(obEmp, o.name)+'</div>'+
         '<div style="flex:1;min-width:0;text-align:left;">'+
           '<div style="font-size:13px;font-weight:700;color:var(--pv-text);">'+escH(o.name)+'</div>'+
-          '<div style="font-size:11px;color:var(--pv-muted-2);">'+escH(o.dept)+' · Started '+fmtDate(o.start)+'</div>'+
+          '<div style="font-size:11px;color:var(--pv-muted-2);">'+escH((obEmp&&obEmp.dept)||o.dept||'—')+' · Started '+fmtDate(o.start)+'</div>'+
         '</div>'+
         '<div style="display:flex;align-items:center;gap:8px;">'+
           '<div class="ob-progress-bar"><div class="ob-progress-fill" style="width:'+p+'%"></div></div>'+
@@ -5742,8 +5965,31 @@ function renderHistoryTimeline(){
 
 /* ── TEAM DIRECTORY ── */
 var empEditIdx=-1, empPendingPhoto='';
-var empNextId=(function(){var m=0;employees.forEach(function(e){if((e.id||0)>m)m=e.id;});return m+1;})();
+/* Next canonical employee code = highest existing PTG-NNN suffix + 1. Never
+   derived from list position or alphabetical order (which produced the old
+   EMP-0XX drift) — a new hire always takes the next free PTG number. */
+function _nextEmpCode(){
+  var mx=0;
+  (employees||[]).forEach(function(e){ var m=/^PTG-(\d+)$/i.exec((e.empId||'').trim()); if(m){ var n=parseInt(m[1],10); if(n>mx)mx=n; } });
+  return 'PTG-'+String(mx+1).padStart(3,'0');
+}
 function saveEmployeeStore(){fnSave('petgo_employees',employees);}
+/* Directory sort: Seniority (sort_order, default) | Name A–Z | Department.
+   Sorts a filtered COPY only, so the underlying employees array, each row's
+   edit/delete index, and the displayed employee_id never change. */
+var empSortMode='seniority';
+function _empSeniority(a,b){
+  var ao=(a.sortOrder==null?1e9:a.sortOrder), bo=(b.sortOrder==null?1e9:b.sortOrder);
+  return ao-bo || String(a.name||'').localeCompare(String(b.name||''));
+}
+function _empSortList(list){
+  return list.sort(function(a,b){
+    if(empSortMode==='name') return String(a.name||'').localeCompare(String(b.name||''));
+    if(empSortMode==='dept') return String(a.dept||'').localeCompare(String(b.dept||'')) || _empSeniority(a,b);
+    return _empSeniority(a,b);
+  });
+}
+function setEmpSort(m){ empSortMode=m; renderEmpGrid(); }
 /* Mirror the approver designations onto the employee data model, keyed by the
    login email (the single source of truth). Exactly the two named people carry
    a flag; everyone else is explicitly false. Idempotent. */
@@ -5772,6 +6018,7 @@ function renderEmpGrid(){
   var grid=document.getElementById('emp-grid'); if(!grid)return;
   if(!employees.length){grid.innerHTML='<div class="emp-empty">No employees yet. Click “Add Employee” to build your directory.</div>';return;}
   if(!list.length){grid.innerHTML='<div class="emp-empty">No employees match your search.</div>';return;}
+  _empSortList(list);
   var emailSVG='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>';
   var waSVG='<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M20.52 3.449C12.831-3.984.106 1.407.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c7.905 4.27 17.661-1.4 17.665-10.449 0-3.176-1.24-6.165-3.495-8.416zM12.05 21.785h-.004c-1.775 0-3.51-.478-5.021-1.379l-.36-.214-3.734.98.998-3.641-.235-.374a9.86 9.86 0 01-1.51-5.26c.002-8.72 10.646-13.088 16.815-6.918a9.815 9.815 0 012.896 6.99c-.003 5.448-4.436 9.885-9.895 9.885z"/></svg>';
   var rows=list.map(function(emp){
@@ -5840,7 +6087,7 @@ function openEmpModal(idx){
   var emp=empEditIdx>=0?employees[empEditIdx]:{name:'',title:'',dept:'',email:'',phone:'',photo:''};
   empPendingPhoto='';
   document.getElementById('emp-f-name').value=emp.name||'';
-  document.getElementById('emp-f-empid').value=empEditIdx<0?('PTG-'+String(empNextId).padStart(3,'0')):(emp.empId||'');
+  document.getElementById('emp-f-empid').value=empEditIdx<0?_nextEmpCode():(emp.empId||'');
   document.getElementById('emp-f-title').value=emp.title||'';
   document.getElementById('emp-f-dept').value=emp.dept||'';
   document.getElementById('emp-f-email').value=emp.email||'';
@@ -5860,8 +6107,11 @@ async function saveEmp(){
   var editing=empEditIdx>=0;
   var existingPhoto=(editing&&employees[empEditIdx].photo)||'';
   var finalPhoto=empPendingPhoto==='__clear__'?'':(empPendingPhoto||existingPhoto);
-  var empId=document.getElementById('emp-f-empid').value.trim()||('PTG-'+String((editing?empEditIdx+1:employees.length+1)).padStart(3,'0'));
-  var emp={id:(editing?employees[empEditIdx].id:undefined),empId:empId,name:name,title:document.getElementById('emp-f-title').value.trim(),dept:document.getElementById('emp-f-dept').value.trim(),email:document.getElementById('emp-f-email').value.trim(),phone:document.getElementById('emp-f-phone').value.trim(),project:((document.getElementById('emp-f-project')||{}).value)||'Unassigned',photo:finalPhoto};
+  var empId=document.getElementById('emp-f-empid').value.trim()||_nextEmpCode();
+  /* Spread the existing record first so server-managed fields (sortOrder, roleTag,
+     reportsTo, role) survive an edit instead of being dropped from the in-memory
+     model; the form fields below then override the user-editable identity. */
+  var emp=Object.assign({}, (editing?employees[empEditIdx]:{}), {id:(editing?employees[empEditIdx].id:undefined),empId:empId,name:name,title:document.getElementById('emp-f-title').value.trim(),dept:document.getElementById('emp-f-dept').value.trim(),email:document.getElementById('emp-f-email').value.trim(),phone:document.getElementById('emp-f-phone').value.trim(),project:((document.getElementById('emp-f-project')||{}).value)||'Unassigned',photo:finalPhoto});
   _pvSyncApproverFlags([emp]);
   /* Persist locally, then let the hooked saveEmployeeStore() upsert to Supabase
      — same upsert-on-save pattern as the other STORES (see syncEmployees). The
@@ -6057,6 +6307,266 @@ function docExportReport(){
   showToast('Report ready — use the print dialog to save as PDF.');
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   ===== REPORT ENGINE v2 =====
+   Auto-generated dashboard for the Documents module, built as three isolated,
+   independently-testable layers:  PROFILER → PLANNER → RENDERER.
+   Everything lives under the RE2 namespace (single IIFE) so a layer can be
+   lifted out and unit-tested with no DOM. Layer 1 (PROFILER) is implemented
+   first; PLANNER and RENDERER are added in later passes.
+   ─────────────────────────────────────────────────────────────────────────── */
+/* ---- RE2:PROFILER:START ---- */
+var RE2=(function(){
+  'use strict';
+
+  /* ── low-level value helpers ─────────────────────────────────────────── */
+  function isBlank(v){ return v==null || (typeof v==='string' && v.trim()===''); }
+  /* Parse a cell to a plain number. Strips currency symbols, the "LD"/"LYD"
+     token, thousands commas and a trailing "%" (percent → fraction). Returns
+     null when the cell is not numeric. */
+  function toNum(v){
+    if(typeof v==='number') return isFinite(v)?v:null;
+    if(v instanceof Date || v==null) return null;
+    var s=String(v).trim(); if(s==='') return null;
+    var pct=/%\s*$/.test(s);
+    s=s.replace(/[$£€,]/g,'').replace(/\bl(?:y)?d\b/ig,'').replace(/%/g,'').replace(/\s+/g,'');
+    if(s===''||!isFinite(Number(s))) return null;
+    var n=Number(s); return pct? n/100 : n;
+  }
+  function isNumeric(v){ return toNum(v)!=null; }
+
+  var MON={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+  /* Parse a cell to a Date. Supports Date objects, "Jan 2025"/"January 2025",
+     "2025-01"/"2025-01-15", "01/2025", "dd/mm/yyyy". Bare numbers are only
+     treated as Excel serials when headerHint is true — otherwise a currency
+     column of ~45,000 values would be misread as dates. */
+  function parseDate(v,headerHint){
+    if(v instanceof Date) return isNaN(v.getTime())?null:v;
+    if(typeof v==='number'){
+      if(headerHint && v>=20000 && v<=60000){
+        var ds=new Date(Date.UTC(1899,11,30)+Math.round(v)*86400000);
+        return isNaN(ds.getTime())?null:ds;
+      }
+      return null;
+    }
+    if(v==null) return null;
+    var s=String(v).trim(); if(s==='') return null; var m;
+    /* YYYY-MM or YYYY-MM-DD */
+    if((m=/^(\d{4})[-\/.](\d{1,2})(?:[-\/.](\d{1,2}))?$/.exec(s))){
+      var y=+m[1],mo=+m[2]-1,da=m[3]?+m[3]:1;
+      if(mo>=0&&mo<12){ var d1=new Date(y,mo,da); return isNaN(d1.getTime())?null:d1; }
+    }
+    /* MM/YYYY */
+    if((m=/^(\d{1,2})[-\/.](\d{4})$/.exec(s))){
+      var mo2=+m[1]-1,y2=+m[2];
+      if(mo2>=0&&mo2<12){ var d2=new Date(y2,mo2,1); return isNaN(d2.getTime())?null:d2; }
+    }
+    /* dd/mm/yyyy or mm/dd/yyyy (disambiguate on a >12 component) */
+    if((m=/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4})$/.exec(s))){
+      var a=+m[1],b=+m[2],y3=+m[3]; if(y3<100)y3+=2000;
+      var mo3,da3; if(a>12){da3=a;mo3=b-1;}else{mo3=a-1;da3=b;}
+      if(mo3>=0&&mo3<12){ var d3=new Date(y3,mo3,da3); return isNaN(d3.getTime())?null:d3; }
+    }
+    /* "Jan 2025", "January 2025", "Jan-25" */
+    if((m=/^([a-z]{3,9})[\s\-\/]+(\d{2,4})$/i.exec(s))){
+      var key=m[1].slice(0,3).toLowerCase();
+      if(key in MON){ var yy=+m[2]; if(yy<100)yy+=2000; var d4=new Date(yy,MON[key],1); return isNaN(d4.getTime())?null:d4; }
+    }
+    return null;
+  }
+
+  /* ── currency detection ──────────────────────────────────────────────── */
+  /* Uploaded sheets carry no currency metadata: infer from "(LD)"/"(LYD)"/
+     "(USD)"/"(EUR)" tokens or an "LD "/"$"/"€" prefix in the header or the
+     column's own cells. Returns a currency code or null. */
+  function detectCurrency(name,cells){
+    var probe=[String(name||'')];
+    for(var i=0;i<cells.length && i<12;i++){ if(!isBlank(cells[i])) probe.push(String(cells[i])); }
+    var blob=probe.join(' ');
+    if(/\(\s*l(?:y)?d\s*\)|\blyd\b|libyan\s*dinar|(^|\s)ld\s*[\d(]/i.test(blob)) return 'LYD';
+    if(/\(\s*usd\s*\)|\busd\b|us\s*dollar|\$\s*[\d(]/i.test(blob)) return 'USD';
+    if(/\(\s*eur\s*\)|\beur\b|euro\b|€\s*[\d(]/i.test(blob)) return 'EUR';
+    return null;
+  }
+
+  /* ── header-row detection ────────────────────────────────────────────── */
+  /* Score a candidate header row (spec Layer 1A):
+       strFrac   – share of columns holding a non-empty, non-numeric label
+       belowFrac – share of those positions whose NEXT row is a number/date
+       uniqFrac  – share of header labels that are distinct
+     A fill penalty kills 1-cell title lines. Max ≈ 3.0. */
+  function scoreHeaderRow(rows,r,ncols){
+    var cells=rows[r]||[]; var nonEmpty=0,strLike=0,distinctCount=0,seen={};
+    for(var c=0;c<ncols;c++){
+      var v=cells[c]; if(isBlank(v)) continue; nonEmpty++;
+      if(typeof v==='string' && toNum(v)==null && parseDate(v,false)==null) strLike++;
+      var k=String(v).trim().toLowerCase(); if(!(k in seen)){seen[k]=1;distinctCount++;}
+    }
+    if(nonEmpty===0) return {score:-1,nonEmpty:0};
+    var below=rows[r+1]||null,hits=0,den=0;
+    if(below){
+      for(var c2=0;c2<ncols;c2++){
+        if(isBlank(cells[c2])) continue; den++;
+        var bv=below[c2];
+        if(!isBlank(bv) && (isNumeric(bv)||parseDate(bv,false)!=null||bv instanceof Date)) hits++;
+      }
+    }
+    var strFrac=strLike/ncols, belowFrac=den?hits/den:0, uniqFrac=nonEmpty?distinctCount/nonEmpty:0, fillFrac=nonEmpty/ncols;
+    var score=strFrac+belowFrac+uniqFrac+(fillFrac>=0.5?0:-0.6);
+    return {score:score,nonEmpty:nonEmpty,strFrac:strFrac,belowFrac:belowFrac,uniqFrac:uniqFrac,fillFrac:fillFrac};
+  }
+  function detectHeaderRow(rows,ncols){
+    var best=-1,bestScore=-Infinity,bestBrk=null,scan=Math.min(10,rows.length);
+    for(var r=0;r<scan;r++){
+      var s=scoreHeaderRow(rows,r,ncols);
+      if(s.score>bestScore){ bestScore=s.score; best=r; bestBrk=s; }   /* strict > → earliest wins ties */
+    }
+    if(best<0){ best=0; bestBrk={strFrac:0}; }
+    return {index:best, score:bestScore, confidence:Math.max(0,Math.min(1,bestScore/3)), strFrac:(bestBrk&&bestBrk.strFrac)||0};
+  }
+
+  /* ── per-column type inference (spec Layer 1B/1C) ─────────────────────── */
+  function inferColumn(name,index,values,headerCells){
+    var n=values.length;
+    var seen={},distinctCount=0;
+    for(var i=0;i<values.length;i++){ var k=String(values[i]); if(!(k in seen)){seen[k]=1;distinctCount++;} }
+
+    var lname=String(name||'').toLowerCase();
+    var dateHint=/date|month|period|quarter|\bqtr\b|year|week|\bfy\b|as of|day\b|time/.test(lname);
+    var pctHint=/%|margin|\brate\b|percent/.test(lname);
+    var idNameHint=/(^|[\s_\-])(id|no|num|number|ref|code|invoice|account|sku|#)([\s_\-]|$)/.test(lname);
+    var currency=detectCurrency(name,values);
+
+    var dateOk=0,numOk=0,allPct=(n>0),i2;
+    for(i2=0;i2<n;i2++){
+      if(parseDate(values[i2],dateHint)!=null) dateOk++;
+      var num=toNum(values[i2]);
+      if(num!=null){ numOk++; if(!(num>=0&&num<=1)) allPct=false; } else { allPct=false; }
+    }
+    var dateFrac=n?dateOk/n:0, numFrac=n?numOk/n:0;
+    var idish=n>0 && (distinctCount/n)>=0.98;
+
+    var type;
+    if(n===0) type='empty';
+    else if(dateFrac>=0.8) type='date';
+    else if(pctHint && numFrac>=0.8 && allPct) type='percent';
+    else if(currency && numFrac>=0.8) type='currency';
+    else if(numFrac>=0.8) type='number';
+    else { /* text */
+      if(idish && (idNameHint || distinctCount>12)) type='id';
+      else if(distinctCount<=12) type='category';
+      else type='highCard';
+    }
+    /* numeric identifier (unique integer key with an id-ish header) → not a measure */
+    var isId=(type==='id') || (type==='number' && idish && idNameHint);
+
+    /* stats */
+    var min=null,max=null,sum=null,avg=null;
+    if(type==='number'||type==='currency'||type==='percent'){
+      sum=0; var cnt=0;
+      for(i2=0;i2<n;i2++){ var nv=toNum(values[i2]); if(nv==null)continue; cnt++; sum+=nv; if(min==null||nv<min)min=nv; if(max==null||nv>max)max=nv; }
+      avg=cnt?sum/cnt:null;
+    } else if(type==='date'){
+      for(i2=0;i2<n;i2++){ var dv=parseDate(values[i2],dateHint); if(!dv)continue; var t=dv.getTime(); if(min==null||t<min)min=t; if(max==null||t>max)max=t; }
+    }
+
+    var format;
+    if(type==='date') format={kind:'date'};
+    else if(type==='percent') format={kind:'percent',decimals:1};
+    else if(type==='currency') format={kind:'currency',currency:currency,native:true};
+    else if(type==='number') format={kind:'number'};
+    else format={kind:'text'};
+
+    var isMeasure=(type==='number'||type==='currency'||type==='percent') && !isId;
+    var isDimension=(type==='date'||type==='category'||type==='highCard'||type==='id'||isId);
+
+    return {name:String(name||('Column '+(index+1))),index:index,type:type,format:format,
+      distinctCount:distinctCount,nullCount:0,min:min,max:max,sum:sum,avg:avg,
+      isMeasure:isMeasure,isDimension:isDimension,isId:isId};
+  }
+
+  /* ── main entry ──────────────────────────────────────────────────────── */
+  /* profileSheet(rows[, opts]) → { meta, headerRowIndex, columns[], data[] }
+     rows: array-of-arrays as produced by XLSX sheet_to_json({header:1}).
+     opts.headerRow: force a header index (used by the low-confidence picker). */
+  function profileSheet(rows,opts){
+    opts=opts||{};
+    rows=(rows||[]).filter(function(r){ return Array.isArray(r); });
+    if(!rows.length){
+      return {meta:{titleLines:[],rowCount:0,colCount:0,headerConfidence:0,lowConfidence:true,dateRange:null,currencies:[]},headerRowIndex:0,columns:[],data:[]};
+    }
+    var ncols=0; for(var r=0;r<rows.length;r++){ if(rows[r].length>ncols) ncols=rows[r].length; }
+
+    var det=detectHeaderRow(rows,ncols);
+    var forced=(opts.headerRow!=null);
+    var headerRowIndex=forced?Math.max(0,Math.min(opts.headerRow,rows.length-1)):det.index;
+    var confidence=forced?1:det.confidence;
+
+    /* title lines = every non-empty row above the header, cells joined */
+    var titleLines=[];
+    for(var t=0;t<headerRowIndex;t++){
+      var line=(rows[t]||[]).filter(function(c){return !isBlank(c);}).map(function(c){return String(c).trim();}).join(' · ');
+      if(line) titleLines.push(line);
+    }
+
+    var headerCells=rows[headerRowIndex]||[];
+    /* data region: rows below the header, dropping any row >80% empty */
+    var data=[];
+    for(var d=headerRowIndex+1;d<rows.length;d++){
+      var row=rows[d]||[]; var filled=0;
+      for(var c3=0;c3<ncols;c3++){ if(!isBlank(row[c3])) filled++; }
+      if(filled/ncols < 0.2) continue;                 /* spacer / merged-cell artifact */
+      var padded=new Array(ncols);
+      for(var c4=0;c4<ncols;c4++){ padded[c4]=(c4<row.length)?row[c4]:null; }
+      data.push(padded);
+    }
+
+    /* columns */
+    var columns=[];
+    for(var c=0;c<ncols;c++){
+      var name=isBlank(headerCells[c])?('Column '+(c+1)):String(headerCells[c]).trim();
+      var vals=[],nulls=0;
+      for(var i=0;i<data.length;i++){ var v=data[i][c]; if(isBlank(v)) nulls++; else vals.push(v); }
+      var col=inferColumn(name,c,vals,headerCells);
+      col.nullCount=nulls;
+      columns.push(col);
+    }
+
+    /* meta */
+    var currencies={}; columns.forEach(function(col){ if(col.type==='currency'&&col.format.currency) currencies[col.format.currency]=1; });
+    var dateCol=null; for(var dc=0;dc<columns.length;dc++){ if(columns[dc].type==='date'){ dateCol=columns[dc]; break; } }
+    var dateRange=(dateCol&&dateCol.min!=null&&dateCol.max!=null)?{min:new Date(dateCol.min),max:new Date(dateCol.max)}:null;
+
+    /* Confidence is low when the score is weak, the chosen header row isn't
+       mostly text labels, or there are no data rows beneath it — each is a
+       reason to surface the amber "header auto-detected as row N" banner. */
+    var lowConfidence=!forced && (confidence<0.6 || det.strFrac<0.5 || data.length===0);
+
+    return {
+      meta:{
+        titleLines:titleLines,
+        rowCount:data.length,
+        colCount:ncols,
+        headerConfidence:Math.round(confidence*100)/100,
+        lowConfidence:lowConfidence,
+        dateRange:dateRange,
+        currencies:Object.keys(currencies)
+      },
+      headerRowIndex:headerRowIndex,
+      columns:columns,
+      data:data
+    };
+  }
+
+  return {
+    _version:'2.0-profiler',
+    profileSheet:profileSheet,
+    /* helpers exposed for later layers + unit tests */
+    _h:{isBlank:isBlank,toNum:toNum,isNumeric:isNumeric,parseDate:parseDate,detectCurrency:detectCurrency,detectHeaderRow:detectHeaderRow,scoreHeaderRow:scoreHeaderRow,inferColumn:inferColumn}
+  };
+})();
+/* ---- RE2:PROFILER:END ---- */
+
 /* ════════════════════════════════════════════════════════════
    REPORTS MODULE — company reporting (Upstream / Downstream)
    Reuses the Documents upload pattern + pivot-detection engine
@@ -6212,7 +6722,21 @@ function _rpPurgeBrandTests(){
   return true;
 }
 _rpPurgeBrandTests();
-var rpState={cat:'upstream',companyId:null,editId:null,q:'',sort:'name',tnFilter:'all'};
+var rpState={cat:'upstream',companyId:null,editId:null,q:'',sort:'name',tnFilter:'all',view:(function(){try{return localStorage.getItem('petgo_rp_view')||'grid';}catch(e){return 'grid';}})()};
+/* Shared category palette → CSS token, for the card left-bar + section bar (FIX C).
+   Downstream folds to amber regardless of relationship group (per spec palette). */
+var RP_GROUP_COLOR={'NOC-owned':'--pv-cat-noc','Joint Venture':'--pv-cat-jv','IOC Partner':'--pv-cat-ioc','Services':'--pv-cat-svc','Downstream Marketing':'--pv-cat-down','Other':'--pv-cat-svc'};
+function rpCatColorVar(c){ return c.category==='downstream' ? '--pv-cat-down' : (RP_GROUP_COLOR[rpGroupOf(c)]||'--pv-cat-svc'); }
+function rpGroupColorVar(g){ return rpState.cat==='downstream' ? '--pv-cat-down' : (RP_GROUP_COLOR[g]||'--pv-cat-svc'); }
+/* Split "Arabian Gulf Oil Company (AGOCO)" → {main, short:'AGOCO'} so the name
+   stays one line (fixes the AGOCO 2-line wrap) and the acronym sits beneath. */
+function rpNameParts(name){ name=String(name||''); var m=name.match(/^(.*?)\s*\(([^)]+)\)\s*$/); return m?{main:m[1].trim(),short:m[2].trim()}:{main:name,short:''}; }
+function rpSetView(v){
+  if(rpState.view===v)return;
+  rpState.view=v; try{localStorage.setItem('petgo_rp_view',v);}catch(e){}
+  document.querySelectorAll('#rp-view-toggle button').forEach(function(b){b.classList.toggle('is-active',b.dataset.view===v);});
+  rpRenderGrid();
+}
 function rpId(p){return p+Date.now().toString(36)+Math.floor(Math.random()*46656).toString(36);}
 function _rpReduced(){return !!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);}
 function rpFindCompany(id){for(var i=0;i<rpCompanies.length;i++)if(rpCompanies[i].id===id)return rpCompanies[i];return null;}
@@ -6575,43 +7099,72 @@ function rpRenderKpis(){
       fnKpi('Last Scan',scanV,scanS,'','','clock');
     return;
   }
-  var now=new Date();
-  var qi=Math.floor(now.getMonth()/3);
-  var qStart=now.getFullYear()+'-'+('0'+(qi*3+1)).slice(-2)+'-01';
-  var qCount=rpReports.filter(function(r){return r.uploadDate&&r.uploadDate>=qStart;}).length;
+  /* FIX A — every tile is live from day one (never a structurally-always-zero
+     metric). Portfolio-wide figures, identical across the Upstream/Downstream tabs. */
   var up=rpCompanies.filter(function(c){return c.category==='upstream';}).length;
   var down=rpCompanies.length-up;
-  var latest=rpLatestOf(rpReports);
+  var openByCo={};
+  rpTenders.forEach(function(t){ if(!rpTnIsOpen(t))return; var c=rpTnCompanyOf(t); if(c)openByCo[c.id]=(openByCo[c.id]||0)+1; });
+  var operators=Object.keys(openByCo).length;
+  var withLogoDesc=rpCompanies.filter(function(c){return c.logoUrl&&(c.coreActivity||c.notes);}).length;
+  var coverage=rpCompanies.length?Math.round(withLogoDesc/rpCompanies.length*100):0;
+  var scanV='—',scanS='daily 07:30 Tripoli';
+  if(rpTnLastScan&&rpTnLastScan.at){
+    var sd=new Date(rpTnLastScan.at);
+    scanV=sd.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    scanS=(rpTnLastScan.ok?'daily 07:30 Tripoli':'FAILED — '+escH(rpTnLastScan.error||'error'));
+  }
   el.innerHTML=
-    fnKpi('Total Reports',rpReports.length,'across the portfolio','','','file-text')+
     fnKpi('Companies Tracked',rpCompanies.length,up+' upstream · '+down+' downstream','','','briefcase')+
-    fnKpi('Reports This Quarter',qCount,'Q'+(qi+1)+' '+now.getFullYear(),'','','trending-up')+
-    fnKpi('Most Recent Upload',latest?rpShortDate(latest.uploadDate):'—',latest?escH(latest.title):'No reports yet','','','clock');
+    fnKpi('Operators with Open Tenders',operators,(operators===1?'1 company':operators+' companies')+' with live tenders','','','trending-up')+
+    fnKpi('Coverage',coverage+'%','logo + description complete','','','check-circle')+
+    fnKpi('Last Scan',scanV,scanS,'','','clock');
 }
 function rpRenderCatViews(){
   var isT=rpState.cat==='tenders';
   var tb=document.querySelector('#rp-overview .rp-toolbar'); if(tb)tb.style.display=isT?'none':'';
   var gr=document.getElementById('rp-grid'); if(gr)gr.style.display=isT?'none':'';
   var tn=document.getElementById('rp-tenders'); if(tn)tn.style.display=isT?'':'none';
+  document.querySelectorAll('#rp-view-toggle button').forEach(function(b){b.classList.toggle('is-active',b.dataset.view===rpState.view);});
   rpRenderKpis();
   if(isT){rpRenderTenders();rpTnFetch();}
   else rpRenderGrid();
 }
-function rpCoCardHTML(c,st){
-  var tag=rpRelType(c);
-  return '<div class="rp-co-card" onclick="rpOpenCompany(\''+c.id+'\')" onmouseenter="rpCoTip(event,\''+c.id+'\')" onmouseleave="rpCoTipHide()">'+rpLogoHTML(c)+
-    (tag?'<span class="rp-co-tag">'+tag+'</span>':'')+
-    '<div class="rp-co-name">'+escH(c.name)+'</div>'+
-    (c.coreActivity?'<div class="rp-co-act">'+escH(c.coreActivity)+'</div>':'')+
-    (st.n?'<div class="rp-co-meta"><b>'+st.n+'</b>&nbsp;report'+(st.n>1?'s':'')+'<span class="rp-co-dot"></span>Last '+rpShortDate(st.last)+'</div>':'')+
-    '</div>';
+/* FIX C — 44px logo tile (white bg, contain) with the shared initials fallback. */
+function rpCoLogo2(c){
+  if(c.logoUrl)return '<div class="rp-cc-logo"><img src="'+escH(c.logoUrl)+'" alt=""></div>';
+  var ini=rpDisplayInitials(c.name);
+  return '<div class="rp-cc-logo ini'+(ini.length>2?' is-3i':'')+'" style="background:'+rpBlueGrad(c.name)+'">'+escH(ini)+'</div>';
+}
+/* FIX C — info-dense fixed-height card: logo + open-tender chip, name + acronym,
+   2-line description (reserved height), footer region · activity type. Category is
+   encoded by the 3px left bar (no per-card badge — the section header states it). */
+function rpCoCard2HTML(c){
+  var np=rpNameParts(c.name), tn=rpTnOpenCount(c.id);
+  var desc=c.coreActivity||c.notes||'';
+  var foot=(c.region?escH(c.region)+' · ':'')+escH(rpGroupOf(c));
+  var pin='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
+  return '<div class="rp-cocard" style="--rp-bar:var('+rpCatColorVar(c)+')" onclick="rpOpenCompany(\''+c.id+'\')" onmouseenter="rpCoTip(event,\''+c.id+'\')" onmouseleave="rpCoTipHide()">'+
+    '<div class="rp-cc-top">'+rpCoLogo2(c)+'<span class="rp-cc-tn'+(tn>0?' has':'')+'">'+tn+' tender'+(tn===1?'':'s')+'</span></div>'+
+    '<div class="rp-cc-name" title="'+escH(np.main)+'">'+escH(np.main)+'</div>'+
+    '<div class="rp-cc-short">'+escH(np.short)+'</div>'+
+    '<div class="rp-cc-desc">'+escH(desc)+'</div>'+
+    '<div class="rp-cc-foot">'+pin+'<span>'+foot+'</span></div>'+
+  '</div>';
 }
 function rpRenderGrid(){
   rpCoTipHide(true);
   var grid=document.getElementById('rp-grid'); if(!grid)return;
+  if(rpState.view==='table'){
+    /* Table view (FIX D) ships in the next step; the toggle + persistence are live now. */
+    grid.innerHTML='<div class="rp-empty2"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>'+
+      '<div class="rp-empty2-l">Table view is coming in the next step</div>'+
+      '<div class="rp-empty2-s">Switch back to <b>Grid</b> to browse companies.</div></div>';
+    return;
+  }
   var q=(rpState.q||'').trim().toLowerCase();
   var list=rpCompanies.filter(function(c){
-    return c.category===rpState.cat&&(!q||String(c.name).toLowerCase().indexOf(q)>=0);
+    return c.category===rpState.cat&&(!q||String(c.name).toLowerCase().indexOf(q)>=0||String(c.coreActivity||'').toLowerCase().indexOf(q)>=0);
   });
   var stats={};
   list.forEach(function(c){
@@ -6625,21 +7178,25 @@ function rpRenderGrid(){
     return String(a.name).localeCompare(String(b.name));
   });
   var groups={};
-  list.forEach(function(c){
-    var g=rpGroupOf(c);
-    (groups[g]||(groups[g]=[])).push(c);
-  });
+  list.forEach(function(c){ var g=rpGroupOf(c); (groups[g]||(groups[g]=[])).push(c); });
   var html='';
   RP_GROUP_ORDER.forEach(function(g){
     var cos=groups[g]; if(!cos||!cos.length)return;
-    html+='<div class="rp-sec-label"><span>'+escH(g)+'</span><em>· '+cos.length+'</em></div>'+
-      '<div class="rp-grid">'+cos.map(function(c){return rpCoCardHTML(c,stats[c.id]);}).join('')+'</div>';
+    html+='<div class="rp-sec2"><span class="rp-sec2-bar" style="background:var('+rpGroupColorVar(g)+')"></span><span>'+escH(g)+'</span><span class="rp-sec2-chip">'+cos.length+'</span></div>'+
+      '<div class="rp-grid2">'+cos.map(rpCoCard2HTML).join('')+'</div>';
   });
-  if(!list.length&&q)html='<div class="rp-co-empty">No companies match “'+escH(rpState.q.trim())+'”</div>';
-  grid.innerHTML=html+(q?'':
-    '<div class="rp-grid"><div class="rp-co-card rp-co-add" onclick="rpOpenCompanyModal()">'+
-    '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'+
-    'Add Company</div></div>');
+  if(!list.length){
+    grid.innerHTML = q
+      ? '<div class="rp-empty2"><div class="rp-empty2-l">No companies match “'+escH(rpState.q.trim())+'”</div><div class="rp-empty2-s">Try a different name or clear the search.</div></div>'
+      : '<div class="rp-empty2"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg><div class="rp-empty2-l">No '+escH(rpState.cat)+' companies yet</div><div class="rp-empty2-s">Add the first one to start tracking reports.</div><div style="margin-top:14px;"><button class="fn-add-btn" style="margin:0 auto;" onclick="rpOpenCompanyModal()">+ Add Company</button></div></div>';
+    return;
+  }
+  if(!q){
+    html+='<div class="rp-grid2"><div class="rp-cocard rp-cc-add" onclick="rpOpenCompanyModal()">'+
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Company</div></div>';
+  }
+  grid.innerHTML=html;
+  if(window.gsap&&!_rpReduced())gsap.from('#rp-grid .rp-cocard',{y:8,opacity:0,duration:.22,ease:'power2.out',stagger:.03,clearProps:'opacity,transform'});
 }
 function rpSetSearch(v){rpState.q=v;rpRenderGrid();}
 function rpSetSort(v){
@@ -8271,9 +8828,11 @@ FX.onChange(function(){
   <div class="fn-modal-box">
     <div class="fn-modal-hdr"><div class="fn-modal-ttl" id="emp-modal-ttl">Add Employee</div><button class="fn-modal-x" onclick="closeFnModal('emp-modal')">✕</button></div>
     <div class="emp-photo-area">
-      <div class="emp-photo-ring" id="emp-photo-ring" onclick="document.getElementById('emp-photo-input').click()" title="Upload a photo">
-        <img id="emp-photo-preview" alt=""><span id="emp-photo-initials">?</span>
-        <span class="emp-photo-cam"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
+      <div class="emp-photo-wrap" role="button" tabindex="0" aria-label="Upload a photo" title="Upload a photo" onclick="document.getElementById('emp-photo-input').click()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('emp-photo-input').click();}">
+        <div class="emp-photo-ring" id="emp-photo-ring">
+          <img id="emp-photo-preview" alt=""><span id="emp-photo-initials">?</span>
+        </div>
+        <span class="emp-photo-cam" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
       </div>
       <div class="emp-photo-actions">
         <button type="button" class="emp-photo-btn" onclick="document.getElementById('emp-photo-input').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload photo</button>
@@ -8369,7 +8928,9 @@ FX.onChange(function(){
       financeApprover: !!r.is_finance_approver,
       executiveApprover: !!r.is_executive_approver,
       reportsTo: r.reports_to||null,   /* manager's employees.id — drives the Org Chart tree */
-      role: r.role||'view_only'
+      role: r.role||'view_only',
+      sortOrder: (r.sort_order!=null?r.sort_order:null),   /* seniority order for display (server-managed) */
+      roleTag: r.role_tag||''                              /* e.g. 'FINANCE APPROVER · CFO' (server-managed) */
     };
   }
   window.SBEmp = {

@@ -34,6 +34,8 @@
      a translucent ring blends into whatever it overlaps instead of separating. */
   --pv-av-ring:#121626;
   --pv-line:rgba(255,255,255,.07);
+  /* semantic row-hover overlay — a white lift over --pv-card (no new base color) */
+  --pv-surface-hover:rgba(255,255,255,.05);
   --pv-pos:#6ee7a0;
   --pv-neg:#f87171;
   --pv-warn:#fbbf24;
@@ -399,6 +401,7 @@
   --pv-bg:#e9edf4; --pv-text:#141d33; --pv-text-2:#33415e;
   --pv-muted:#586780; --pv-muted-2:#7a889f; --pv-muted-3:#9aa6bc;
   --pv-card:#ffffff; --pv-av-ring:#ffffff; --pv-line:rgba(20,30,55,.10);
+  --pv-surface-hover:rgba(20,30,55,.04);
   --pv-shadow-tile:0 1px 2px rgba(30,50,90,.06), 0 6px 16px -5px rgba(30,50,90,.12);
   --pv-shadow-card:0 1px 3px rgba(30,50,90,.07), 0 10px 22px -7px rgba(30,50,90,.14);
   --pv-shadow-hover:0 2px 8px rgba(30,50,90,.10), 0 18px 38px -10px rgba(30,50,90,.18);
@@ -1424,22 +1427,60 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#070b14;}
 .rp-tn-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
 .rp-tn-bar .fn-add-btn{margin-left:auto;}
 .rp-tn-note{font-size:11px;font-weight:600;color:var(--pv-muted-3);}
-.rp-tn-note.is-err{color:#f87171;}
-.rp-tn-list{display:flex;flex-direction:column;gap:14px;padding-bottom:20px;}
-.rp-tn-row{display:flex;align-items:center;gap:14px;background:var(--pv-card);border-radius:16px;box-shadow:var(--pv-shadow-tile);padding:14px 16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .18s ease, box-shadow .25s ease;}
-.rp-tn-row:hover{transform:translateY(-1px);box-shadow:var(--pv-shadow-hover);}
-.rp-tn-row.is-closed{opacity:.62;}
-.rp-tn-row .rp-co-logo{width:42px;height:42px;font-size:13px;margin:0;cursor:pointer;}
-.rp-tn-logo-un{width:42px;height:42px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;background:rgba(148,163,184,.14);color:var(--pv-muted-2);border:1px dashed var(--pv-line);}
-.rp-tn-main{flex:1;min-width:0;}
-.rp-tn-title{font-size:13px;font-weight:800;color:var(--pv-text);line-height:1.35;}
-.rp-tn-meta{font-size:11px;color:var(--pv-muted-2);margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.rp-tn-meta b{color:var(--pv-text);font-weight:800;cursor:pointer;}
-.rp-tn-meta b:hover{color:#93c5fd;}
+.rp-tn-note.is-err{color:var(--pv-neg);}
+.rp-tn-list{display:flex;flex-direction:column;gap:10px;padding-bottom:24px;}
+/* FIX B — sticky urgency group headers. Offset (--tn-sticky-top) is set from
+   the live topbar height in JS so headers park just below the frosted topbar. */
+.rp-tn-group{position:sticky;top:var(--tn-sticky-top,60px);z-index:6;display:flex;align-items:center;gap:8px;margin:16px 2px 2px;padding:7px 2px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--pv-muted-2);background:var(--pv-bg);}
+.rp-tn-group:first-child{margin-top:2px;}
+.rp-tn-group .tn-g-count{font-style:normal;color:var(--pv-muted-3);font-weight:700;letter-spacing:.04em;}
+.rp-tn-group::after{content:'';flex:1;height:1px;background:var(--pv-line);margin-left:2px;}
+.rp-tn-group.is-toggle{cursor:pointer;user-select:none;border-radius:8px;outline:none;}
+.rp-tn-group.is-toggle:hover,.rp-tn-group.is-toggle:focus-visible{color:var(--pv-muted);}
+.rp-tn-group .tn-g-caret{flex:none;transition:transform .18s ease;}
+.rp-tn-group.is-collapsed .tn-g-caret{transform:rotate(-90deg);}
+/* FIX C — row is the click target; filled per-row button removed. */
+.rp-tn-row{position:relative;display:flex;align-items:center;gap:14px;min-height:72px;box-sizing:border-box;background:var(--pv-card);border-radius:14px;box-shadow:var(--pv-shadow-tile);padding:12px 18px 12px 22px;overflow:hidden;cursor:pointer;outline:none;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:background .14s ease, box-shadow .14s ease;}
+.rp-tn-row:hover,.rp-tn-row:focus-visible{background:linear-gradient(var(--pv-surface-hover),var(--pv-surface-hover)),var(--pv-card);box-shadow:var(--pv-shadow-hover);}
+.rp-tn-row.is-closed{opacity:.6;}
+/* urgency rail — 3px full-height bar, widens to 4px on hover/focus */
+.rp-tn-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:rgba(148,163,184,.28);transition:width .14s ease;}
+.rp-tn-row:hover::before,.rp-tn-row:focus-visible::before{width:4px;}
+.rp-tn-row.u-red::before{background:var(--pv-neg);}
+.rp-tn-row.u-amber::before{background:var(--pv-warn);}
+.rp-tn-row.u-neutral::before{background:rgba(148,163,184,.6);}
+.rp-tn-row.u-muted::before{background:rgba(148,163,184,.28);}
+.rp-tn-logo{display:flex;flex:none;cursor:pointer;}
+.rp-tn-row .rp-co-logo{width:36px;height:36px;font-size:12px;border-radius:10px;margin:0;flex:none;}
+.rp-tn-logo-un{width:36px;height:36px;border-radius:10px;flex:none;display:flex;align-items:center;justify-content:center;background:rgba(148,163,184,.14);color:var(--pv-muted-2);border:1px dashed var(--pv-line);}
+.rp-tn-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;}
+.rp-tn-title{font-size:15px;font-weight:600;color:var(--pv-text);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rp-tn-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11.5px;color:var(--pv-muted-2);}
+.rp-tn-co{color:var(--pv-muted);cursor:pointer;}
+.rp-tn-co:hover{color:var(--pv-text-2);}
+.rp-tn-dl{font-weight:600;color:var(--pv-muted);}
+.rp-tn-dl .tn-dl-abs{color:var(--pv-muted-3);font-weight:600;}
+.rp-tn-row.u-red .rp-tn-dl{color:var(--pv-neg);}
+.rp-tn-row.u-amber .rp-tn-dl{color:var(--pv-warn);}
+.rp-tn-row.u-muted .rp-tn-dl{color:var(--pv-muted-3);}
 .rp-tn-ref{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(96,165,250,.1);color:#7ea8ee;border:1px solid rgba(96,165,250,.22);}
 [data-theme="light"] .rp-tn-ref{background:rgba(37,99,235,.06);color:#3b5fa8;border-color:rgba(37,99,235,.2);}
-.rp-tn-exp-soon{color:#fbbf24;font-weight:800;}
-.rp-tn-open{flex:none;text-decoration:none;}
+.rp-tn-side{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:5px;text-align:right;}
+.rp-tn-seen{font-size:11px;color:var(--pv-muted-3);white-space:nowrap;}
+/* ghost "Open ↗" — hidden until row hover/focus (one primary action per screen) */
+.rp-tn-open{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;color:var(--pv-blue-300);text-decoration:none;white-space:nowrap;opacity:0;transform:translateX(-3px);transition:opacity .14s ease,transform .14s ease;}
+.rp-tn-open svg{flex:none;}
+.rp-tn-row:hover .rp-tn-open,.rp-tn-row:focus-visible .rp-tn-open,.rp-tn-open:focus-visible{opacity:1;transform:none;}
+/* FIX A — accent tints reuse the existing warn/neg channels (no new base color) */
+.rp-tn-kpi.is-amber .fn-kpi-v{color:var(--pv-warn);}
+.rp-tn-kpi.is-amber .fn-kpi-icon{background:rgba(251,191,36,.14)!important;color:var(--pv-warn)!important;}
+.rp-tn-kpi.is-red .fn-kpi-v{color:var(--pv-neg);}
+.rp-tn-kpi.is-red .fn-kpi-icon{background:rgba(248,113,113,.14)!important;color:var(--pv-neg)!important;}
+@media(max-width:700px){
+  .rp-tn-row{flex-wrap:wrap;padding:12px 16px 12px 20px;}
+  .rp-tn-side{align-self:stretch;flex-direction:row;justify-content:space-between;align-items:center;width:100%;text-align:left;}
+  .rp-tn-open{opacity:1;transform:none;}
+}
 .rp-tn-empty{text-align:center;color:var(--pv-muted-2);font-size:12.5px;font-weight:600;padding:34px 16px;line-height:1.7;background:var(--pv-card);border-radius:16px;box-shadow:var(--pv-shadow-tile);}
 /* "Open Tenders (N)" chip on tooltip + company detail header */
 .rp-tn-chip{cursor:pointer;background:rgba(52,211,153,.12);color:#34d399;border:1px solid rgba(52,211,153,.28);}
@@ -6722,7 +6763,7 @@ function _rpPurgeBrandTests(){
   return true;
 }
 _rpPurgeBrandTests();
-var rpState={cat:'upstream',companyId:null,editId:null,q:'',sort:'name',tnFilter:'all',view:(function(){try{return localStorage.getItem('petgo_rp_view')||'grid';}catch(e){return 'grid';}})()};
+var rpState={cat:'upstream',companyId:null,editId:null,q:'',sort:'name',tnFilter:'all',tnCollapsed:{nodate:true},view:(function(){try{return localStorage.getItem('petgo_rp_view')||'grid';}catch(e){return 'grid';}})()};
 /* Shared category palette → CSS token, for the card left-bar + section bar (FIX C).
    Downstream folds to amber regardless of relationship group (per spec palette). */
 var RP_GROUP_COLOR={'NOC-owned':'--pv-cat-noc','Joint Venture':'--pv-cat-jv','IOC Partner':'--pv-cat-ioc','Services':'--pv-cat-svc','Downstream Marketing':'--pv-cat-down','Other':'--pv-cat-svc'};
@@ -6948,6 +6989,54 @@ function rpTnDate(iso){
   if(d.getFullYear()!==new Date().getFullYear())o.year='numeric';
   return d.toLocaleDateString('en-GB',o);
 }
+/* ── FIX B/C helpers: urgency from days-to-close ── */
+function rpTnMidnight(){var d=new Date();d.setHours(0,0,0,0);return d;}
+function rpTnDaysLeft(t){
+  if(!t||!t.expiryDate)return null;
+  var d=new Date(t.expiryDate+'T00:00:00'); if(isNaN(d))return null;
+  return Math.round((d-rpTnMidnight())/864e5);
+}
+/* urgency class for the left rail + deadline colour: <=2 red, 3-7 amber,
+   >7 neutral, none/closed muted grey (mirrors FIX C spec). */
+function rpTnRailClass(t){
+  if(t.delisted||(t.expiryDate&&t.expiryDate<rpTnToday()))return 'u-muted';
+  var d=rpTnDaysLeft(t);
+  if(d===null)return 'u-muted';
+  if(d<=2)return 'u-red';
+  if(d<=7)return 'u-amber';
+  return 'u-neutral';
+}
+/* relative-first deadline, absolute date in muted parens */
+function rpTnDeadlineHTML(t){
+  if(t.delisted)return '<span class="rp-tn-dl">Removed <span class="tn-dl-abs">('+rpTnDate(t.lastSeenDate)+')</span></span>';
+  if(!t.expiryDate)return '<span class="rp-tn-dl">No closing date</span>';
+  var abs=rpTnDate(t.expiryDate),d=rpTnDaysLeft(t);
+  if(d===null)return '<span class="rp-tn-dl">Closes <span class="tn-dl-abs">('+abs+')</span></span>';
+  if(d<0)return '<span class="rp-tn-dl">Closed <span class="tn-dl-abs">('+abs+')</span></span>';
+  var rel=d===0?'Closes today':(d===1?'Closes in 1 day':'Closes in '+d+' days');
+  return '<span class="rp-tn-dl">'+rel+' <span class="tn-dl-abs">('+abs+')</span></span>';
+}
+/* Strip a leading company-name prefix from a tender title when it duplicates the
+   company field. Matches the company words (order-preserving, punctuation-loose)
+   only when a separator follows, so real title words are never clipped. */
+function _rpTnStripPrefix(title,cand){
+  var words=rpTnNorm(cand).split(' ').filter(Boolean);
+  if(!words.length)return title;
+  var re=new RegExp('^[\\s\\W_]*'+words.map(function(w){return w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}).join('[\\s\\W_]+')+'[\\s\\W_]+','i');
+  var out=title.replace(re,'').trim();
+  return (out&&out.length>=4&&out!==title.trim())?out:title;
+}
+function rpTnCleanTitle(t,c){
+  var title=String(t.title||'').trim(),cands=[];
+  if(c&&c.name){cands.push(c.name);cands.push(String(c.name).replace(/\([^)]*\)/g,' '));}
+  if(t.companyNameRaw){cands.push(t.companyNameRaw);cands.push(String(t.companyNameRaw).replace(/\([^)]*\)/g,' '));}
+  cands.sort(function(a,b){return rpTnNorm(b).length-rpTnNorm(a).length;});
+  for(var i=0;i<cands.length;i++){
+    var r=_rpTnStripPrefix(title,cands[i]);
+    if(r!==title)return r;
+  }
+  return title;
+}
 function rpTnFetch(force){
   if(_rpTnBusy)return;
   if(!force&&Date.now()-_rpTnFetchAt<5*60*1000)return;
@@ -6977,6 +7066,34 @@ function rpTnScanNow(){
 window.rpTnScanNow=rpTnScanNow;
 function rpTnSetFilter(v){rpState.tnFilter=v;rpRenderTenders();}
 window.rpTnSetFilter=rpTnSetFilter;
+/* ── FIX C interactions: whole row is the click target; ghost link + keyboard nav.
+   NOTE: row-open currently follows the tender link. FIX E swaps this for the
+   detail drawer (the ghost "Open ↗" keeps opening the NOC site externally). */
+function rpTnRowOpen(e,el){
+  var url=el&&el.getAttribute('data-url');
+  if(!url)return;
+  window.open(url,'_blank','noopener');
+}
+function rpTnRowKey(e,el){
+  if(e.key==='Enter'||e.key===' '){e.preventDefault();rpTnRowOpen(e,el);return;}
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();
+    var rows=Array.prototype.slice.call(document.querySelectorAll('#rp-tn-list .rp-tn-row'));
+    var i=rows.indexOf(el),n=e.key==='ArrowDown'?i+1:i-1;
+    if(n>=0&&n<rows.length)rows[n].focus();
+  }
+}
+window.rpTnRowOpen=rpTnRowOpen;window.rpTnRowKey=rpTnRowKey;
+function rpTnToggleGroup(key){
+  if(!rpState.tnCollapsed)rpState.tnCollapsed={};
+  rpState.tnCollapsed[key]=!rpState.tnCollapsed[key];
+  rpRenderTenders();
+}
+function rpTnGroupKey(e,key){if(e.key==='Enter'||e.key===' '){e.preventDefault();rpTnToggleGroup(key);}}
+window.rpTnToggleGroup=rpTnToggleGroup;window.rpTnGroupKey=rpTnGroupKey;
+function _rpTnKpiAccent(html,cls){return cls?html.replace('class="fn-kpi"','class="fn-kpi rp-tn-kpi '+cls+'"'):html;}
+function _rpTnCaret(){return '<svg class="tn-g-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';}
+function _rpTnExtIcon(){return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>';}
 function rpGoTenders(cid){
   rpCoTipHide(true);
   rpState.companyId=null;rpState.cat='tenders';rpState.tnFilter=cid||'all';
@@ -6995,32 +7112,32 @@ function rpTnNote(){
   el.className='rp-tn-note'+(((rpTnLastScan&&!rpTnLastScan.ok)||_rpTnErr)?' is-err':'');
 }
 function rpTnRowHTML(t,c){
-  var open=rpTnIsOpen(t);
+  var open=rpTnIsOpen(t),url=t.tenderLinkUrl||t.sourceUrl||'';
   var logo=c
-    ? '<span style="display:flex;flex:none;" onmouseenter="rpCoTip(event,\''+c.id+'\')" onmouseleave="rpCoTipHide()" onclick="rpOpenCompany(\''+c.id+'\')">'+rpLogoHTML(c)+'</span>'
-    : '<div class="rp-tn-logo-un" title="No tracked company matched"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg></div>';
-  var meta=[];
-  meta.push(c
-    ? '<b onclick="rpOpenCompany(\''+c.id+'\')" onmouseenter="rpCoTip(event,\''+c.id+'\')" onmouseleave="rpCoTipHide()">'+escH(c.name)+'</b>'
-    : '<span class="fn-badge rp-badge-muted" style="cursor:default;">Unmatched'+(t.companyNameRaw?' · '+escH(t.companyNameRaw):'')+'</span>');
-  if(t.referenceNumber)meta.push('<span class="rp-tn-ref">'+escH(t.referenceNumber)+'</span>');
-  if(t.delisted)meta.push('Removed from listing '+rpTnDate(t.lastSeenDate));
-  else if(!t.expiryDate)meta.push('No closing date listed');
-  else if(t.expiryDate<rpTnToday())meta.push('Expired '+rpTnDate(t.expiryDate));
-  else{
-    var soon=(new Date(t.expiryDate+'T00:00:00')-new Date())/864e5<=10;
-    meta.push(soon?'<span class="rp-tn-exp-soon">Closes '+rpTnDate(t.expiryDate)+'</span>':'Closes '+rpTnDate(t.expiryDate));
-  }
-  meta.push('First seen '+rpTnDate(t.scannedDate));
-  return '<div class="rp-tn-row'+(open?'':' is-closed')+'">'+logo+
-    '<div class="rp-tn-main"><div class="rp-tn-title">'+escH(t.title)+'</div>'+
-    '<div class="rp-tn-meta">'+meta.join('<span class="rp-co-dot"></span>')+'</div></div>'+
-    '<a class="fn-add-btn rp-tn-open" href="'+escH(t.tenderLinkUrl)+'" target="_blank" rel="noopener">Open Tender&nbsp;→</a></div>';
+    ? '<span class="rp-tn-logo" onclick="event.stopPropagation();rpOpenCompany(\''+c.id+'\')" onmouseenter="rpCoTip(event,\''+c.id+'\')" onmouseleave="rpCoTipHide()">'+rpLogoHTML(c)+'</span>'
+    : '<div class="rp-tn-logo-un" title="No tracked company matched"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg></div>';
+  /* FIX C.4 — title deduplicated; company shown once in the subline below */
+  var title=escH(rpTnCleanTitle(t,c));
+  var meta='';
+  if(t.referenceNumber)meta+='<span class="rp-tn-ref">'+escH(t.referenceNumber)+'</span><span class="rp-co-dot"></span>';
+  meta+=c
+    ? '<span class="rp-tn-co" onclick="event.stopPropagation();rpOpenCompany(\''+c.id+'\')" onmouseenter="rpCoTip(event,\''+c.id+'\')" onmouseleave="rpCoTipHide()">'+escH(c.name)+'</span>'
+    : '<span class="rp-tn-co" style="cursor:default;">'+(t.companyNameRaw?escH(t.companyNameRaw):'Unmatched')+'</span>';
+  meta+='<span class="rp-co-dot"></span>'+rpTnDeadlineHTML(t);
+  var side='<span class="rp-tn-seen">First seen '+rpTnDate(t.scannedDate)+'</span>'+
+    (url?'<a class="rp-tn-open" href="'+escH(url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation();" tabindex="-1">Open '+_rpTnExtIcon()+'</a>':'');
+  return '<div class="rp-tn-row '+rpTnRailClass(t)+(open?'':' is-closed')+'" role="button" tabindex="0" data-url="'+escH(url)+'" onclick="rpTnRowOpen(event,this)" onkeydown="rpTnRowKey(event,this)">'+logo+
+    '<div class="rp-tn-main"><div class="rp-tn-title" title="'+escH(t.title)+'">'+title+'</div>'+
+    '<div class="rp-tn-meta">'+meta+'</div></div>'+
+    '<div class="rp-tn-side">'+side+'</div></div>';
 }
 function rpRenderTenders(){
   var list=document.getElementById('rp-tn-list'),sel=document.getElementById('rp-tn-filter');
   if(!list||!sel)return;
   rpTnNote();
+  /* park sticky group headers just under the live (variable-height) topbar */
+  var tb=document.querySelector('.pv-topbar');
+  if(tb)list.style.setProperty('--tn-sticky-top',(tb.offsetHeight-1)+'px');
   var resolved=rpTenders.map(function(t){return {t:t,c:rpTnCompanyOf(t)};});
   var counts={},unmatched=0;
   resolved.forEach(function(r){if(r.c)counts[r.c.id]=(counts[r.c.id]||0)+1;else unmatched++;});
@@ -7044,19 +7161,44 @@ function rpRenderTenders(){
         : 'No tenders stored yet. The scan runs daily at 07:30 Tripoli — or press <b>Scan now</b>.'))+'</div>';
     return;
   }
-  rows.sort(function(a,b){
-    var oa=rpTnIsOpen(a.t)?0:1,ob=rpTnIsOpen(b.t)?0:1;
-    if(oa!==ob)return oa-ob;
-    if(a.t.scannedDate!==b.t.scannedDate)return a.t.scannedDate>b.t.scannedDate?-1:1;
-    return String(a.t.title).localeCompare(String(b.t.title));
-  });
-  var html='',closedShown=false;
+  /* FIX B — partition by urgency, default sort closing-date ascending (soonest
+     first); no-closing-date and closed sink to the bottom. */
+  var B={h48:[],week:[],month:[],later:[],nodate:[],closed:[]};
   rows.forEach(function(r){
-    if(!rpTnIsOpen(r.t)&&!closedShown){
-      closedShown=true;
-      html+='<div class="rp-sec-label"><span>Closed or delisted</span><em>· '+rows.filter(function(x){return !rpTnIsOpen(x.t);}).length+'</em></div>';
+    var t=r.t;
+    if(t.delisted||(t.expiryDate&&t.expiryDate<rpTnToday())){B.closed.push(r);return;}
+    var d=rpTnDaysLeft(t);
+    if(d===null){B.nodate.push(r);return;}
+    if(d<=2)B.h48.push(r);
+    else if(d<=7)B.week.push(r);
+    else if(d<=30)B.month.push(r);
+    else B.later.push(r);
+  });
+  function ascExpiry(a,b){
+    if(a.t.expiryDate!==b.t.expiryDate)return a.t.expiryDate<b.t.expiryDate?-1:1;
+    return String(a.t.title).localeCompare(String(b.t.title));
+  }
+  function descSeen(a,b){var x=b.t.lastSeenDate||b.t.scannedDate||'',y=a.t.lastSeenDate||a.t.scannedDate||'';return x<y?-1:(x>y?1:0);}
+  ['h48','week','month','later'].forEach(function(k){B[k].sort(ascExpiry);});
+  B.nodate.sort(descSeen);B.closed.sort(descSeen);
+  var groups=[
+    {key:'h48',label:'Closing in 48 hours'},
+    {key:'week',label:'Closing this week'},
+    {key:'month',label:'Closing this month'},
+    {key:'later',label:'Later'},
+    {key:'nodate',label:'No closing date',collapsible:true},
+    {key:'closed',label:'Closed or delisted'}
+  ];
+  var html='';
+  groups.forEach(function(g){
+    var arr=B[g.key]; if(!arr.length)return;
+    var collapsed=g.collapsible&&rpState.tnCollapsed&&rpState.tnCollapsed[g.key];
+    if(g.collapsible){
+      html+='<div class="rp-tn-group is-toggle'+(collapsed?' is-collapsed':'')+'" role="button" tabindex="0" aria-expanded="'+(!collapsed)+'" onclick="rpTnToggleGroup(\''+g.key+'\')" onkeydown="rpTnGroupKey(event,\''+g.key+'\')">'+_rpTnCaret()+'<span>'+g.label+'</span><span class="tn-g-count">'+arr.length+'</span></div>';
+    }else{
+      html+='<div class="rp-tn-group"><span>'+g.label+'</span><span class="tn-g-count">'+arr.length+'</span></div>';
     }
-    html+=rpTnRowHTML(r.t,r.c);
+    if(!collapsed)arr.forEach(function(r){html+=rpTnRowHTML(r.t,r.c);});
   });
   list.innerHTML=html;
 }
@@ -7083,9 +7225,12 @@ function rpRenderOverview(){
 function rpRenderKpis(){
   var el=document.getElementById('rp-kpis'); if(!el)return;
   if(rpState.cat==='tenders'){
+    /* FIX A — Open Tenders | Closing This Week (amber) | Closing in 48h (red) |
+       Last Scan. "Unmatched" dropped (structurally 0 once matching runs). */
     var resolved=rpTenders.map(function(t){return {t:t,c:rpTnCompanyOf(t)};});
     var open=resolved.filter(function(r){return rpTnIsOpen(r.t);});
-    var matched=open.filter(function(r){return !!r.c;}).length;
+    var wk=0,h48=0;
+    open.forEach(function(r){var d=rpTnDaysLeft(r.t); if(d===null)return; if(d<=7)wk++; if(d<=2)h48++;});
     var scanV='—',scanS='no scan yet';
     if(rpTnLastScan&&rpTnLastScan.at){
       var d=new Date(rpTnLastScan.at);
@@ -7094,8 +7239,8 @@ function rpRenderKpis(){
     }
     el.innerHTML=
       fnKpi('Open Tenders',open.length,rpTenders.length+' tracked in total','','','file-text')+
-      fnKpi('Matched',matched,'linked to tracked companies','','','briefcase')+
-      fnKpi('Unmatched',open.length-matched,'no tracked company yet','','','trending-up')+
+      _rpTnKpiAccent(fnKpi('Closing This Week',wk,wk?'within 7 days':'none this week','','','alert-circle'),wk>0?'is-amber':'')+
+      _rpTnKpiAccent(fnKpi('Closing in 48h',h48,h48?'urgent — act now':'none imminent','','','alert-triangle'),h48>0?'is-red':'')+
       fnKpi('Last Scan',scanV,scanS,'','','clock');
     return;
   }
@@ -7225,7 +7370,7 @@ function rpSetCat(cat,btn){
   document.querySelectorAll('#rp-cat-seg button').forEach(function(b){b.classList.toggle('is-active',b===btn||b.dataset.rcat===cat);});
   rpSegPlace(true);
   rpRenderCatViews();
-  if(window.gsap&&!_rpReduced())gsap.from(cat==='tenders'?'#rp-tn-list .rp-tn-row':'#rp-grid .rp-co-card',{y:10,opacity:0,duration:.28,ease:'power2.out',stagger:.04,clearProps:'opacity,transform'});
+  if(window.gsap&&!_rpReduced())gsap.from(cat==='tenders'?'#rp-tn-list .rp-tn-row':'#rp-grid .rp-co-card',{y:10,opacity:0,duration:.28,ease:'power2.out',stagger:cat==='tenders'?.025:.04,clearProps:'opacity,transform'});
 }
 
 /* ── company detail: breadcrumb + header + reports table ── */

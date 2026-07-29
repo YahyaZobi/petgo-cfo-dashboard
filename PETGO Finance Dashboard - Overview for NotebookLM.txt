@@ -1,0 +1,179 @@
+PETGO FINANCE CFO DASHBOARD — OVERVIEW AND WALKTHROUGH
+========================================================
+(Source document for NotebookLM video/podcast generation)
+
+
+WHAT THIS APP IS
+-----------------
+The PETGO Finance CFO Dashboard is a single, web-based application built to give
+PETGO's leadership — the CFO and CEO in particular — one place to see and manage
+the financial and operational health of the company. Instead of switching between
+separate Excel sheets for budgets, payroll, invoices, contracts, and project
+spending, everything lives in one connected dashboard with a clean, modern
+interface designed to be read at a glance and drilled into when needed.
+
+The app currently runs directly in a web browser. It was built quickly and
+deliberately as a lightweight, no-server tool so it could be stood up fast and
+customised easily for PETGO's specific structure (departments, employees,
+currency, branding). It optionally connects to Microsoft 365 (OneDrive /
+SharePoint) so that some data can be pulled live from existing company Excel
+files rather than re-entered by hand.
+
+
+WHO USES IT AND WHY IT EXISTS
+-------------------------------
+The primary users are the CFO and the CEO, with the finance and HR teams doing
+day-to-day data entry. The purpose is simple: give the people who make financial
+and strategic decisions a single, real-time picture of:
+
+  - How much money is coming in and going out
+  - Whether departments are on budget or over budget
+  - Which invoices are overdue and which contracts are about to expire
+  - What the company is spending on active projects versus what was budgeted
+  - Who is on the team, what they're paid, and when their leave or contracts
+    are due
+
+The bigger strategic goal — the reason this dashboard matters beyond day-to-day
+bookkeeping — is to evolve it into a tool that also tracks PETGO's oil and gas
+PROJECTS specifically: their progress, their budgets versus actual spend, and
+their position across the upstream (exploration and production) and downstream
+(refining, distribution, sales) parts of the business. The Projects module in
+the dashboard today is the seed of that: as the company's project data grows,
+this is the part of the app that will expand the most.
+
+
+HOW THE APP IS ORGANISED
+--------------------------
+The app has a dark, modern sidebar on the left with three groups of sections:
+"Menu" (general tools), "Finance" (money-related modules), and "People"
+(HR-related modules). Clicking any item switches the main panel on the right —
+nothing reloads, it all feels instant, like a native desktop tool rather than a
+web page.
+
+
+SECTION-BY-SECTION WALKTHROUGH
+=================================
+
+1. DASHBOARD (Executive Overview)
+   The landing screen after login. Shows top-line KPI cards — Total Revenue,
+   Total Expenses, Net Profit, Headcount — plus a Revenue vs. Expenses trend
+   chart, a recent activity feed, and a company announcements banner. This is
+   the "30-second glance" screen: if the CEO only has a minute, this is what
+   they look at.
+
+2. ANALYTICS
+   A cross-module data visualisation area. It automatically detects the shape
+   of the underlying data and picks the most sensible chart type to display it
+   — useful for spotting patterns across departments or time periods without
+   building a chart manually.
+
+3. DOCUMENTS (My Documents)
+   A simple file cabinet inside the app — upload, view, and delete company
+   documents directly, with file type icons and size shown.
+
+4. TEAM DIRECTORY
+   A living list of every employee: photo, title, department, email, and
+   phone. This directory feeds other modules automatically — for example, the
+   payroll and contracts sections cross-reference names from here, and the
+   org chart is generated from it.
+
+5. AUDIT LOG
+   A timestamped history of every create, edit, and delete action taken across
+   the whole app. This is the accountability trail — who changed what, and
+   when.
+
+6. SETTINGS
+   Where the app is configured: language (Arabic/English), currency (LYD, USD,
+   EUR), Microsoft data source connections (for pulling live Excel data from
+   OneDrive/SharePoint), full data backup and restore, and notification
+   preferences.
+
+
+FINANCE SECTION
+-----------------
+
+7. BUDGET TRACKER
+   Compares budgeted amounts to actual spend, broken down by department and
+   category, with a variance percentage so it's immediately clear who is
+   over or under budget. Includes a bar chart comparing budgeted vs. actual
+   per department.
+
+8. INVOICES
+   The invoice register — vendor, amount, due date, and status (Paid,
+   Pending, Overdue, Draft), plus an aging chart showing how overdue invoices
+   are piling up.
+
+9. EXPENSE CLAIMS
+   Employee-submitted expenses with a built-in approve/reject workflow, so
+   the CFO can see what's pending sign-off at any time.
+
+10. PETTY CASH
+    A running log of small cash transactions in and out, with a live running
+    balance and a breakdown by category.
+
+11. PROJECTS
+    Tracks budget versus actual spend per project, with a status flag
+    (Active, On Hold, Completed). This is the module that will grow into full
+    oil-and-gas project tracking — progress, cost, and eventually
+    upstream/downstream categorisation — as PETGO's project portfolio expands.
+
+
+PEOPLE (HR) SECTION
+----------------------
+
+12. LEAVE TRACKER
+    Employee leave requests (Annual, Sick, Emergency, Unpaid) with approval
+    status, a calendar view, and automatic days-remaining calculations.
+
+13. PAYROLL
+    The monthly salary register — base salary, deductions, and net pay per
+    employee, with headcount and total payroll KPIs. Includes one-click,
+    print-ready PDF payslip generation with PETGO branding, a full earnings
+    and deductions breakdown, and the net pay spelled out in words.
+
+14. CONTRACTS
+    Tracks every employee contract's expiry date with colour-coded urgency
+    (Critical / Warning / Active / Expired), so nothing lapses unnoticed.
+    Signed contract PDFs can be attached and viewed directly, along with each
+    role's job description.
+
+15. ONBOARDING
+    A checklist tracker for getting new employees set up.
+
+16. ORG CHART
+    Automatically generated from the Team Directory — CEO at the top,
+    departments as branches, employees as leaves. Always up to date because
+    it's built from the same data as the directory.
+
+17. PERFORMANCE REVIEWS
+    Tracks review cycles, ratings, and notes per employee, with a status for
+    where each review stands.
+
+
+FEATURES THAT RUN ACROSS THE WHOLE APP
+-----------------------------------------
+  - Global Search: search every module at once and jump straight to a result.
+  - Smart Notifications: automatic alerts for expiring contracts, overdue
+    invoices, and expense claims waiting on approval.
+  - Dark/Light Theme: switch the whole app's look with one click.
+  - Excel Export: nearly every table can be exported to Excel in one click.
+  - Full Backup/Restore: the entire dashboard's data can be exported to a
+    single file and restored later.
+  - Optional Microsoft 365 Login and Live Data: with an Azure/Microsoft Entra
+    ID app registration configured, users can log in with their real
+    Microsoft work account, and modules can pull live numbers straight from
+    Excel files stored in OneDrive or SharePoint — so the dashboard can
+    reflect the same numbers finance already keeps in Excel, without manual
+    re-entry.
+
+
+WHY THIS MATTERS FOR THE CEO
+-------------------------------
+Today, this dashboard already replaces a scattered set of spreadsheets with one
+coherent, branded, easy-to-read view of PETGO's finances and people. The
+direction it's heading — and the reason it's worth investing further in — is
+becoming the CEO and CFO's single shared window into PETGO's oil and gas
+projects specifically: seeing project progress, cost performance, and
+upstream/downstream activity in the same place they already check revenue,
+payroll, and contracts. The goal is one dashboard, one source of truth, for
+both the financial side of the business and the operational project side.

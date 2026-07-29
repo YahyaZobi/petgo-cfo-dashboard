@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "exported": "2026-06-23T10:31:38.201Z",
+  "data": {
+    "petgo_budgets": [],
+    "petgo_invoices": [],
+    "petgo_petty": [],
+    "petgo_projects": [],
+    "petgo_expenses": [
+      {
+        "id": 1,
+        "emp": "Yahya Zoubi",
+        "cat": "Software",
+        "desc": "Power BI Pro License",
+        "amount": 2400,
+        "date": "2026-06-01",
+        "status": "Approved"
+      },
+      {
+        "id": 2,
+        "emp": "Ahmed Sudgey",
+        "cat": "Travel",
+        "desc": "Tripoli–Benghazi field visit",
+        "amount": 1800,
+        "date": "2026-06-10",
+        "status": "Approved"
+      },
+      {
+        "id": 3,
+        "emp": "Mohamed Elwkhi",
+        "cat": "Equipment",
+        "desc": "Field measurement device",
+        "amount": 5500,
+        "date": "2026-06-12",
+        "status": "Approved"
+      },
+      {
+        "id": 4,
+        "emp": "Abdulrahman Elfgi",
+        "cat": "Training",
+        "desc": "Engineering certification",
+        "amount": 3200,
+        "date": "2026-05-28",
+        "status": "Approved"
+      },
+      {
+        "id": 5,
+        "emp": "Karen Mombay",
+        "cat": "Office",
+        "desc": "HR software subscription",
+        "amount": 1200,
+        "date": "2026-06-15",
+        "status": "Rejected"
+      }
+    ],
+    "petgo_leaves": [],
+    "petgo_payroll": [],
+    "petgo_contracts": [
+      {
+        "id": 1,
+        "name": "Nezar Atiega",
+        "dept": "Executive",
+        "type": "Permanent",
+        "end": "2027-12-31"
+      },
+      {
+        "id": 2,
+        "name": "Karen Mombay",
+        "dept": "Business Development",
+        "type": "Fixed Term",
+        "end": "2026-12-31"
+      },
+      {
+        "id": 3,
+        "name": "Ahmed Sudgey",
+        "dept": "Upstream",
+        "type": "Fixed Term",
+        "end": "2026-09-30"
+      },
+      {
+        "id": 4,
+        "name": "Mohamed Elwkhi",
+        "dept": "Engineering",
+        "type": "Fixed Term",
+        "end": "2027-06-30"
+      },
+      {
+        "id": 5,
+        "name": "Yahya Zoubi",
+        "dept": "Engineering",
+        "type": "Fixed Term",
+        "end": "2026-12-31"
+      },
+      {
+        "id": 6,
+        "name": "Abdulrahman Elfgi",
+        "dept": "Project Delivery",
+        "type": "Fixed Term",
+        "end": "2026-08-31"
+      },
+      {
+        "id": 7,
+        "name": "Asil Abduldaem",
+        "dept": "Project Delivery",
+        "type": "Fixed Term",
+        "end": "2026-08-31"
+      }
+    ],
+    "petgo_onboarding": [],
+    "petgo_audit_log": [
+      {
+        "id": 502,
+        "module": "Contracts",
+        "action": "Updated: 7 records",
+        "time": "22 Jun 2026 · 23:59",
+        "color": "#f59e0b"
+      },
+      {
+        "id": 501,
+        "module": "Contracts",
+        "action": "Updated: 7 records",
+        "time": "22 Jun 2026 · 23:59",
+        "color": "#f59e0b"
+      },
+      {
+        "id": 500,
+        "module": "Contracts",
+        "action": "Updated: 7 records",
+        "time": "22 Jun 2026 · 23:59",
+        "color": "#f59e0b"
+      },
+      {
+        "id": 502,
+        "module": "Export",
+        "action": "Exported table: Payroll",
+        "time": "22 Jun 2026 · 23:54",
+        "color": "#10b981"
+      },
+      {
+        "id": 501,
+        "module": "Expenses",
+        "action": "Updated: 5 records",
+        "time": "22 Jun 2026 · 23:52",
+        "color": "#ec4899"
+      },
+      {
+        "id": 500,
+        "module": "Expenses",
+        "action": "Updated: 5 records",
+        "time": "22 Jun 2026 · 23:52",
+        "color": "#ec4899"
+      },
+      {
+        "id": 500,
+        "module": "Backup",
+        "action": "Full data backup exported",
+        "time": "22 Jun 2026 · 23:42",
+        "color": "#10b981"
+      },
+      {
+        "id": 500,
+        "module": "Export",
+        "action": "Exported table: Leave_Tracker",
+        "time": "22 Jun 2026 · 18:51",
+        "color": "#10b981"
+      }
+    ],
+    "petgo_announcements": [],
+    "petgo_reviews": []
+  }
+}

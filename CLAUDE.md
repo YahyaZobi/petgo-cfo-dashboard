@@ -3,8 +3,11 @@
 Internal operations platform for PETGO (Libyan oil & gas services, 11 staff).
 
 ## Architecture
-- Single-file app: index.html contains all HTML, CSS, vanilla JS
-- No build step, no npm, no framework. CDN imports only (GSAP).
+- index.html contains all app HTML, CSS, vanilla JS. No frontend framework.
+- npm exists for tooling and Netlify Functions only — NOT a frontend build
+  step. index.html is served as-is.
+- Netlify Functions live in netlify/functions/. Use these for anything
+  requiring a secret — the browser must never hold an API key.
 - Data layer: Supabase (project axpqhzjhkunrsasxoria, eu-west-1)
 - Deployed: Netlify, auto-deploy from main
 
@@ -23,17 +26,23 @@ See DESIGN_SYSTEM.md.
 CEO Nezar Atiega = Executive Approver. Karen Mombay (CFO) = Finance Approver
 under threshold. Both Admin in Vantage.
 
-## Constraints
-- Do NOT introduce a build step or framework without asking
-- Do NOT split index.html without an explicit plan approved first
-- Supabase RLS policies must be verified on any schema change
-
-## Known constraints / open issues
-- Client-side only: any API key in index.html is publicly visible.
-  Vantage Copilot must proxy through a serverless function, never
-  embed the Groq key directly.
-- No test runner exists. Verify changes by manual checklist.
-
 ## Source of truth
 - Employee roster: Supabase `employees` table (11 rows). Not localStorage.
 - localStorage migration is COMPLETE. Do not add localStorage persistence.
+
+## Constraints
+- Do NOT introduce a frontend build step or framework without asking.
+- Do NOT split index.html without an explicit plan approved first.
+- Supabase RLS policies must be verified on any schema change.
+- Secrets NEVER go in index.html — it ships to every browser. Anything
+  requiring a key goes through netlify/functions/ with the key in a Netlify
+  env var.
+- Copilot (and any future feature) must query Supabase using the signed-in
+  user's JWT, never the service role key. RLS must apply identically to
+  Copilot and the UI.
+- No test runner exists. Verify changes by manual checklist.
+
+## Vantage Copilot scope
+In scope: Tenders/Reports, Pipeline, Projects, Team Directory, Leave, Org Chart.
+Out of scope: all financial modules (Budget Tracker, Invoices, Expense Claims,
+Petty Cash), Payroll, Performance Reviews, Audit Log.
